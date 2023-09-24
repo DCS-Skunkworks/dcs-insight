@@ -24,15 +24,6 @@ local DCSConsole = require "DCSConsole"
 DCSConsoleGlobal = DCSConsole:new(TCP_address, TCP_port, APIHandler)
 DCSConsoleGlobal:init()
 
-Logg:log_is_nil("DCSInsight: DCSConsoleGlobal.APIHandler", DCSConsoleGlobal.APIHandler)
-Logg:log_is_nil("DCSInsight: DCSConsoleGlobal.APIHandler.apiTable", DCSConsoleGlobal.APIHandler.apiTable)
---Logg:log_table_indexes(DCSConsoleGlobal.APIHandler.apiTable)
---Logg:log_simple(DCSConsoleGlobal.APIHandler.apiTable[0])
-Logg:log("DCSInsight: APIHandler.apiTable is ")
-Logg:log_table(DCSConsoleGlobal.APIHandler.apiTable, 10, 100)
-Logg:log("TABLE END \n\n")
-
-
 
 local counter = 0;
 local function step(arg, time)

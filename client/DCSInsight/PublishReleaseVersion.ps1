@@ -78,7 +78,7 @@ Write-Host "Project file updated" -foregroundcolor "Green"
 Write-Host "Finished release version management" -foregroundcolor "Green"
 
 #---------------------------------
-# Server publishing
+# Client publishing
 #---------------------------------
 #Cleaning previous publish
 Write-Host "Starting cleaning previous build" -foregroundcolor "Green"

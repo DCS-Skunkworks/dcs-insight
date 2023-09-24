@@ -209,6 +209,10 @@ function APIHandler:verify_entries()
         else
             seen[command.id] = true -- set the element to seen
         end
+
+        if(command.apiInfo.parameter_count ~= #command.apiInfo.parameter_defs)then
+            Logg:log("Parameter count mismatch in "..command.apiInfo.api_syntax)
+        end
     end
 
     local message = "Following api have duplicate id. This must be corrected :\n"
