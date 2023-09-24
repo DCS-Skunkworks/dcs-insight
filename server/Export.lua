@@ -1,0 +1,1 @@
+dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\DCSInsight.lua]])

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>disable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>dcs-insight</AssemblyName>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.8667.3</AssemblyVersion>
+    <ApplicationIcon>Images\Magnifier_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Images\Magnifier_icon.ico" />
+    <None Remove="Images\Magnifier_icon.png" />
+    <None Remove="Images\search_api.png" />
+    <None Remove="Magnifier_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Images\Magnifier_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NLog" Version="5.2.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Magnifier_icon.ico" />
+    <Resource Include="Images\Magnifier_icon.png" />
+    <Resource Include="Images\search_api.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
