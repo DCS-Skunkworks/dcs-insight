@@ -1,12 +1,12 @@
 #Declaring & setting some variables
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 $publishPath = $scriptPath+"\_PublishTemp_\"
-
+$dcsinsightPath = $scriptPath+"\..\..\server"
 #---------------------------------
 # Pre-checks
 #---------------------------------
 #Checking destination folder first
-if (($env:dcsinsightReleaseDestinationFolderPath -eq $null) -or (-not (Test-Path $env:dcsinsightReleaseDestinationFolderPath))){
+if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path $env:dcsinsightReleaseDestinationFolderPath))){
 	Write-Host "Fatal error. Destination folder does not exists. Please set environment variable 'dcsinsightReleaseDestinationFolderPath' to a valid value" -foregroundcolor "Red"
 	exit
 }
@@ -78,7 +78,7 @@ Write-Host "Project file updated" -foregroundcolor "Green"
 Write-Host "Finished release version management" -foregroundcolor "Green"
 
 #---------------------------------
-# Publish-Build & Zip
+# Server publishing
 #---------------------------------
 #Cleaning previous publish
 Write-Host "Starting cleaning previous build" -foregroundcolor "Green"
@@ -87,7 +87,6 @@ dotnet clean DCSInsight.csproj -o $publishPath
 
 Write-Host "Starting Publish" -foregroundcolor "Green"
 Set-Location -Path $scriptPath
-
 
 Write-Host "Starting Publish DCS-INSIGHT" -foregroundcolor "Green"
 dotnet publish DCSInsight.csproj --self-contained false -f net6.0-windows -r win-x64 -c Release -o $publishPath /p:DebugType=None /p:DebugSymbols=false
@@ -106,6 +105,39 @@ Write-Host "Getting file info" -foregroundcolor "Green"
 $file_version = (Get-Command $publishPath\dcs-insight.exe).FileVersionInfo.FileVersion
 Write-Host "File version is $file_version" -foregroundcolor "Green"
 
+if (Test-Path -Path $publishPath\client) {
+    Write-Host "client folder exists" -foregroundcolor "Green"
+} else {
+	Write-Host "Creating client folder" -foregroundcolor "Green"
+    New-Item -ItemType Directory -Path $publishPath\client
+}
+
+Write-Host "Removing old files from client folder" -foregroundcolor "Green"
+Remove-Item $publishPath\client\*.*
+
+Write-Host "Moving client files to client folder" -foregroundcolor "Green"
+Move-Item -Path $publishPath\*.* -Destination $publishPath\client
+
+#---------------------------------
+# Server publishing
+#---------------------------------
+if (Test-Path -Path $publishPath\server) {
+    Write-Host "server folder exists" -foregroundcolor "Green"
+} else {
+	Write-Host "Creating server folder" -foregroundcolor "Green"
+    New-Item -ItemType Directory -Path $publishPath\server
+}
+
+Write-Host "Removing old files from server folder" -foregroundcolor "Green"
+Remove-Item $publishPath\server\* -Recurse
+
+Write-Host "Copying DCS-INSIGHT files to server folder" -foregroundcolor "Green"
+Copy-Item -Path $dcsinsightPath\* -Destination $publishPath\server -Recurse
+
+
+#---------------------------------
+# Zipping
+#---------------------------------
 #Compressing release folder to destination
 Write-Host "Destination for zip file:" $env:dcsinsightReleaseDestinationFolderPath"\dcs-insight_x64_$file_version.zip" -foregroundcolor "Green"
 Compress-Archive -Force -Path $publishPath\* -DestinationPath $env:dcsinsightReleaseDestinationFolderPath"\dcs-insight_x64_$file_version.zip"
