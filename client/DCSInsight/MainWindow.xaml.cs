@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -40,6 +41,7 @@ namespace DCSInsight
         private int _metaDataPollCounter;
         private readonly List<UserControlAPI> _loadedAPIUserControls = new();
         private const int MAX_CONTROLS_ON_PAGE = 200;
+        private bool _formLoaded;
 
         public MainWindow()
         {
@@ -59,9 +61,12 @@ namespace DCSInsight
         {
             try
             {
-                Logger.Error("ERRÅR");
-                Logger.Info("INFÅ");
+                if (_formLoaded) return;
+                
+                ShowVersionInfo();
                 SetFormState();
+                CheckBoxTop.IsChecked = true;
+                _formLoaded = true;
             }
             catch (Exception ex)
             {
@@ -96,6 +101,33 @@ namespace DCSInsight
                     _isRunning = true;
                     _clientThread = new Thread(ClientThread);
                     _clientThread.Start();
+                }
+                catch (Exception ex)
+                {
+                    Common.ShowErrorMessageBox(ex);
+                }
+            }
+            finally
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
+            }
+        }
+
+        private void Disconnect()
+        {
+            try
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                try
+                {
+                    _isRunning = false;
+                    _tcpClient.Close();
+                    _dcsAPIList.Clear();
+                    _metaDataPollCounter = 0;
+                    _loadedAPIUserControls.Clear();
+                    ItemsControlAPI.ItemsSource = null;
+                    ItemsControlAPI.Items.Clear();
+                    SetConnectionStatus(_isRunning);
                 }
                 catch (Exception ex)
                 {
@@ -174,6 +206,7 @@ namespace DCSInsight
 
         private void SetConnectionStatus(bool connected)
         {
+            ButtonConnect.Content = _isRunning ? "Disconnect" : "Connect";
             Title = _isRunning ? "Connected" : "Disconnected";
             SetFormState();
         }
@@ -182,8 +215,6 @@ namespace DCSInsight
         {
             try
             {
-                Logger.Info(str);
-
                 if (_dcsAPIList == null || _dcsAPIList.Count == 0)
                 {
                     HandleAPIMessage(str);
@@ -253,7 +284,12 @@ namespace DCSInsight
         {
             try
             {
-                Connect();
+                if (!_isRunning)
+                {
+                    Connect();
+                    return;
+                }
+                Disconnect();
             }
             catch (Exception ex)
             {
@@ -483,6 +519,19 @@ namespace DCSInsight
                 {
                     ShowAPIs();
                 }
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void ShowVersionInfo()
+        {
+            try
+            {
+                var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                TextBlockAppInfo.Text = $"dcs-insight v.{fileVersionInfo.FileVersion}";
             }
             catch (Exception ex)
             {

@@ -27,21 +27,23 @@ function DCSConsole:new(host, port, APIHandler)
 end
 
 DCSConsole.ReadClientData = function (str)
-	--Logg:log_simple("ReadClientData "..str.."\n")
+	Logg:log_simple("Reading client request\n")
 
 	if (str == nil) then return end
 	
 	if(str == "SENDAPI") then
 		local json = JSON:encode_pretty(DCSConsoleGlobal.APIHandler.apiTable)
 		--Logg:log_simple("Outgoing JSON is\n"..json)
-		DCSConsoleGlobal.tcpServer:send(json)			
+		DCSConsoleGlobal.tcpServer:send(json)	
+		Logg:log_simple("Sending API list request\n")
 	else
 		local command = JSON:decode(str);
 		--local result_code, buffer = Logg:dump_table(command, 100, 5000)
-		local api = DCSConsoleGlobal.APIHandler:execute(command)		
+		local api = DCSConsoleGlobal.APIHandler:execute(command)
 		local json = JSON:encode_pretty(api)
 		--Logg:log_simple("Outgoing JSON is\n"..json)
 		DCSConsoleGlobal.tcpServer:send(json)
+		Logg:log_simple("Sending API execution result for command id="..command.id.."\n")
 	end
 end
 

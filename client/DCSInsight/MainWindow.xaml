@@ -42,7 +42,7 @@
         <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3">
             <StatusBar DockPanel.Dock="Bottom" Margin="5,0,5,0">
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                    <TextBlock Name="TextBlockAppName" >dcs-insight</TextBlock>
+                    <TextBlock Name="TextBlockAppInfo" >dcs-insight</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>
