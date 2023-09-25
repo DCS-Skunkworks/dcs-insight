@@ -23,7 +23,7 @@ function SetCommand:new()
     local parameter0 = Parameter:new(0, ParamName.device_id, ParamType.number)
     apiInfo.parameter_defs[#apiInfo.parameter_defs + 1] = parameter0
 
-    local parameter1 = Parameter:new(1, ParamName.argument_id, ParamType.number)
+    local parameter1 = Parameter:new(1, ParamName.command_id, ParamType.number)
     apiInfo.parameter_defs[#apiInfo.parameter_defs + 1] = parameter1
 
     local parameter2 = Parameter:new(2, ParamName.new_value, ParamType.number)
