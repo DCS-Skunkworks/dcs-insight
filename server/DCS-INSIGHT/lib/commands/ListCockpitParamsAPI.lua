@@ -1,34 +1,29 @@
 module("ListCockpitParamsAPI", package.seeall)
 
-local APIInfo = require("APIInfo")
-local Parameter = require("Parameter")
+local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
 local API_ID = 17
 
---- @class ListCockpitParamsAPI : APIHandlerBase
+--- @class ListCockpitParamsAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local ListCockpitParamsAPI = {}
+local ListCockpitParamsAPI = APIBase:new()
 
 
 --- @func Returns new ListCockpitParamsAPI
-function ListCockpitParamsAPI:new()
-    local apiInfo = APIInfo:new()
-    apiInfo.id = API_ID
-    apiInfo.returns_data = true
-    apiInfo.api_syntax = "list_cockpit_params()"
-    apiInfo.parameter_count = 0
-    apiInfo.parameter_defs = {}
+function ListCockpitParamsAPI:new(o)
+    o = o or APIBase:new(
+        o,
+        API_ID,
+        true,
+        "list_cockpit_params()",
+        0
+    )
 
-
-    --- @type ListCockpitParamsAPI
-    local o = {
-        id = API_ID,
-        apiInfo = apiInfo
-    }
     setmetatable(o, self)
     self.__index = self
+    
     return o
 end
 
@@ -40,13 +35,9 @@ end
 --- @param api APIInfo
 function ListCockpitParamsAPI:execute(api)
 
-    api.result = list_cockpit_params()
-    if (api.result == nil) then api.result = "result is nil" end
+    local result = list_cockpit_params()
+    api = self:decode_result(api, result)
 
-    if(type(api.result) == "table")then
-        local result, str = Logg:dump_table(api.result, 100, 1000)        
-        api.result = str
-    end
     return api
 end
 

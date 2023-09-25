@@ -180,7 +180,7 @@ namespace DCSInsight
                         var cts = new CancellationTokenSource(100);
                         var dcsApi = await _asyncCommandsChannel.Reader.ReadAsync(cts.Token);
                         //_tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi, Formatting.Indented) + "\n"));
-                        Debug.WriteLine(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
+                        //Debug.WriteLine(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
                         _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi) + "\n"));
                     }
 
@@ -189,7 +189,7 @@ namespace DCSInsight
                     var bytes = new byte[_tcpClient.Available];
                     var bytesRead = _tcpClient.GetStream().Read(bytes);
                     var msg = Encoding.ASCII.GetString(bytes);
-
+                    //Debug.WriteLine(msg);
                     Dispatcher?.BeginInvoke((Action)(() => HandleMessage(msg)));
                     Thread.Sleep(100);
                 }
@@ -241,7 +241,7 @@ namespace DCSInsight
             try
             {
                 _dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
-                Debug.WriteLine("Count is " + _dcsAPIList.Count);
+                //Debug.WriteLine("Count is " + _dcsAPIList.Count);
                 Dispatcher?.BeginInvoke((Action)(ShowAPIs));
             }
             catch (Exception ex)
@@ -405,7 +405,7 @@ namespace DCSInsight
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                Debug.WriteLine("ErrorMessage() : " + ex.Message);
             }
         }
 
@@ -418,7 +418,7 @@ namespace DCSInsight
             }
             catch (Exception ex2)
             {
-                Debug.WriteLine(ex2.Message);
+                Debug.WriteLine("ErrorMessage() : " + ex2.Message);
             }
         }
 

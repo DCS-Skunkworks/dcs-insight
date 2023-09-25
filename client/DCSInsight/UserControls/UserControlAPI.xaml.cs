@@ -27,6 +27,13 @@ namespace DCSInsight.UserControls
         private Timer _pollingTimer;
         private bool _canSend;
         private bool _keepResults;
+        private Button _buttonSend;
+        private Label _labelKeepResults;
+        private CheckBox _checkBoxKeepResults;
+        private Label _labelPolling;
+        private CheckBox _checkBoxPolling;
+        private Label _labelPollingInterval;
+        private ComboBox _comboBoxPollTimes;
 
         public int Id { get; private set; }
 
@@ -51,11 +58,8 @@ namespace DCSInsight.UserControls
             {
                 if (_isLoaded) return;
 
-                ComboBoxPollTimes.Items.Clear();
-                ComboBoxPollTimes.Items.Add(500);
-                ComboBoxPollTimes.Items.Add(1000);
-                ComboBoxPollTimes.Items.Add(2000);
-                ComboBoxPollTimes.SelectedIndex = 0;
+                IsTabStop = true;
+                
                 BuildUI();
                 _isLoaded = true;
             }
@@ -69,10 +73,10 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                ButtonSend.IsEnabled = !_textBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && _isConnected;
-                CheckBoxPolling.IsEnabled = ButtonSend.IsEnabled;
-                ComboBoxPollTimes.IsEnabled = CheckBoxPolling.IsChecked == false;
-                _canSend = ButtonSend.IsEnabled;
+                _buttonSend.IsEnabled = !_textBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && _isConnected;
+                _checkBoxPolling.IsEnabled = _buttonSend.IsEnabled;
+                _comboBoxPollTimes.IsEnabled = _checkBoxPolling.IsChecked == false;
+                _canSend = _buttonSend.IsEnabled;
             }
             catch (Exception ex)
             {
@@ -97,71 +101,131 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                TextBoxSyntax.Text = _dcsAPI.Syntax;
-                TextBoxSyntax.ToolTip = $"API Id = {_dcsAPI.Id}";
-                StackPanelParametersDev.Children.Clear();
-                StackPanelParametersDev.Visibility = Visibility.Collapsed;
-                StackPanelParameters.Visibility = Visibility.Visible;
+                Mouse.OverrideCursor = Cursors.Wait;
 
-                foreach (var dcsAPIParameterType in _dcsAPI.Parameters)
+                try
                 {
-                    var label = new Label
-                    {
-                        Content = dcsAPIParameterType.ParameterName.Replace("_", "__")
-                    };
-                    label.VerticalAlignment = VerticalAlignment.Center;
-                    StackPanelParameters.Children.Add(label);
-                    StackPanelParameters.UpdateLayout();
+                    TextBoxSyntax.Text = _dcsAPI.Syntax;
+                    TextBoxSyntax.ToolTip = $"API Id = {_dcsAPI.Id}";
 
-                    var textBox = new TextBox
+                    var controlList = new List<Control>();
+
+                    foreach (var dcsAPIParameterType in _dcsAPI.Parameters)
                     {
-                        Name = "TextBox" + dcsAPIParameterType.Id,
-                        Tag = dcsAPIParameterType.Id,
-                        Width = 50,
-                        Height = 20
-                    };
-                    if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
-                    {
-                        textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+                        var label = new Label
+                        {
+                            Content = dcsAPIParameterType.ParameterName.Replace("_", "__")
+                        };
+                        label.VerticalAlignment = VerticalAlignment.Center;
+                        controlList.Add(label);
+
+                        var textBox = new TextBox
+                        {
+                            Name = "TextBox" + dcsAPIParameterType.Id,
+                            Tag = dcsAPIParameterType.Id,
+                            Width = 50,
+                            Height = 20,
+                            IsTabStop = true
+                        };
+
+                        if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
+                        {
+                            textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+                        }
+                        textBox.KeyUp += TextBoxParameter_OnKeyUp;
+
+                        controlList.Add(textBox);
+                        _textBoxParameterList.Add(textBox);
                     }
-                    textBox.KeyUp += TextBoxParameter_OnKeyUp;
-                    _textBoxParameterList.Add(textBox);
-                    StackPanelParameters.Children.Add(textBox);
-                    StackPanelParameters.UpdateLayout();
+
+                    _buttonSend = new Button
+                    {
+                        Content = "Send",
+                        Height = 20,
+                        Width = 50,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(20, 0, 0, 0)
+                    };
+                    _buttonSend.Click += ButtonSend_OnClick;
+                    controlList.Add(_buttonSend);
+
+                    _labelKeepResults = new Label
+                    {
+                        Content = "Keep results",
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(10, 0, 0, 0)
+                    };
+                    controlList.Add(_labelKeepResults);
+
+                    _checkBoxKeepResults = new CheckBox
+                    {
+                        Margin = new Thickness(0,0,0,0),
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    _checkBoxKeepResults.Checked += CheckBoxKeepResults_OnChecked;
+                    _checkBoxKeepResults.Unchecked += CheckBoxKeepResults_OnUnchecked;
+                    controlList.Add(_checkBoxKeepResults);
+
+                    _labelPolling = new Label
+                    {
+                        Content = "Polling",
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(10,0,0,0)
+                    };
+                    controlList.Add(_labelPolling);
+
+                    _checkBoxPolling = new CheckBox
+                    {
+                        Margin = new Thickness(0,0,0,0),
+                        VerticalAlignment = VerticalAlignment.Center
+
+                    };
+                    _checkBoxPolling.Checked += CheckBoxPolling_OnChecked;
+                    _checkBoxPolling.Unchecked += CheckBoxPolling_OnUnchecked;
+                    controlList.Add(_checkBoxPolling);
+                    
+                    _labelPollingInterval = new Label
+                    {
+                        Content = "Interval (ms) :",
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(10,0,0,0)
+                    };
+                    controlList.Add(_labelPollingInterval);
+
+                    _comboBoxPollTimes = new ComboBox
+                    {
+                        Height = 20,
+                        Margin = new Thickness(2, 0, 0, 0),
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    _comboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
+                    _comboBoxPollTimes.Items.Add(500);
+                    _comboBoxPollTimes.Items.Add(1000);
+                    _comboBoxPollTimes.Items.Add(2000);
+                    _comboBoxPollTimes.SelectedIndex = 0;
+                    controlList.Add(_comboBoxPollTimes);
+
+                    ItemsControlParameters.ItemsSource = controlList;
+
+                    //No polling for procedures
+                    _labelPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                    _labelKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                    _checkBoxKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                    _labelPollingInterval.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                    _checkBoxPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                    _comboBoxPollTimes.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+
+                    SetFormState();
+                }
+                catch (Exception ex)
+                {
+                    Common.ShowErrorMessageBox(ex);
                 }
 
-
-                //This is ugly
-                StackPanelParameters.Children.Remove(ButtonSend);
-                StackPanelParameters.Children.Remove(LabelKeepResult);
-                StackPanelParameters.Children.Remove(CheckBoxKeepResults);
-                StackPanelParameters.Children.Remove(LabelPollingCheckBox);
-                StackPanelParameters.Children.Remove(CheckBoxPolling);
-                StackPanelParameters.Children.Remove(LabelInterval);
-                StackPanelParameters.Children.Remove(ComboBoxPollTimes);
-
-                StackPanelParameters.Children.Add(ButtonSend);
-                StackPanelParameters.Children.Add(LabelKeepResult);
-                StackPanelParameters.Children.Add(CheckBoxKeepResults);
-                StackPanelParameters.Children.Add(LabelPollingCheckBox);
-                StackPanelParameters.Children.Add(CheckBoxPolling);
-                StackPanelParameters.Children.Add(LabelInterval);
-                StackPanelParameters.Children.Add(ComboBoxPollTimes);
-
-                //No polling for procedures
-                LabelPollingCheckBox.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                LabelKeepResult.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                CheckBoxKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                LabelInterval.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                CheckBoxPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                ComboBoxPollTimes.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                StackPanelParameters.UpdateLayout();
-
-                SetFormState();
             }
-            catch (Exception ex)
+            finally
             {
-                Common.ShowErrorMessageBox(ex);
+                Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
 
@@ -278,7 +342,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                StartPolling(int.Parse(ComboBoxPollTimes.SelectedValue.ToString()));
+                StartPolling(int.Parse(_comboBoxPollTimes.SelectedValue.ToString()));
                 SetFormState();
             }
             catch (Exception ex)
@@ -303,7 +367,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                if (e.Key is not (>= Key.D0 and <= Key.D9 or >= Key.NumPad0 and <= Key.NumPad9 or Key.OemPeriod) && e.Key != Key.OemMinus && e.Key != Key.OemPlus
+                if (e.Key is not (>= Key.D0 and <= Key.D9 or >= Key.NumPad0 and <= Key.NumPad9 or Key.OemPeriod or Key.Tab) && e.Key != Key.OemMinus && e.Key != Key.OemPlus
                     && e.Key != Key.Add && e.Key != Key.Subtract)
                 {
                     e.Handled = true;

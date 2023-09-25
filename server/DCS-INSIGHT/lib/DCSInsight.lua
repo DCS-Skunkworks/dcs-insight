@@ -20,15 +20,15 @@ Logg = Logger:new(lfs.writedir()..[[Logs\dcs-insight-server.log]])
 local APIHandler = require("APIHandler")
 local APIHandler = APIHandler:new()
 
-local DCSConsole = require "DCSConsole"
-DCSConsoleGlobal = DCSConsole:new(TCP_address, TCP_port, APIHandler)
-DCSConsoleGlobal:init()
+local Listener = require "Listener"
+ListenerGlobal = Listener:new(TCP_address, TCP_port, APIHandler)
+ListenerGlobal:init()
 
 
 local counter = 0;
 local function step(arg, time)
-	if(DCSConsoleGlobal.tcpServer.step) then
-		DCSConsoleGlobal.tcpServer:step()
+	if(ListenerGlobal.tcpServer.step) then
+		ListenerGlobal.tcpServer:step()
 	end
 
 	if(counter % 50 == 0) then
@@ -50,7 +50,7 @@ local lastStepTime = 0
 
 -- Lua Export Functions
 LuaExportStart = function()
-	DCSConsoleGlobal.tcpServer:init()
+	ListenerGlobal.tcpServer:init()
 
 	-- Chain previously-included export as necessary
 	if PrevExport.LuaExportStart then
@@ -59,7 +59,7 @@ LuaExportStart = function()
 end
 
 LuaExportStop = function()
-	DCSConsoleGlobal.tcpServer:close()
+	ListenerGlobal.tcpServer:close()
 
 	-- Chain previously-included export as necessary
 	if PrevExport.LuaExportStop then
@@ -82,7 +82,7 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			Logg:log_simple("DCSConsole.step() failed: "..err)
+			Logg:log_simple("Listener.step() failed: "..err)
 		end
 		lastStepTime = currentTime + .1
 	end

@@ -1,29 +1,29 @@
-module("SetFrequency", package.seeall)
+module("SetArgumentValue", package.seeall)
 
 local APIBase = require("APIBase")
-local Parameter = require("Parameter")
 
 -- This is the unique ID for this particular API
-local API_ID = 4
+local API_ID = 1
 
---- @class SetFrequency : APIBase
+--- @class SetArgumentValue : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local SetFrequency = APIBase:new()
+local SetArgumentValue = APIBase:new()
 
 
---- @func Returns new SetFrequency
-function SetFrequency:new(o)
+--- @func Returns new SetArgumentValue
+function SetArgumentValue:new(o)
     o = o or APIBase:new(
         o,
         API_ID,
         false,
-        "GetDevice(device_id):set_frequency(new_value)",
-        2
+        "GetDevice(device_id):set_argument_value(argument_id, new_value)",
+        3
     )
 
     o:add_param_def(0, ParamName.device_id, ParamType.number)
-    o:add_param_def(1, ParamName.new_value, ParamType.number)
+    o:add_param_def(1, ParamName.argument_id, ParamType.number)
+    o:add_param_def(2, ParamName.new_value, ParamType.number)
 
     setmetatable(o, self)
     self.__index = self
@@ -31,14 +31,15 @@ function SetFrequency:new(o)
 end
 
 --- @func Inits with internal data
-function SetFrequency:init()
+function SetArgumentValue:init()
 end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function SetFrequency:execute(api)
+function SetArgumentValue:execute(api)
     local param0
     local param1
+    local param2
 
     local result_code, message = self:verify_params()
     if(result_code == 1)then
@@ -49,13 +50,14 @@ function SetFrequency:execute(api)
     for i, param in pairs(api.parameter_defs) do
         if (param.id == 0) then param0 = param.value end
         if (param.id == 1) then param1 = param.value end
+        if (param.id == 2) then param2 = param.value end
     end
 
+    local result = GetDevice(param0):set_argument_value(param1, param2)        
     
-    local result = GetDevice(param0):set_frequency(param1)        
     api = self:decode_result(api, result)
 
     return api
 end
 
-return SetFrequency
+return SetArgumentValue

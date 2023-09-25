@@ -5,56 +5,36 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              Loaded="UserControlAPI_OnLoaded"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="800" Height="auto">
-    <Grid>
+             d:DesignHeight="400" d:DesignWidth="800" Height="auto" IsTabStop="True">
+    <Grid >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
             <RowDefinition Height="10*" />
             <RowDefinition Height="10*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Background="#ffffcc"  ></StackPanel>
-        <StackPanel Name="StackPanelMain" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="2" Margin="5,5,5,5">
+
+        <StackPanel Grid.Row="0"  Background="#ffffcc"  ></StackPanel>
+
+        <StackPanel Grid.Column="0" Grid.Row="1"   Margin="5,5,5,5">
             <TextBox Name="TextBoxSyntax" Text="GetDevice(device_id):SetCommand(command_id, new_value)" FontSize="15" FontStyle="Normal" IsReadOnly="True" Background="WhiteSmoke" BorderThickness="0" FontFamily="consolas" Margin="5,5,5,5" ></TextBox>
-            <StackPanel Name="StackPanelParametersDev" Orientation="Horizontal" Height="25" Margin="0,10,0,0">
-                <Label Content="device__id" ></Label>
-                <TextBox Width="50" Height="20"></TextBox>
-                <Label Content="command__id"></Label>
-                <TextBox Width="50" Height="20"></TextBox>
-                <Label Content="new__value"></Label>
-                <TextBox Width="50" Height="20"></TextBox>
-                <Button Name="ButtonSendDev" Content = "Send" Height = "20" Margin="20,0,0,0"></Button>
-                <CheckBox Name="CheckBoxPollingDev" Content="Polling" VerticalAlignment="Center" Margin="30,0,0,0"></CheckBox>
-                <Label Name="LabelIntervalDev" Content="Interval (ms)" Margin="30,0,0,0"></Label>
-                <ComboBox Name="ComboBoxPollTimesDev" Height="20" Margin="5,0,0,0" ></ComboBox>
-            </StackPanel>
-
-            <StackPanel Name="StackPanelParameters" Orientation="Horizontal" Height="35" Visibility="Visible"  Margin="0,10,0,0">
-                <Button Name="ButtonSend" Content = "Send" Height = "20" Width="50" VerticalAlignment="Center" Margin="20,0,0,0" Click="ButtonSend_OnClick"></Button>
-
-                <Label Name="LabelKeepResult" Content="Keep results" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
-                <CheckBox Name="CheckBoxKeepResults" FlowDirection="RightToLeft" Margin="0,0,0,0"  Unchecked="CheckBoxKeepResults_OnUnchecked" Checked="CheckBoxKeepResults_OnChecked" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-
-                <Label Name="LabelPollingCheckBox" Content="Polling" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
-                <CheckBox Name="CheckBoxPolling" FlowDirection="RightToLeft" Margin="0,0,0,0"  Unchecked="CheckBoxPolling_OnUnchecked" Checked="CheckBoxPolling_OnChecked" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-
-                <Label Name="LabelInterval" Content="Interval (ms) :" VerticalAlignment="Center" Margin="10,0,0,0"></Label>
-                <ComboBox Name="ComboBoxPollTimes" Height="20" Margin="2,0,0,0" VerticalAlignment="Center" DataContextChanged="ComboBoxPollTimes_OnDataContextChanged">
-                    <ComboBoxItem IsSelected="True" >200</ComboBoxItem>
-                    <ComboBoxItem>500</ComboBoxItem>
-                    <ComboBoxItem>1000</ComboBoxItem>
-                    <ComboBoxItem>2000</ComboBoxItem>
-                </ComboBox>
-            </StackPanel>
-            <DockPanel Margin="5,10,0,0" >
-                <Label Content="Result" DockPanel.Dock="Left"></Label>
-                
-                <TextBox Name="TextBoxResult" MaxHeight="400" VerticalScrollBarVisibility="Visible"></TextBox>
-            </DockPanel>
         </StackPanel>
+
+        <ItemsControl Name="ItemsControlParameters" Grid.Column="0" Grid.Row="2" KeyboardNavigation.TabNavigation="Cycle" Margin="5,5,5,5">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <DockPanel  Grid.Column="0" Grid.Row="3"    Margin="5,10,0,0" >
+            <Label Content="Result" DockPanel.Dock="Left"></Label>
+            <TextBox Name="TextBoxResult" MaxHeight="400" VerticalScrollBarVisibility="Visible"></TextBox>
+        </DockPanel>
     </Grid>
 </UserControl>
