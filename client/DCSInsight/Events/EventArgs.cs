@@ -3,13 +3,13 @@ using DCSInsight.JSON;
 
 namespace DCSInsight.Events
 {
-    public class SendCommandEventArgs : System.EventArgs
+    public class SendCommandEventArgs : EventArgs
     {
         public object Sender { get; set; }
         public DCSAPI APIObject { get; set; }
     }
 
-    public class ErrorEventArgs : System.EventArgs
+    public class ErrorEventArgs : EventArgs
     {
         public object Sender { get; set; }
         public string Message { get; set; }
