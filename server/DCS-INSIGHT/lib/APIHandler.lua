@@ -1,7 +1,7 @@
 module("APIHandler", package.seeall)
 
-local GetArgument = require("GetArgument")
-local SetArgument = require("SetArgument")
+local GetArgumentValue = require("GetArgumentValue")
+local SetArgumentValue = require("SetArgumentValue")
 local SetCommand = require("SetCommand")
 local SetFrequency = require("SetFrequency")
 local GetFrequency = require("GetFrequency")
@@ -36,7 +36,7 @@ local LoGetMechInfoAPI = require("LoGetMechInfoAPI")
 
 
 --- @class APIHandler 
---- @field public commandsTable table<APIHandlerBase>
+--- @field public commandsTable table<APIBase>
 --- @field public apiTable table<APIInfo>
 local APIHandler = {}
 
@@ -55,13 +55,13 @@ end
 
 --- @func Fills the commands and api table
 function APIHandler:init()
-    local getArgument = GetArgument:new()
-    self.commandsTable[#self.commandsTable + 1] = getArgument
-    self.apiTable[#self.apiTable + 1] = getArgument.apiInfo
+    local getArgumentValue = GetArgumentValue:new(nil)
+    self.commandsTable[#self.commandsTable + 1] = getArgumentValue
+    self.apiTable[#self.apiTable + 1] = getArgumentValue.apiInfo
     
-    local setArgument = SetArgument:new()
-    self.commandsTable[#self.commandsTable + 1] = setArgument
-    self.apiTable[#self.apiTable + 1] = setArgument.apiInfo
+    local setArgumentValue = SetArgumentValue:new()
+    self.commandsTable[#self.commandsTable + 1] = setArgumentValue
+    self.apiTable[#self.apiTable + 1] = setArgumentValue.apiInfo
     
     local setCommand = SetCommand:new()
     self.commandsTable[#self.commandsTable + 1] = setCommand
@@ -123,7 +123,7 @@ function APIHandler:init()
     self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
     self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
     
-    local listCockpitParamsAPI = ListCockpitParamsAPI:new()
+    local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil)
     self.commandsTable[#self.commandsTable + 1] = listCockpitParamsAPI
     self.apiTable[#self.apiTable + 1] = listCockpitParamsAPI.apiInfo
     
@@ -178,7 +178,7 @@ end
 --- @param api APIInfo
 function APIHandler:execute(api)
     local result
-
+    
     for k, v in pairs(self.commandsTable) do
         if (api.id == v.id) then
             result = v:execute(api)

@@ -20,7 +20,7 @@ function APIInfo:new(id, returns_data, api_syntax, parameter_count, parameter_de
 		returns_data = returns_data,
 		api_syntax = api_syntax,
 		parameter_count = parameter_count,
-		parameter_defs = parameter_defs,
+		parameter_defs = parameter_defs or {},
 		value = value,
 		result = result
 	}
@@ -28,6 +28,5 @@ function APIInfo:new(id, returns_data, api_syntax, parameter_count, parameter_de
 	self.__index = self
 	return o
 end
-
 
 return APIInfo

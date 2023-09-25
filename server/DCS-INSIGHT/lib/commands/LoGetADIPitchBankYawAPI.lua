@@ -1,32 +1,26 @@
 module("LoGetADIPitchBankYawAPI", package.seeall)
 
-local APIInfo = require("APIInfo")
-local Parameter = require("Parameter")
+local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
 local API_ID = 14
 
---- @class LoGetADIPitchBankYawAPI : APIHandlerBase
+--- @class LoGetADIPitchBankYawAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetADIPitchBankYawAPI = {}
+local LoGetADIPitchBankYawAPI = APIBase:new()
 
 
 --- @func Returns new LoGetADIPitchBankYawAPI
-function LoGetADIPitchBankYawAPI:new()
-    local apiInfo = APIInfo:new()
-    apiInfo.id = API_ID
-    apiInfo.returns_data = true
-    apiInfo.api_syntax = "LoGetADIPitchBankYaw()"
-    apiInfo.parameter_count = 0
-    apiInfo.parameter_defs = {}
-
-
-    --- @type LoGetADIPitchBankYawAPI
-    local o = {
-        id = API_ID,
-        apiInfo = apiInfo
-    }
+function LoGetADIPitchBankYawAPI:new(o)
+    o = o or APIBase:new(
+        o,
+        API_ID,
+        true,
+        "LoGetADIPitchBankYaw()",
+        0
+    )
+    
     setmetatable(o, self)
     self.__index = self
     return o
@@ -40,14 +34,15 @@ end
 --- @param api APIInfo
 function LoGetADIPitchBankYawAPI:execute(api)
 
-    local pitch, bank, yaw = LoGetADIPitchBankYaw()
-    api.result = "pitch="..pitch..", bank="..bank..", yaw="..yaw
-    if (api.result == nil) then api.result = "result is nil" end
-
-    if(type(api.result) == "table")then
-        local result, str = Logg:dump_table(api.result, 100, 1000)        
-        api.result = str
+    local result_code, message = self:verify_params()
+    if(result_code == 1)then
+        api.result = message
+        return api
     end
+
+    local pitch, bank, yaw =  LoGetADIPitchBankYaw()
+    api.result = "pitch="..pitch..", bank="..bank..", yaw="..yaw
+
     return api
 end
 
