@@ -26,6 +26,7 @@ namespace DCSInsight.UserControls
         private bool _isConnected;
         private Timer _pollingTimer;
         private bool _canSend;
+        private bool _keepResults;
 
         public int Id { get; private set; }
 
@@ -97,6 +98,7 @@ namespace DCSInsight.UserControls
             try
             {
                 TextBoxSyntax.Text = _dcsAPI.Syntax;
+                TextBoxSyntax.ToolTip = $"API Id = {_dcsAPI.Id}";
                 StackPanelParametersDev.Children.Clear();
                 StackPanelParametersDev.Visibility = Visibility.Collapsed;
                 StackPanelParameters.Visibility = Visibility.Visible;
@@ -107,6 +109,7 @@ namespace DCSInsight.UserControls
                     {
                         Content = dcsAPIParameterType.ParameterName.Replace("_", "__")
                     };
+                    label.VerticalAlignment = VerticalAlignment.Center;
                     StackPanelParameters.Children.Add(label);
                     StackPanelParameters.UpdateLayout();
 
@@ -130,16 +133,25 @@ namespace DCSInsight.UserControls
 
                 //This is ugly
                 StackPanelParameters.Children.Remove(ButtonSend);
+                StackPanelParameters.Children.Remove(LabelKeepResult);
+                StackPanelParameters.Children.Remove(CheckBoxKeepResults);
+                StackPanelParameters.Children.Remove(LabelPollingCheckBox);
                 StackPanelParameters.Children.Remove(CheckBoxPolling);
                 StackPanelParameters.Children.Remove(LabelInterval);
                 StackPanelParameters.Children.Remove(ComboBoxPollTimes);
 
                 StackPanelParameters.Children.Add(ButtonSend);
+                StackPanelParameters.Children.Add(LabelKeepResult);
+                StackPanelParameters.Children.Add(CheckBoxKeepResults);
+                StackPanelParameters.Children.Add(LabelPollingCheckBox);
                 StackPanelParameters.Children.Add(CheckBoxPolling);
                 StackPanelParameters.Children.Add(LabelInterval);
                 StackPanelParameters.Children.Add(ComboBoxPollTimes);
 
                 //No polling for procedures
+                LabelPollingCheckBox.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                LabelKeepResult.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
+                CheckBoxKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
                 LabelInterval.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
                 CheckBoxPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
                 ComboBoxPollTimes.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
@@ -157,6 +169,12 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (_keepResults)
+                {
+                    TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n-----------\n");
+                    TextBoxResult.Text = TextBoxResult.Text.Insert(0, dcsApi.Result);
+                    return;
+                }
                 TextBoxResult.Text = dcsApi.Result;
             }
             catch (Exception ex)
@@ -318,6 +336,32 @@ namespace DCSInsight.UserControls
         public async ValueTask DisposeAsync()
         {
             if (_pollingTimer != null) await _pollingTimer.DisposeAsync();
+        }
+
+        private void CheckBoxKeepResults_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _keepResults = false;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxKeepResults_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _keepResults = true;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
         }
     }
 }
