@@ -126,7 +126,8 @@ namespace DCSInsight.UserControls
                         {
                             Name = "TextBox" + dcsAPIParameterType.Id,
                             Tag = dcsAPIParameterType.Id,
-                            Width = 50,
+                            MinWidth = 50,
+                            MaxWidth = 100,
                             Height = 20,
                             IsTabStop = true
                         };
