@@ -6,7 +6,7 @@ namespace DCSInsight.Events
 {
     internal static class ICEventHandler
     {
-        public delegate void SendCommandEventHandler(object sender, SendCommandEventArgs e);
+        public delegate void SendCommandEventHandler(SendCommandEventArgs e);
         public static event SendCommandEventHandler OnSendCommand;
         
         public static void AttachCommandListener(ICommandListener listener)
@@ -19,13 +19,13 @@ namespace DCSInsight.Events
             OnSendCommand -= listener.SendCommand;
         }
 
-        public static void SendCommand(object sender, DCSAPI api)
+        public static void SendCommand(DCSAPI api)
         {
-            OnSendCommand?.Invoke(sender, new SendCommandEventArgs {Sender  = sender, APIObject = api});
+            OnSendCommand?.Invoke(new SendCommandEventArgs {APIObject = api});
         }
 
 
-        public delegate void ErrorEventHandler(object sender, ErrorEventArgs e);
+        public delegate void ErrorEventHandler(ErrorEventArgs e);
         public static event ErrorEventHandler OnError;
 
         public static void AttachErrorListener(IErrorListener listener)
@@ -38,9 +38,9 @@ namespace DCSInsight.Events
             OnError -= listener.ErrorMessage;
         }
 
-        public static void SendErrorMessage(object sender, string message, Exception ex)
+        public static void SendErrorMessage(string message, Exception ex)
         {
-            OnError?.Invoke(sender, new ErrorEventArgs { Sender = sender, Message = message, Ex = ex});
+            OnError?.Invoke(new ErrorEventArgs { Message = message, Ex = ex});
         }
     }
 }
