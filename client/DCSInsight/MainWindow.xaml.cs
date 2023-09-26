@@ -55,6 +55,7 @@ namespace DCSInsight
             ICEventHandler.DetachCommandListener(this);
             ICEventHandler.DetachErrorListener(this);
             _tcpClient?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -94,7 +95,7 @@ namespace DCSInsight
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Loopback, Convert.ToInt32(TextBoxPort.Text));
+                    IPEndPoint serverEndPoint = new(IPAddress.Loopback, Convert.ToInt32(TextBoxPort.Text));
                     _isRunning = false;
                     _tcpClient = new TcpClient();
                     _tcpClient.Connect(serverEndPoint);
@@ -195,7 +196,7 @@ namespace DCSInsight
                 }
                 catch (SocketException ex)
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => ErrorMessage(this, ex.Message, ex)));
+                    Dispatcher?.BeginInvoke((Action)(() => ErrorMessage( ex.Message, ex)));
                 }
             }
 
@@ -206,8 +207,8 @@ namespace DCSInsight
 
         private void SetConnectionStatus(bool connected)
         {
-            ButtonConnect.Content = _isRunning ? "Disconnect" : "Connect";
-            Title = _isRunning ? "Connected" : "Disconnected";
+            ButtonConnect.Content = connected ? "Disconnect" : "Connect";
+            Title = connected ? "Connected" : "Disconnected";
             SetFormState();
         }
 
@@ -250,7 +251,7 @@ namespace DCSInsight
             }
         }
         
-        public async void SendCommand(object sender, SendCommandEventArgs args)
+        public async void SendCommand(SendCommandEventArgs args)
         {
             try
             {
@@ -364,30 +365,32 @@ namespace DCSInsight
             if (LogManager.Configuration != null && LogManager.Configuration.ConfiguredNamedTargets.Count != 0)
             {
                 Target target = LogManager.Configuration.FindTargetByName(targetName);
-                if (target == null)
+                if (target != null)
                 {
-                    throw new Exception($"Could not find log with a target named: [{targetName}]. See NLog.config for configured targets");
-                }
+                    FileTarget fileTarget;
 
-                FileTarget fileTarget;
+                    // Unwrap the target if necessary.
+                    if (target is not WrapperTargetBase wrapperTarget)
+                    {
+                        fileTarget = target as FileTarget;
+                    }
+                    else
+                    {
+                        fileTarget = wrapperTarget.WrappedTarget as FileTarget;
+                    }
 
-                // Unwrap the target if necessary.
-                if (target is not WrapperTargetBase wrapperTarget)
-                {
-                    fileTarget = target as FileTarget;
+                    if (fileTarget == null)
+                    {
+                        throw new Exception($"Could not get a FileTarget type log from {target.GetType()}");
+                    }
+
+                    var logEventInfo = new LogEventInfo { TimeStamp = DateTime.Now };
+                    fileName = fileTarget.FileName.Render(logEventInfo);
                 }
                 else
                 {
-                    fileTarget = wrapperTarget.WrappedTarget as FileTarget;
+                    throw new Exception($"Could not find log with a target named: [{targetName}]. See NLog.config for configured targets");
                 }
-
-                if (fileTarget == null)
-                {
-                    throw new Exception($"Could not get a FileTarget type log from {target.GetType()}");
-                }
-
-                var logEventInfo = new LogEventInfo { TimeStamp = DateTime.Now };
-                fileName = fileTarget.FileName.Render(logEventInfo);
             }
             else
             {
@@ -396,7 +399,7 @@ namespace DCSInsight
             return fileName;
         }
 
-        public void ErrorMessage(object sender, ErrorEventArgs args)
+        public void ErrorMessage(ErrorEventArgs args)
         {
             try
             {
@@ -409,7 +412,7 @@ namespace DCSInsight
             }
         }
 
-        public void ErrorMessage(object sender, string message, Exception ex)
+        public void ErrorMessage(string message, Exception ex)
         {
             try
             {
@@ -477,9 +480,9 @@ namespace DCSInsight
                         filteredAPIs = _dcsAPIList.Where(o => o.Syntax.ToLower().Contains(searchWord)).ToList();
                     }
 
-                    if (filteredAPIs.Count() > MAX_CONTROLS_ON_PAGE)
+                    if (filteredAPIs.Count > MAX_CONTROLS_ON_PAGE)
                     {
-                        Common.ShowMessageBox($"Query returned {filteredAPIs.Count()} API. Max that can be displayed at any time is {MAX_CONTROLS_ON_PAGE}.");
+                        Common.ShowMessageBox($"Query returned {filteredAPIs.Count} API. Max that can be displayed at any time is {MAX_CONTROLS_ON_PAGE}.");
                         return;
                     }
 
@@ -493,7 +496,7 @@ namespace DCSInsight
                     ItemsControlAPI.Items.Clear();
                     ItemsControlAPI.ItemsSource = _loadedAPIUserControls;
 
-                    TextBlockMessage.Text = $"{filteredAPIs.Count()} APIs loaded.";
+                    TextBlockMessage.Text = $"{filteredAPIs.Count} APIs loaded.";
 
                     if (filteredAPIs.Any())
                     {

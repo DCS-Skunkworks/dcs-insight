@@ -24,7 +24,7 @@ namespace DCSInsight.UserControls
         private bool _isLoaded;
         private readonly List<TextBox> _textBoxParameterList = new();
         private bool _isConnected;
-        private Timer _pollingTimer;
+        private readonly Timer _pollingTimer;
         private bool _canSend;
         private bool _keepResults;
         private Button _buttonSend;
@@ -49,7 +49,18 @@ namespace DCSInsight.UserControls
 
         public void Dispose()
         {
+
             _pollingTimer?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_pollingTimer != null)
+            {
+                await _pollingTimer.DisposeAsync();
+                GC.SuppressFinalize(this);
+            }
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -117,9 +128,9 @@ namespace DCSInsight.UserControls
                     {
                         var label = new Label
                         {
-                            Content = dcsAPIParameterType.ParameterName.Replace("_", "__")
+                            Content = dcsAPIParameterType.ParameterName.Replace("_", "__"),
+                            VerticalAlignment = VerticalAlignment.Center
                         };
-                        label.VerticalAlignment = VerticalAlignment.Center;
                         controlList.Add(label);
 
                         var textBox = new TextBox
@@ -261,7 +272,7 @@ namespace DCSInsight.UserControls
                     }
                 }
 
-                ICEventHandler.SendCommand(this, _dcsAPI);
+                ICEventHandler.SendCommand( _dcsAPI);
                 SetFormState();
             }
             catch (Exception ex)
@@ -306,7 +317,7 @@ namespace DCSInsight.UserControls
             }
             catch (Exception ex)
             {
-                ICEventHandler.SendErrorMessage(this, "Timer Polling Error", ex);
+                ICEventHandler.SendErrorMessage( "Timer Polling Error", ex);
             }
         }
 
@@ -393,11 +404,6 @@ namespace DCSInsight.UserControls
             {
                 Common.ShowErrorMessageBox(ex);
             }
-        }
-
-        public async ValueTask DisposeAsync()
-        {
-            if (_pollingTimer != null) await _pollingTimer.DisposeAsync();
         }
 
         private void CheckBoxKeepResults_OnUnchecked(object sender, RoutedEventArgs e)
