@@ -1,23 +1,23 @@
-module("LoGetAccelerationUnitsAPI", package.seeall)
+module("LoGetPayloadInfoAPI", package.seeall)
 
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 15
+local API_ID = 30
 
---- @class LoGetAccelerationUnitsAPI : APIBase
+--- @class LoGetPayloadInfoAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetAccelerationUnitsAPI = APIBase:new()
+local LoGetPayloadInfoAPI = APIBase:new()
 
 
---- @func Returns new LoGetAccelerationUnitsAPI
-function LoGetAccelerationUnitsAPI:new(o)
+--- @func Returns new LoGetPayloadInfoAPI
+function LoGetPayloadInfoAPI:new(o)
     o = o or APIBase:new(
         o,
         API_ID,
         true,
-        "LoGetAccelerationUnits()",
+        "LoGetPayloadInfo()",
         0
     )
 
@@ -27,24 +27,24 @@ function LoGetAccelerationUnitsAPI:new(o)
 end
 
 --- @func Inits with internal data
-function LoGetAccelerationUnitsAPI:init()
+function LoGetPayloadInfoAPI:init()
 end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function LoGetAccelerationUnitsAPI:execute(api)
-
+function LoGetPayloadInfoAPI:execute(api)
+    
     local result_code, message = self:verify_params()
     if(result_code == 1)then
         api.result = message
         return api
     end
 
-    local result = LoGetAccelerationUnits()
+    local result = LoGetPayloadInfo()
 
     api = self:decode_result(api, result)
 
     return api
 end
 
-return LoGetAccelerationUnitsAPI
+return LoGetPayloadInfoAPI

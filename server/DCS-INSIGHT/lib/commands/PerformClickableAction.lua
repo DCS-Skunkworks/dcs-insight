@@ -3,7 +3,7 @@ module("PerformClickableAction", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 5
+local API_ID = 2
 
 --- @class PerformClickableAction : APIBase
 --- @field id number API ID

@@ -3,7 +3,7 @@ module("LoGetADIPitchBankYawAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 14
+local API_ID = 16
 
 --- @class LoGetADIPitchBankYawAPI : APIBase
 --- @field id number API ID

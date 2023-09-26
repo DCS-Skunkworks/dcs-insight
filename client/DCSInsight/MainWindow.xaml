@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:DCSInsight"
 
         mc:Ignorable="d"
-        Title="DCS-Insight" Height="500" Width="700" WindowStartupLocation="CenterScreen" Closing="MainWindow_OnClosing" Loaded="MainWindow_OnLoaded">
+        Title="DCS-Insight" Height="560" Width="700" WindowStartupLocation="CenterScreen" Closing="MainWindow_OnClosing" Loaded="MainWindow_OnLoaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>

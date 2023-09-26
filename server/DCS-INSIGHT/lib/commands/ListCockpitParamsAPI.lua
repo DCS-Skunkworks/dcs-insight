@@ -3,7 +3,7 @@ module("ListCockpitParamsAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 17
+local API_ID = 8
 
 --- @class ListCockpitParamsAPI : APIBase
 --- @field id number API ID

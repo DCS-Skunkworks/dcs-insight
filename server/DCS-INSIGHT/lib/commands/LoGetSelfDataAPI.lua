@@ -3,7 +3,7 @@ module("LoGetSelfDataAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 7
+local API_ID = 9
 
 --- @class LoGetSelfDataAPI : APIBase
 --- @field id number API ID

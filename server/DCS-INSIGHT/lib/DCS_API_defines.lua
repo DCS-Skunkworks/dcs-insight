@@ -88,6 +88,37 @@ function LoGetModelTime() end
 --- @return number
 function LoGetMissionStartTime() end
 
+--- @func Returns HSI data
+--- @return number
+function LoGetControlPanel_HSI() end
+
+--- @func Returns payload information
+--- @return number
+function LoGetPayloadInfo() end
+
+--- @func Returns magnetic yaw
+--- @return number
+function LoGetMagneticYaw() end
+
+--- @func Returns mode control panel state
+--- @return number
+function LoGetMCPState() end
+
+--- @func Returns track while scan information
+--- @return number
+function LoGetTWSInfoAPI() end
+
+
+
+--- @func Returns atmospheric pressure
+--- @return number
+function LoGetBasicAtmospherePressure() end
+
+
+--- @func Returns navigational information
+--- @return number
+function LoGetNavigationInfo() end
+
 --- @func Returns whether own ships/aircraft data can be exported.
 --- @return boolean 
 function LoIsOwnshipExportAllowed() end

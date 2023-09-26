@@ -3,7 +3,7 @@ module("LoIsOwnshipExportAllowedAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 10
+local API_ID = 12
 
 --- @class LoIsOwnshipExportAllowedAPI : APIBase
 --- @field id number API ID
