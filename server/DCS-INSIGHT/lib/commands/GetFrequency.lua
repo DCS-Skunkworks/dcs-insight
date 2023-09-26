@@ -36,14 +36,24 @@ end
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function GetFrequency:execute(api)
+    local param0
     
     local result_code, message = self:verify_params()
-    if(result_code)then
+    if(result_code == 1)then
         api.result = message
         return api
     end
     
-    local result = GetDevice(api.parameter_defs[1]):get_frequency()
+    for i, param in pairs(api.parameter_defs) do
+        if (param.id == 0) then param0 = param.value end
+    end
+
+    if(self:verify_device(param0) == false) then
+        api.result = "Device not found"
+        return api
+    end
+
+    local result = GetDevice(param0):get_frequency()
     api = self:decode_result(api, result)
 
     return api

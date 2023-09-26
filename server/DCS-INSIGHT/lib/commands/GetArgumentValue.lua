@@ -37,9 +37,9 @@ end
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function GetArgumentValue:execute(api)
-
+    
     local result_code, message = self:verify_params()
-    if(result_code == 1)then
+    if (result_code == 1) then
         api.result = message
         return api
     end
@@ -50,8 +50,13 @@ function GetArgumentValue:execute(api)
         if (param.id == 1) then param1 = param.value end
     end
 
+    if (self:verify_device(param0) == false) then
+        api.result = "Device not found"
+        return api
+    end
+
     local result = GetDevice(param0):get_argument_value(param1)
-    
+
     api = self:decode_result(api, result)
 
     return api

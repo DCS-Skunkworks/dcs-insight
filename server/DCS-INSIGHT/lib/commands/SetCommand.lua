@@ -53,6 +53,11 @@ function SetCommand:execute(api)
         if (param.id == 2) then param2 = param.value end
     end
 
+    if(self:verify_device(param0) == false) then
+        api.result = "Device not found"
+        return api
+    end
+
     local result = GetDevice(param0):SetCommand(param1, param2)        
     api = self:decode_result(api, result)
 

@@ -59,7 +59,7 @@ namespace DCSInsight.UserControls
                 if (_isLoaded) return;
 
                 IsTabStop = true;
-                
+
                 BuildUI();
                 _isLoaded = true;
             }
@@ -74,8 +74,11 @@ namespace DCSInsight.UserControls
             try
             {
                 _buttonSend.IsEnabled = !_textBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && _isConnected;
-                _checkBoxPolling.IsEnabled = _buttonSend.IsEnabled;
-                _comboBoxPollTimes.IsEnabled = _checkBoxPolling.IsChecked == false;
+                if (_dcsAPI.ReturnsData)
+                {
+                    _checkBoxPolling.IsEnabled = _buttonSend.IsEnabled;
+                    _comboBoxPollTimes.IsEnabled = _checkBoxPolling.IsChecked == false;
+                }
                 _canSend = _buttonSend.IsEnabled;
             }
             catch (Exception ex)
@@ -149,72 +152,66 @@ namespace DCSInsight.UserControls
                     _buttonSend.Click += ButtonSend_OnClick;
                     controlList.Add(_buttonSend);
 
-                    _labelKeepResults = new Label
+                    if (_dcsAPI.ReturnsData)
                     {
-                        Content = "Keep results",
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(10, 0, 0, 0)
-                    };
-                    controlList.Add(_labelKeepResults);
+                        _labelKeepResults = new Label
+                        {
+                            Content = "Keep results",
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(10, 0, 0, 0)
+                        };
+                        controlList.Add(_labelKeepResults);
 
-                    _checkBoxKeepResults = new CheckBox
-                    {
-                        Margin = new Thickness(0,0,0,0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    _checkBoxKeepResults.Checked += CheckBoxKeepResults_OnChecked;
-                    _checkBoxKeepResults.Unchecked += CheckBoxKeepResults_OnUnchecked;
-                    controlList.Add(_checkBoxKeepResults);
+                        _checkBoxKeepResults = new CheckBox
+                        {
+                            Margin = new Thickness(0, 0, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        _checkBoxKeepResults.Checked += CheckBoxKeepResults_OnChecked;
+                        _checkBoxKeepResults.Unchecked += CheckBoxKeepResults_OnUnchecked;
+                        controlList.Add(_checkBoxKeepResults);
 
-                    _labelPolling = new Label
-                    {
-                        Content = "Polling",
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(10,0,0,0)
-                    };
-                    controlList.Add(_labelPolling);
+                        _labelPolling = new Label
+                        {
+                            Content = "Polling",
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(10, 0, 0, 0)
+                        };
+                        controlList.Add(_labelPolling);
 
-                    _checkBoxPolling = new CheckBox
-                    {
-                        Margin = new Thickness(0,0,0,0),
-                        VerticalAlignment = VerticalAlignment.Center
+                        _checkBoxPolling = new CheckBox
+                        {
+                            Margin = new Thickness(0, 0, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
 
-                    };
-                    _checkBoxPolling.Checked += CheckBoxPolling_OnChecked;
-                    _checkBoxPolling.Unchecked += CheckBoxPolling_OnUnchecked;
-                    controlList.Add(_checkBoxPolling);
-                    
-                    _labelPollingInterval = new Label
-                    {
-                        Content = "Interval (ms) :",
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(10,0,0,0)
-                    };
-                    controlList.Add(_labelPollingInterval);
+                        };
+                        _checkBoxPolling.Checked += CheckBoxPolling_OnChecked;
+                        _checkBoxPolling.Unchecked += CheckBoxPolling_OnUnchecked;
+                        controlList.Add(_checkBoxPolling);
 
-                    _comboBoxPollTimes = new ComboBox
-                    {
-                        Height = 20,
-                        Margin = new Thickness(2, 0, 0, 0),
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    _comboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
-                    _comboBoxPollTimes.Items.Add(500);
-                    _comboBoxPollTimes.Items.Add(1000);
-                    _comboBoxPollTimes.Items.Add(2000);
-                    _comboBoxPollTimes.SelectedIndex = 0;
-                    controlList.Add(_comboBoxPollTimes);
+                        _labelPollingInterval = new Label
+                        {
+                            Content = "Interval (ms) :",
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(10, 0, 0, 0)
+                        };
+                        controlList.Add(_labelPollingInterval);
+
+                        _comboBoxPollTimes = new ComboBox
+                        {
+                            Height = 20,
+                            Margin = new Thickness(2, 0, 0, 0),
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        _comboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
+                        _comboBoxPollTimes.Items.Add(500);
+                        _comboBoxPollTimes.Items.Add(1000);
+                        _comboBoxPollTimes.Items.Add(2000);
+                        _comboBoxPollTimes.SelectedIndex = 0;
+                        controlList.Add(_comboBoxPollTimes);
+                    }
 
                     ItemsControlParameters.ItemsSource = controlList;
-
-                    //No polling for procedures
-                    _labelPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                    _labelKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                    _checkBoxKeepResults.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                    _labelPollingInterval.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                    _checkBoxPolling.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-                    _comboBoxPollTimes.Visibility = _dcsAPI.ReturnsData ? Visibility.Visible : Visibility.Collapsed;
-
                     SetFormState();
                 }
                 catch (Exception ex)

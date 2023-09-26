@@ -177,16 +177,19 @@ end
 --- @func Executes the command and returns a command containing the result
 --- @param api APIInfo
 function APIHandler:execute(api)
-    local result
-    
+
     for k, v in pairs(self.commandsTable) do
         if (api.id == v.id) then
-            result = v:execute(api)
-            break
+
+            local result_code, result = pcall(v.execute, v, api)
+            if(result_code == true)then
+                return result
+            else
+                api.result = result
+                return api
+            end
         end
     end
-
-    return result
 end
 
 

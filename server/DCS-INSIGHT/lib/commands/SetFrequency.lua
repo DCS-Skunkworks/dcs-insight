@@ -51,8 +51,12 @@ function SetFrequency:execute(api)
         if (param.id == 1) then param1 = param.value end
     end
 
+    if(self:verify_device(param0) == false) then
+        api.result = "Device not found"
+        return api
+    end
     
-    local result = GetDevice(param0):set_frequency(param1)        
+    local result = GetDevice(param0):set_frequency(param1)
     api = self:decode_result(api, result)
 
     return api

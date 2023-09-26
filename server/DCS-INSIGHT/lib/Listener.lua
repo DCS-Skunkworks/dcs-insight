@@ -33,18 +33,28 @@ Listener.ReadClientData = function (str)
 	
 	if(str == "SENDAPI") then
 		local json = JSON:encode_pretty(ListenerGlobal.APIHandler.apiTable)
-		--Logg:log_simple("Outgoing JSON is\n"..json)
 		ListenerGlobal.tcpServer:send(json)	
-		Logg:log_simple("Sending API list request\n")
+
+		if(Log_JSON == true)then
+			Logg:log_simple("Sending API list request\n")
+			Logg:log_simple("Outgoing JSON is\n"..json)	
+		end
 	else
 		local command = JSON:decode(str);
-		local result_code, buffer = Logg:dump_table(command, 100, 5000)
-		--Logg:log_simple("Incoming JSON is\n"..buffer)
+
+		if(Log_JSON == true)then			
+			local result_code, buffer = Logg:dump_table(command, 100, 5000)
+			Logg:log_simple("Incoming JSON is\n"..buffer)		
+		end
+
 		local api = ListenerGlobal.APIHandler:execute(command)
 		local json = JSON:encode_pretty(api)
-		Logg:log_simple("Outgoing JSON is\n"..json)
 		ListenerGlobal.tcpServer:send(json)
-		Logg:log_simple("Sending API execution result for command id="..command.id.."\n")
+
+		if(Log_JSON == true)then			
+			Logg:log_simple("Sending API execution result for command id="..command.id.."\n")
+			Logg:log_simple("Outgoing JSON is\n"..json)
+		end
 	end
 end
 
