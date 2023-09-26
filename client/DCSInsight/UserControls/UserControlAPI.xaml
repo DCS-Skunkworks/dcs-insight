@@ -34,7 +34,7 @@
 
         <DockPanel  Grid.Column="0" Grid.Row="3"    Margin="5,10,0,0" >
             <Label Content="Result" DockPanel.Dock="Left"></Label>
-            <TextBox Name="TextBoxResult" MaxHeight="400" VerticalScrollBarVisibility="Visible"></TextBox>
+            <TextBox Name="TextBoxResult" MaxHeight="400" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible"></TextBox>
         </DockPanel>
     </Grid>
 </UserControl>

@@ -65,28 +65,36 @@ end
 --- @param result any
 function APIBase:decode_result(api, result)
 
-	Logg:log("H1")
     if (result == nil) then 
 		if(api.returns_data == true)then
 			api.result = "result is nil"
 		else
 			api.result = "api was called"
 		end
-		Logg:log("H2")
 		return api
 	end
 	
     if(type(result) == "table")then
-		Logg:log("H3")
         local result, str = Logg:dump_table(result, 100, 2000)
         api.result = str
 		return api
     end
-	Logg:log("H4")
+	
 	api.result = result
     return api
 end
 
+--- @func Checks that there is a device with that number
+--- @param device_id number
+--- @return boolean
+function APIBase:verify_device(device_id)
 
+	local device = GetDevice(device_id)
+	if(device == nil) then
+		return false
+	else
+		return true
+	end
+end
 
 return APIBase

@@ -220,10 +220,10 @@ namespace DCSInsight
                     HandleAPIMessage(str);
                     return;
                 }
-
+                
+                var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(str);
                 foreach (var userControlApi in _loadedAPIUserControls)
                 {
-                    var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(str);
                     if (userControlApi.Id == dcsApi.Id)
                     {
                         userControlApi.SetResult(dcsApi);
@@ -232,7 +232,7 @@ namespace DCSInsight
             }
             catch (Exception ex)
             {
-                Common.ShowErrorMessageBox(ex);
+                Common.ShowErrorMessageBox( ex, "HandleMessage()");
             }
         }
 
