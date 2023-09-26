@@ -3,7 +3,7 @@ module("LoGetModelTimeAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 8
+local API_ID = 10
 
 --- @class LoGetModelTimeAPI : APIBase
 --- @field id number API ID

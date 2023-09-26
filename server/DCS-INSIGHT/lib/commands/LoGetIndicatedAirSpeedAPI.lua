@@ -3,7 +3,7 @@ module("LoGetIndicatedAirSpeedAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 12
+local API_ID = 14
 
 --- @class LoGetIndicatedAirSpeedAPI : APIBase
 --- @field id number API ID

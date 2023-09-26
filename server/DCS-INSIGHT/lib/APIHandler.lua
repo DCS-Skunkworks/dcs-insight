@@ -29,8 +29,13 @@ local LoGetSideDeviationAPI = require("LoGetSideDeviationAPI")
 local LoGetSlipBallPositionAPI = require("LoGetSlipBallPositionAPI")
 local LoGetEngineInfoAPI = require("LoGetEngineInfoAPI")
 local LoGetMechInfoAPI = require("LoGetMechInfoAPI")
-
-
+local LoGetControlPanel_HSI_API = require("LoGetControlPanel_HSI_API")
+local LoGetPayloadInfoAPI = require("LoGetPayloadInfoAPI")
+local LoGetNavigationInfoAPI = require("LoGetNavigationInfoAPI")
+local LoGetMagneticYawAPI = require("LoGetMagneticYawAPI")
+local LoGetBasicAtmospherePressureAPI = require("LoGetBasicAtmospherePressureAPI")
+local LoGetMCPStateAPI = require("LoGetMCPStateAPI")
+local LoGetTWSInfoAPI = require("LoGetTWSInfoAPI")
 
 
 
@@ -63,6 +68,10 @@ function APIHandler:init()
     self.commandsTable[#self.commandsTable + 1] = setArgumentValue
     self.apiTable[#self.apiTable + 1] = setArgumentValue.apiInfo
     
+    local performClickableAction = PerformClickableAction:new()
+    self.commandsTable[#self.commandsTable + 1] = performClickableAction
+    self.apiTable[#self.apiTable + 1] = performClickableAction.apiInfo
+    
     local setCommand = SetCommand:new()
     self.commandsTable[#self.commandsTable + 1] = setCommand
     self.apiTable[#self.apiTable + 1] = setCommand.apiInfo
@@ -74,14 +83,18 @@ function APIHandler:init()
     local setFrequency = SetFrequency:new()
     self.commandsTable[#self.commandsTable + 1] = setFrequency
     self.apiTable[#self.apiTable + 1] = setFrequency.apiInfo
-    
-    local performClickableAction = PerformClickableAction:new()
-    self.commandsTable[#self.commandsTable + 1] = performClickableAction
-    self.apiTable[#self.apiTable + 1] = performClickableAction.apiInfo
 
     local loGetAircraftDrawArgumentValue = LoGetAircraftDrawArgumentValueAPI:new()
     self.commandsTable[#self.commandsTable + 1] = loGetAircraftDrawArgumentValue
     self.apiTable[#self.apiTable + 1] = loGetAircraftDrawArgumentValue.apiInfo
+    
+    local listIndicationAPI = ListIndicationAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
+    self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
+    
+    local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil)
+    self.commandsTable[#self.commandsTable + 1] = listCockpitParamsAPI
+    self.apiTable[#self.apiTable + 1] = listCockpitParamsAPI.apiInfo
     
     local loGetSelfData = LoGetSelfDataAPI:new()
     self.commandsTable[#self.commandsTable + 1] = loGetSelfData
@@ -118,14 +131,6 @@ function APIHandler:init()
     local loGetSnaresAPI = LoGetSnaresAPI:new()
     self.commandsTable[#self.commandsTable + 1] = loGetSnaresAPI
     self.apiTable[#self.apiTable + 1] = loGetSnaresAPI.apiInfo
-    
-    local listIndicationAPI = ListIndicationAPI:new()
-    self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
-    self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
-    
-    local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil)
-    self.commandsTable[#self.commandsTable + 1] = listCockpitParamsAPI
-    self.apiTable[#self.apiTable + 1] = listCockpitParamsAPI.apiInfo
     
     local loGetAltitudeAboveSeaLevelAPI = LoGetAltitudeAboveSeaLevelAPI:new()
     self.commandsTable[#self.commandsTable + 1] = loGetAltitudeAboveSeaLevelAPI
@@ -171,6 +176,36 @@ function APIHandler:init()
     self.commandsTable[#self.commandsTable + 1] = loGetMechInfoAPI
     self.apiTable[#self.apiTable + 1] = loGetMechInfoAPI.apiInfo
     
+    local loGetControlPanel_HSI_API = LoGetControlPanel_HSI_API:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetControlPanel_HSI_API
+    self.apiTable[#self.apiTable + 1] = loGetControlPanel_HSI_API.apiInfo
+    
+    local loGetPayloadInfoAPI = LoGetPayloadInfoAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetPayloadInfoAPI
+    self.apiTable[#self.apiTable + 1] = loGetPayloadInfoAPI.apiInfo
+    
+    local loGetNavigationInfoAPI = LoGetNavigationInfoAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetNavigationInfoAPI
+    self.apiTable[#self.apiTable + 1] = loGetNavigationInfoAPI.apiInfo
+    
+    local loGetMagneticYawAPI = LoGetMagneticYawAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetMagneticYawAPI
+    self.apiTable[#self.apiTable + 1] = loGetMagneticYawAPI.apiInfo
+    
+    local loGetBasicAtmospherePressureAPI = LoGetBasicAtmospherePressureAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetBasicAtmospherePressureAPI
+    self.apiTable[#self.apiTable + 1] = loGetBasicAtmospherePressureAPI.apiInfo
+    
+    local loGetMCPStateAPI = LoGetMCPStateAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetMCPStateAPI
+    self.apiTable[#self.apiTable + 1] = loGetMCPStateAPI.apiInfo
+    
+    local loGetTWSInfoAPI = LoGetTWSInfoAPI:new()
+    self.commandsTable[#self.commandsTable + 1] = loGetTWSInfoAPI
+    self.apiTable[#self.apiTable + 1] = loGetTWSInfoAPI.apiInfo
+    
+    
+    
     self:verify_entries()
 end
 
@@ -181,7 +216,7 @@ function APIHandler:execute(api)
     for k, v in pairs(self.commandsTable) do
         if (api.id == v.id) then
 
-            local result_code, result = pcall(v.execute, v, api)
+            local result_code, result = pcall(v.execute, v, api) -- = v:execute(api)
             if(result_code == true)then
                 return result
             else

@@ -3,7 +3,7 @@ module("LoGetSnaresAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 15
+local API_ID = 17
 
 --- @class LoGetSnaresAPI : APIBase
 --- @field id number API ID

@@ -3,7 +3,7 @@ module("GetFrequency", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 3
+local API_ID = 4
 
 --- @class GetFrequency : APIBase
 --- @field id number API ID

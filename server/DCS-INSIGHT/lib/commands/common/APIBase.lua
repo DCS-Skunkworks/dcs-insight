@@ -76,6 +76,10 @@ function APIBase:decode_result(api, result)
 	
     if(type(result) == "table")then
         local result, str = Logg:dump_table(result, 100, 2000)
+		if(string.len(str) == 0) then
+			api.result = "returned empty table"
+			return api
+		end
         api.result = str
 		return api
     end

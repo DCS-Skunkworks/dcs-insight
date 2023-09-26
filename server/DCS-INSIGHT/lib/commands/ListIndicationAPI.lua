@@ -3,7 +3,7 @@ module("ListIndicationAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 16
+local API_ID = 7
 
 --- @class ListIndicationAPI : APIBase
 --- @field id number API ID

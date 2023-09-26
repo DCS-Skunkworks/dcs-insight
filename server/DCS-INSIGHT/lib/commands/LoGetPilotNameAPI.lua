@@ -3,7 +3,7 @@ module("LoGetPilotNameAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 11
+local API_ID = 13
 
 --- @class LoGetPilotNameAPI : APIBase
 --- @field id number API ID

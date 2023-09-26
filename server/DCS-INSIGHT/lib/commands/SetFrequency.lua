@@ -4,7 +4,7 @@ local APIBase = require("APIBase")
 local Parameter = require("Parameter")
 
 -- This is the unique ID for this particular API
-local API_ID = 4
+local API_ID = 5
 
 --- @class SetFrequency : APIBase
 --- @field id number API ID

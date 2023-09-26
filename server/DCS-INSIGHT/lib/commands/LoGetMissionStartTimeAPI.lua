@@ -3,7 +3,7 @@ module("LoGetMissionStartTimeAPI", package.seeall)
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 9
+local API_ID = 11
 
 --- @class LoGetMissionStartTimeAPI : APIBase
 --- @field id number API ID

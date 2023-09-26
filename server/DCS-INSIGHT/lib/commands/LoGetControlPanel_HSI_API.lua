@@ -1,23 +1,23 @@
-module("LoGetAccelerationUnitsAPI", package.seeall)
+module("LoGetControlPanel_HSI_API", package.seeall)
 
 local APIBase = require("APIBase")
 
 -- This is the unique ID for this particular API
-local API_ID = 15
+local API_ID = 29
 
---- @class LoGetAccelerationUnitsAPI : APIBase
+--- @class LoGetControlPanel_HSI_API : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetAccelerationUnitsAPI = APIBase:new()
+local LoGetControlPanel_HSI_API = APIBase:new()
 
 
---- @func Returns new LoGetAccelerationUnitsAPI
-function LoGetAccelerationUnitsAPI:new(o)
+--- @func Returns new LoGetControlPanel_HSI_API
+function LoGetControlPanel_HSI_API:new(o)
     o = o or APIBase:new(
         o,
         API_ID,
         true,
-        "LoGetAccelerationUnits()",
+        "LoGetControlPanel_HSI()",
         0
     )
 
@@ -27,24 +27,24 @@ function LoGetAccelerationUnitsAPI:new(o)
 end
 
 --- @func Inits with internal data
-function LoGetAccelerationUnitsAPI:init()
+function LoGetControlPanel_HSI_API:init()
 end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function LoGetAccelerationUnitsAPI:execute(api)
-
+function LoGetControlPanel_HSI_API:execute(api)
+    
     local result_code, message = self:verify_params()
     if(result_code == 1)then
         api.result = message
         return api
     end
 
-    local result = LoGetAccelerationUnits()
+    local result = LoGetControlPanel_HSI()
 
     api = self:decode_result(api, result)
 
     return api
 end
 
-return LoGetAccelerationUnitsAPI
+return LoGetControlPanel_HSI_API
