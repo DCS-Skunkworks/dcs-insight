@@ -13,12 +13,11 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 * You can poll an API for changes
 * You can search for API
 
-![not_connected_client](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/fb25cc5d-2904-4303-b0f4-455ea7555d75)
+![insight1](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/a99b72b9-b13b-4b3e-b35b-35188b907bd5)
 
-![connected_client](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/6640bf1c-6a7b-42e1-b3ba-af7315bbc162)
+![insight2](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/3cf176f8-011b-43b6-bc44-4b84feefa9a0)
 
-![client_self_data](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/f6fa5bb3-82dc-414a-9824-4cb79573e632)
-
+![insight3](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/033d63a1-0757-4323-b6e2-63dda6f8b5c9)
 
 
 
