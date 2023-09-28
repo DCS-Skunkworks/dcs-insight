@@ -106,7 +106,7 @@ function LoGetMCPState() end
 
 --- @func Returns track while scan information
 --- @return number
-function LoGetTWSInfoAPI() end
+function LoGetTWSInfo() end
 
 
 
