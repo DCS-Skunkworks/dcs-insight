@@ -23,6 +23,7 @@ using NLog.Targets.Wrappers;
 using NLog.Targets;
 using DCSInsight.Misc;
 using ErrorEventArgs = DCSInsight.Events.ErrorEventArgs;
+using System.Windows.Media.Imaging;
 
 namespace DCSInsight
 {
@@ -243,7 +244,7 @@ namespace DCSInsight
             {
                 _dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
                 //Debug.WriteLine("Count is " + _dcsAPIList.Count);
-                Dispatcher?.BeginInvoke((Action)(ShowAPIs));
+                Dispatcher?.BeginInvoke((Action)(() => ShowAPIs()));
             }
             catch (Exception ex)
             {
@@ -448,12 +449,40 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
+        
+        private void UpdateSearchButton()
+        {
 
-        private void ButtonSearchControls_OnMouseDown(object sender, MouseButtonEventArgs e)
+            if (!string.IsNullOrEmpty(TextBoxSearchAPI.Text))
+            {
+                ButtonSearchAPI.Source = new BitmapImage(new Uri(@"/dcs-insight;component/Images/clear_search_result.png", UriKind.Relative));
+                ButtonSearchAPI.Tag = "Clear";
+            }
+            else
+            {
+                ButtonSearchAPI.Source = new BitmapImage(new Uri(@"/dcs-insight;component/Images/search_api.png", UriKind.Relative));
+                ButtonSearchAPI.Tag = "Search";
+            }
+        }
+
+        private void ButtonSearchAPI_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             try
             {
-                ShowAPIs();
+                var mode = (string)ButtonSearchAPI.Tag;
+                if (mode == "Search")
+                {
+                    ButtonSearchAPI.Source = new BitmapImage(new Uri(@"/dcs-insight;component/Images/clear_search_result.png", UriKind.Relative));
+                    ButtonSearchAPI.Tag = "Clear";
+                }
+                else
+                {
+                    ButtonSearchAPI.Source = new BitmapImage(new Uri(@"/dcs-insight;component/Images/search_api.png", UriKind.Relative));
+                    ButtonSearchAPI.Tag = "Search";
+                    TextBoxSearchAPI.Text = "";
+                }
+
+                ShowAPIs(true);
             }
             catch (Exception ex)
             {
@@ -462,7 +491,7 @@ namespace DCSInsight
         }
 
 
-        private void ShowAPIs()
+        private void ShowAPIs(bool searching = false)
         {
             try
             {
@@ -502,6 +531,13 @@ namespace DCSInsight
                     {
                         ItemsControlAPI.Focus();
                     }
+                    
+                    UpdateSearchButton();
+
+                    if (searching)
+                    {
+                        TextBoxSearchAPI.Focus();
+                    }
                 }
                 finally
                 {
@@ -520,7 +556,7 @@ namespace DCSInsight
             {
                 if (e.Key == Key.Enter)
                 {
-                    ShowAPIs();
+                    ShowAPIs(true);
                 }
             }
             catch (Exception ex)
