@@ -10,6 +10,7 @@
     <ApplicationIcon>Images\Magnifier_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Images\clear_search_result.png" />
     <None Remove="Images\Magnifier_icon.ico" />
     <None Remove="Images\Magnifier_icon.png" />
     <None Remove="Images\search_api.png" />
@@ -23,6 +24,7 @@
     <PackageReference Include="NLog" Version="5.2.4" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\clear_search_result.png" />
     <Resource Include="Images\Magnifier_icon.ico" />
     <Resource Include="Images\Magnifier_icon.png" />
     <Resource Include="Images\search_api.png" />

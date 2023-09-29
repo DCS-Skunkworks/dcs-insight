@@ -31,7 +31,7 @@
             <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
             <TextBox Name="TextBoxSearchAPI" TextWrapping="NoWrap"  IsReadOnly="False" Width="150"  Margin="20,0,0,0" KeyDown="TextBoxSearchAPI_OnKeyDown"/>
             <Button>
-                <Image Source="/Images/search_api.png" Name="ButtonSearchControls" MouseDown="ButtonSearchControls_OnMouseDown" ToolTip="Search for DCS API"/>
+                <Image Source="/Images/search_api.png" Name="ButtonSearchAPI"  Tag="Search" MouseDown="ButtonSearchAPI_OnMouseDown" ToolTip="Search for DCS API"/>
             </Button>
         </ToolBar>
 
