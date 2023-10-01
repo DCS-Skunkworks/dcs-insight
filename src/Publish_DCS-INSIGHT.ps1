@@ -1,7 +1,11 @@
 #Declaring & setting some variables
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-$publishPath = $scriptPath+"\_PublishTemp_\"
-$dcsinsightPath = $scriptPath+"\..\..\server"
+$publishPath = $scriptPath + "\_PublishTemp_"
+$clientPublishPath = $scriptPath + "\_PublishTemp_\client"
+$serverPublishPath = $scriptPath + "\_PublishTemp_\server"
+$clientPath = $scriptPath + "\client\DCSInsight"
+$serverPath = $scriptPath + "\server"
+
 #---------------------------------
 # Pre-checks
 #---------------------------------
@@ -12,27 +16,11 @@ if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path
 }
 
 #---------------------------------
-# Tests execution
-#---------------------------------
-#Write-Host "Starting test execution" -foregroundcolor "Green"
-#$testPath = $scriptPath+"\Tests"
-#Set-Location -Path $testPath
-#dotnet test
-#$testsLastExitCode = $LastExitCode
-#Write-Host "Tests LastExitCode: $testsLastExitCode" -foregroundcolor "Green"
-#if ( 0 -ne $testsLastExitCode )
-#{
-#  Write-Host "Fatal error. Some unit tests failed." -foregroundcolor "Red"
-#  exit
-#}
-#Write-Host "Finished test execution" -foregroundcolor "Green"
-
-#---------------------------------
 # Release version management
 #---------------------------------
 Write-Host "Starting release version management" -foregroundcolor "Green"
 #Get Path to csproj
-$projectFilePath = $scriptPath+"\DCSInsight.csproj"
+$projectFilePath = $clientPath+"\DCSInsight.csproj"
 If(-not(Test-Path $projectFilePath)){
 	Write-Host "Fatal error. Project path not found: $projectPath" -foregroundcolor "Red"
 	exit
@@ -43,32 +31,14 @@ $xml = [xml](Get-Content $projectFilePath)
 [string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
 
 #Split the Version Numbers
-$avMajor, $avMinor, $avBuild, $avRevision   = $assemblyVersion.Split('.')
-
+$avMajor, $avMinor, $avPatch   = $assemblyVersion.Split('.')
+[int]$avMinor = [int]$avMinor + 1
 Write-Host "Current assembly version is: $assemblyVersion" -foregroundcolor "Green"
 Write-Host "Current Build is: $avBuild" -foregroundcolor "Green"
 
-#Determining new build version based on the number of days since 1/1/2000
-$startDate=[datetime] '01/01/2000 00:00'
-$endDate= Get-Date
-$ts = New-TimeSpan -Start $startDate -End $endDate
-$calculatedBuild = $ts.Days
-Write-Host "Calculated build is: $calculatedBuild" -foregroundcolor "Green"
-
-#Eventual increase of revision number
-if ($calculatedBuild -eq $avBuild) {
-	Write-Host "Increasing revision" -foregroundcolor "Green"
-	Write-Host "   From: $avRevision" -foregroundcolor "Green"
-	$avRevision = [Convert]::ToInt32($avRevision.Trim(),10)+1
-	Write-Host "   To:   $avRevision" -foregroundcolor "Green"
-} else {    
-	$avRevision = "1"
-	Write-Host "Revision reset to $avRevision" -foregroundcolor "Green"
-}
-
 #Sets new version into Project 
 #Warning: for this to work, since the PropertyGroup is indexed, AssemblyVersion must be in the FIRST Propertygroup (or else, change the index).
-$xml.Project.PropertyGroup.AssemblyVersion = "$avMajor.$avMinor.$calculatedBuild.$avRevision".Trim()
+$xml.Project.PropertyGroup.AssemblyVersion = "$avMajor.$avMinor.$avPatch".Trim()
 [string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
 Write-Host "New assembly version is $assemblyVersion" -foregroundcolor "Green"
 
@@ -82,14 +52,23 @@ Write-Host "Finished release version management" -foregroundcolor "Green"
 #---------------------------------
 #Cleaning previous publish
 Write-Host "Starting cleaning previous build" -foregroundcolor "Green"
-Set-Location -Path $scriptPath
-dotnet clean DCSInsight.csproj -o $publishPath
+Set-Location -Path $clientPath
+
+#Check that client folder exists
+if (Test-Path -Path $clientPublishPath) {
+    Write-Host "client folder exists" -foregroundcolor "Green"
+} else {
+	Write-Host "Creating client folder" -foregroundcolor "Green"
+    New-Item -ItemType Directory -Path $clientPublishPath
+}
+
+dotnet clean DCSInsight.csproj -o $clientPublishPath
 
 Write-Host "Starting Publish" -foregroundcolor "Green"
-Set-Location -Path $scriptPath
+Set-Location -Path $clientPath
 
 Write-Host "Starting Publish DCS-INSIGHT" -foregroundcolor "Green"
-dotnet publish DCSInsight.csproj --self-contained false -f net6.0-windows -r win-x64 -c Release -o $publishPath /p:DebugType=None /p:DebugSymbols=false
+dotnet publish DCSInsight.csproj --self-contained false -f net6.0-windows -r win-x64 -c Release -o $clientPublishPath /p:DebugType=None /p:DebugSymbols=false
 $buildLastExitCode = $LastExitCode
 
 Write-Host "Build DCS-INSIGHT LastExitCode: $buildLastExitCode" -foregroundcolor "Green"
@@ -102,37 +81,25 @@ if ( 0 -ne $buildLastExitCode )
 
 #Getting file info & remove revision from file_version
 Write-Host "Getting file info" -foregroundcolor "Green"
-$file_version = (Get-Command $publishPath\dcs-insight.exe).FileVersionInfo.FileVersion
+$file_version = (Get-Command $clientPublishPath\dcs-insight.exe).FileVersionInfo.FileVersion
 Write-Host "File version is $file_version" -foregroundcolor "Green"
 
-if (Test-Path -Path $publishPath\client) {
-    Write-Host "client folder exists" -foregroundcolor "Green"
-} else {
-	Write-Host "Creating client folder" -foregroundcolor "Green"
-    New-Item -ItemType Directory -Path $publishPath\client
-}
-
-Write-Host "Removing old files from client folder" -foregroundcolor "Green"
-Remove-Item $publishPath\client\*.*
-
-Write-Host "Moving client files to client folder" -foregroundcolor "Green"
-Move-Item -Path $publishPath\*.* -Destination $publishPath\client
 
 #---------------------------------
 # Server publishing
 #---------------------------------
-if (Test-Path -Path $publishPath\server) {
+if (Test-Path -Path $serverPublishPath) {
     Write-Host "server folder exists" -foregroundcolor "Green"
 } else {
 	Write-Host "Creating server folder" -foregroundcolor "Green"
-    New-Item -ItemType Directory -Path $publishPath\server
+    New-Item -ItemType Directory -Path $serverPublishPath
 }
 
 Write-Host "Removing old files from server folder" -foregroundcolor "Green"
-Remove-Item $publishPath\server\* -Recurse
+Remove-Item $serverPublishPath\* -Recurse
 
 Write-Host "Copying DCS-INSIGHT files to server folder" -foregroundcolor "Green"
-Copy-Item -Path $dcsinsightPath\* -Destination $publishPath\server -Recurse
+Copy-Item -Path $serverPath\* -Destination $serverPublishPath -Recurse
 
 
 #---------------------------------
