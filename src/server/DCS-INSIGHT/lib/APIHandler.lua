@@ -236,7 +236,7 @@ function APIHandler:verify_entries()
     for i = 1, #self.commandsTable do
         message = message..self.commandsTable[i].id.." : "..self.commandsTable[i].apiInfo.api_syntax.."\n"
     end
-    Logg:log(message)
+    LogInsight:log(message)
 
     local seen = {}
     local duplicated = {}
@@ -249,7 +249,7 @@ function APIHandler:verify_entries()
         end
 
         if(command.apiInfo.parameter_count ~= #command.apiInfo.parameter_defs)then
-            Logg:log("Parameter count mismatch in "..command.apiInfo.api_syntax)
+            LogInsight:log("Parameter count mismatch in "..command.apiInfo.api_syntax)
         end
     end
 
@@ -261,7 +261,7 @@ function APIHandler:verify_entries()
     end
 
     if(found)then
-        Logg:log(message)
+        LogInsight:log(message)
         error("dcs-insight API Id conflicts found")
     end
 
