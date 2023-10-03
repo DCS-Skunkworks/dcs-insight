@@ -36,7 +36,7 @@ end
 function ListCockpitParamsAPI:execute(api)
 
     local result = list_cockpit_params()
-    LogInsight:log(type(result))
+    
     api = self:decode_result(api, result)
 
     return api
