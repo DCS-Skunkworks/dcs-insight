@@ -27,7 +27,7 @@ function Listener:new(host, port, APIHandler)
 end
 
 Listener.ReadClientData = function (str)
-	Logg:log_simple("Reading client request\n")
+	LogInsight:log_simple("Reading client request\n")
 
 	if (str == nil) then return end
 	
@@ -36,15 +36,15 @@ Listener.ReadClientData = function (str)
 		ListenerGlobal.tcpServer:send(json)	
 
 		if(Log_JSON == true)then
-			Logg:log_simple("Sending API list request\n")
-			Logg:log_simple("Outgoing JSON is\n"..json)	
+			LogInsight:log_simple("Sending API list request\n")
+			LogInsight:log_simple("Outgoing JSON is\n"..json)	
 		end
 	else
 		local command = JSON:decode(str);
 
 		if(Log_JSON == true)then			
-			local result_code, buffer = Logg:dump_table(command, 100, 5000)
-			Logg:log_simple("Incoming JSON is\n"..buffer)		
+			local result_code, buffer = LogInsight:dump_table(command, 100, 5000)
+			LogInsight:log_simple("Incoming JSON is\n"..buffer)		
 		end
 
 		local api = ListenerGlobal.APIHandler:execute(command)
@@ -52,8 +52,8 @@ Listener.ReadClientData = function (str)
 		ListenerGlobal.tcpServer:send(json)
 
 		if(Log_JSON == true)then			
-			Logg:log_simple("Sending API execution result for command id="..command.id.."\n")
-			Logg:log_simple("Outgoing JSON is\n"..json)
+			LogInsight:log_simple("Sending API execution result for command id="..command.id.."\n")
+			LogInsight:log_simple("Outgoing JSON is\n"..json)
 		end
 	end
 end

@@ -15,7 +15,7 @@ dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\server_settings.lua]])
 dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\global\enums.lua]])
 
 local Logger = require("Logger")
-Logg = Logger:new(lfs.writedir()..[[Logs\dcs-insight-server.log]])
+LogInsight = Logger:new(lfs.writedir()..[[Logs\dcs-insight-server.log]])
 
 local APIHandler = require("APIHandler")
 local APIHandler = APIHandler:new()
@@ -32,7 +32,7 @@ local function step(arg, time)
 	end
 
 	if(counter % 50 == 0) then
-		--Logg:log_simple("STEP")
+		--LogInsight:log_simple("STEP")
 	end
 	counter = counter + 1;
 end
@@ -82,7 +82,7 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			Logg:log_simple("Listener.step() failed: "..err)
+			LogInsight:log_simple("Listener.step() failed: "..err)
 		end
 		lastStepTime = currentTime + .1
 	end
