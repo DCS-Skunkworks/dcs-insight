@@ -2,6 +2,7 @@ module("APIBase", package.seeall)
 
 local APIInfo = require("APIInfo")
 local Parameter = require("Parameter")
+local Log = require("LogInsight")
 
 --- @class APIBase
 --- @field id number
@@ -75,7 +76,7 @@ function APIBase:decode_result(api, result)
 	end
 	
     if(type(result) == "table")then
-        local result, str = LogInsight:dump_table(result, 100, 2000)
+        local result, str = Log:dump_table(result, 100, 2000)
 		if(string.len(str) == 0) then
 			api.result = "returned empty table"
 			return api
