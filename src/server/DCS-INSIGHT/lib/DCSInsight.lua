@@ -9,14 +9,12 @@ package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\?.lua;]] .. package.p
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\io\?.lua;]] .. package.path
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\?.lua;]] .. package.path
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\common\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\global\?.lua;]] .. package.path
+package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\?.lua;]] .. package.path
 
 dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\server_settings.lua]])
-dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\global\enums.lua]])
+dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
 
-local Logger = require("Logger")
-LogInsight = Logger:new(lfs.writedir()..[[Logs\dcs-insight-server.log]])
-
+local Log = require("LogInsight")
 local APIHandler = require("APIHandler")
 local APIHandler = APIHandler:new()
 
@@ -32,7 +30,7 @@ local function step(arg, time)
 	end
 
 	if(counter % 50 == 0) then
-		--LogInsight:log_simple("STEP")
+		--Log:log_simple("STEP")
 	end
 	counter = counter + 1;
 end
@@ -82,7 +80,7 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			LogInsight:log_simple("Listener.step() failed: "..err)
+			Log:log_simple("Listener.step() failed: "..err)
 		end
 		lastStepTime = currentTime + .1
 	end
