@@ -21,7 +21,6 @@
         </Grid.RowDefinitions>
 
         <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
-            <Label Name="LabelConnectionStatus" VerticalAlignment="Center" ></Label>
             <Label Content="Server " VerticalAlignment="Center" ></Label>
             <TextBox Name="TextBoxServer" Text="127.0.0.1" Width="80"></TextBox>
             <Label Content="Port" VerticalAlignment="Center" ></Label>
@@ -41,8 +40,8 @@
         </ScrollViewer>
         <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3">
             <StatusBar DockPanel.Dock="Bottom" Margin="5,0,5,0">
-                <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
-                    <TextBlock Name="TextBlockAppInfo" >dcs-insight</TextBlock>
+                <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" >
+                    <TextBlock Name="TextBlockAppInfo" MouseDown="TextBlockAppInfo_OnMouseDown">dcs-insight</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>
