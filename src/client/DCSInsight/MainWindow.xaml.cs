@@ -37,12 +37,14 @@ namespace DCSInsight
         private Thread _clientThread;
         private bool _isRunning;
         private List<DCSAPI> _dcsAPIList = new();
-        
+
         private readonly Channel<DCSAPI> _asyncCommandsChannel = Channel.CreateUnbounded<DCSAPI>();
         private int _metaDataPollCounter;
         private readonly List<UserControlAPI> _loadedAPIUserControls = new();
         private const int MAX_CONTROLS_ON_PAGE = 200;
         private bool _formLoaded;
+        private bool _logJSON = false;
+        private string _currentMessage = "";
 
         public MainWindow()
         {
@@ -64,7 +66,7 @@ namespace DCSInsight
             try
             {
                 if (_formLoaded) return;
-                
+
                 ShowVersionInfo();
                 SetFormState();
                 CheckBoxTop.IsChecked = true;
@@ -181,8 +183,7 @@ namespace DCSInsight
                     {
                         var cts = new CancellationTokenSource(100);
                         var dcsApi = await _asyncCommandsChannel.Reader.ReadAsync(cts.Token);
-                        //_tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi, Formatting.Indented) + "\n"));
-                        //Debug.WriteLine(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
+                        if (_logJSON) Logger.Info(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
                         _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi) + "\n"));
                     }
 
@@ -191,13 +192,13 @@ namespace DCSInsight
                     var bytes = new byte[_tcpClient.Available];
                     var bytesRead = _tcpClient.GetStream().Read(bytes);
                     var msg = Encoding.ASCII.GetString(bytes);
-                    //Debug.WriteLine(msg);
+                    if (_logJSON) Logger.Info(msg);
                     Dispatcher?.BeginInvoke((Action)(() => HandleMessage(msg)));
                     Thread.Sleep(100);
                 }
                 catch (SocketException ex)
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => ErrorMessage( ex.Message, ex)));
+                    Dispatcher?.BeginInvoke((Action)(() => ErrorMessage(ex.Message, ex)));
                 }
             }
 
@@ -222,19 +223,29 @@ namespace DCSInsight
                     HandleAPIMessage(str);
                     return;
                 }
-                
-                var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(str);
-                foreach (var userControlApi in _loadedAPIUserControls)
+
+                if (str.Contains("\"returns_data\":") && str.EndsWith("}")) // regex?
                 {
-                    if (userControlApi.Id == dcsApi.Id)
+                    var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
+
+                    foreach (var userControlApi in _loadedAPIUserControls)
                     {
-                        userControlApi.SetResult(dcsApi);
+                        if (userControlApi.Id == dcsApi.Id)
+                        {
+                            userControlApi.SetResult(dcsApi);
+                        }
                     }
+
+                    _currentMessage = "";
+                }
+                else
+                {
+                    _currentMessage += str;
                 }
             }
             catch (Exception ex)
             {
-                Common.ShowErrorMessageBox( ex, "HandleMessage()");
+                Common.ShowErrorMessageBox(ex, "HandleMessage()");
             }
         }
 
@@ -251,7 +262,7 @@ namespace DCSInsight
                 Dispatcher?.BeginInvoke((Action)(() => Common.ShowErrorMessageBox(ex)));
             }
         }
-        
+
         public async void SendCommand(SendCommandEventArgs args)
         {
             try
@@ -449,7 +460,7 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
-        
+
         private void UpdateSearchButton()
         {
 
@@ -531,7 +542,7 @@ namespace DCSInsight
                     {
                         ItemsControlAPI.Focus();
                     }
-                    
+
                     UpdateSearchButton();
 
                     if (searching)
@@ -571,6 +582,19 @@ namespace DCSInsight
             {
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
                 TextBlockAppInfo.Text = $"dcs-insight v.{fileVersionInfo.FileVersion}";
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBlockAppInfo_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                _logJSON = true;
+                TryOpenLogFileWithTarget("logfile");
             }
             catch (Exception ex)
             {
