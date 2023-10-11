@@ -26,12 +26,12 @@
             <Label Content="Port" VerticalAlignment="Center" ></Label>
             <TextBox Name="TextBoxPort" Text="7790" Width="40"></TextBox>
             <Button Name="ButtonConnect" Content="Connect" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonConnect_OnClick"></Button>
-            <Button Visibility="Collapsed" Name="ButtonTest" Content="Test" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonTest_OnClick"></Button>
             <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
             <TextBox Name="TextBoxSearchAPI" TextWrapping="NoWrap"  IsReadOnly="False" Width="150"  Margin="20,0,0,0" KeyDown="TextBoxSearchAPI_OnKeyDown"/>
             <Button>
                 <Image Source="/Images/search_api.png" Name="ButtonSearchAPI"  Tag="Search" MouseDown="ButtonSearchAPI_OnMouseDown" ToolTip="Search for DCS API"/>
             </Button>
+            <Button Name="ButtonRangeTest" Content="Range Test" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonRangeTest_OnClick"></Button>
         </ToolBar>
 
         <ScrollViewer Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" >

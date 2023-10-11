@@ -14,7 +14,7 @@ package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\?.lua;]] .. pa
 dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\server_settings.lua]])
 dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
 
-local Log = require("LogInsight")
+local LogInsight = require("LogInsight")
 local APIHandler = require("APIHandler")
 local APIHandler = APIHandler:new()
 
@@ -80,7 +80,7 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			Log:log_simple("Listener.step() failed: "..err)
+			LogInsight:log_simple("Listener.step() failed: "..err)
 		end
 		lastStepTime = currentTime + .1
 	end

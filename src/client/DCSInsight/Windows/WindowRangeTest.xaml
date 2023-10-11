@@ -1,0 +1,42 @@
+﻿<Window x:Class="DCSInsight.Windows.WindowRangeTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DCSInsight.Windows"
+        mc:Ignorable="d"
+        Title="Range Test API Calls" Height="450" Width="800" Closing="WindowRangeTest_OnClosing" WindowStartupLocation="CenterScreen" Loaded="WindowRangeTest_OnLoaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+
+        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+            <Label Content="API " VerticalAlignment="Center" ></Label>
+            <ComboBox Width="auto" MinWidth="200" Name="ComboBoxAPI" FontFamily="Consolas" SelectionChanged="ComboBoxAPI_OnSelectionChanged" ></ComboBox>
+            <Button  Content="Start" Margin="10,0,0,0" FontSize="14" Name="ButtonStart"  Click="ButtonStart_OnClick"></Button>
+            <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
+            <Button Width="20" Content="?" Margin="10,0,0,0" BorderBrush="Black" FontSize="14" Name="ButtonInformation"  Click="ButtonInformation_OnClick"></Button>
+        </ToolBar>
+
+        <ItemsControl Name="ItemsControlParameter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <DockPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" >
+            <TextBox Name="TextBoxResults" VerticalScrollBarVisibility="Auto"/>
+        </DockPanel>
+    </Grid>
+</Window>

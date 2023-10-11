@@ -1,6 +1,6 @@
 module("APIHandler", package.seeall)
 
-local Log = require("LogInsight")
+local LogInsight = require("LogInsight")
 
 local GetArgumentValue = require("GetArgumentValue")
 local SetArgumentValue = require("SetArgumentValue")
@@ -238,7 +238,7 @@ function APIHandler:verify_entries()
     for i = 1, #self.commandsTable do
         message = message..self.commandsTable[i].id.." : "..self.commandsTable[i].apiInfo.api_syntax.."\n"
     end
-    Log:log(message)
+    LogInsight:log(message)
 
     local seen = {}
     local duplicated = {}
@@ -251,7 +251,7 @@ function APIHandler:verify_entries()
         end
 
         if(command.apiInfo.parameter_count ~= #command.apiInfo.parameter_defs)then
-            Log:log("Parameter count mismatch in "..command.apiInfo.api_syntax)
+            LogInsight:log("Parameter count mismatch in "..command.apiInfo.api_syntax)
         end
     end
 
@@ -263,7 +263,7 @@ function APIHandler:verify_entries()
     end
 
     if(found)then
-        Log:log(message)
+        LogInsight:log(message)
         error("dcs-insight API Id conflicts found")
     end
 

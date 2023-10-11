@@ -1,5 +1,6 @@
 ﻿using System;
 using DCSInsight.JSON;
+using System.Collections.Generic;
 
 namespace DCSInsight.Events
 {
@@ -15,5 +16,17 @@ namespace DCSInsight.Events
         public string Message { get; set; }
 
         public Exception Ex { get; set; }
+    }
+
+    public class ConnectionEventArgs : EventArgs
+    {
+        public bool IsConnected { get; set; }
+    }
+
+    public class DataEventArgs : EventArgs
+    {
+        public DCSAPI DCSApi { get; set; }
+
+        public List<DCSAPI> DCSAPIS { get; set; }
     }
 }
