@@ -1,5 +1,7 @@
 # dcs-insight
-Application for executing DCS API
+Application for executing DCS API.
+
+You can test ```manually``` or do ```range testing``` to figure out how devices / arguments etc behave.
 
 ### Server
 Install server in ```Scripts``` folder and add entry to Export.lua.
