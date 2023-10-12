@@ -1,18 +1,17 @@
 ---@meta
 
---- @class lfs 
+--- @class lfs
 --- DCS Local File System
 lfs = {}
 
 --- @return string Returns the root location of DCS location in user folder
 function lfs.writedir()
-    return "";
+	return ""
 end
 
 ---@class CockpitDevice
 --- DCS Cockpit Device
 CockpitDevice = {}
-
 
 --- @func Sets command for a device
 --- @param command_id integer
@@ -42,7 +41,6 @@ function CockpitDevice:get_argument_value(argument_id) end
 --- @param argument number
 function CockpitDevice:performClickableAction(command_id, argument) end
 
-
 --- @func Gets a device based on the device ID as specified in devices.lua
 --- @param device_id integer
 --- @return CockpitDevice
@@ -53,14 +51,12 @@ function GetDevice(device_id) end
 --- @return number
 function LoGetAircraftDrawArgumentValue(draw_argument_id) end
 
-
-
 --- Contains Postions and Altitude
 --- @class LatLongAlt
 --- @diagnostic disable-next-line: duplicate-doc-field
---- @field Lat number 
+--- @field Lat number
 --- @diagnostic disable-next-line: duplicate-doc-field
---- @field Long number 
+--- @field Long number
 --- @diagnostic disable-next-line: duplicate-doc-field
 --- @field Alt number Altitude in meters
 LatLongAlt = {}
@@ -82,7 +78,6 @@ function LoGetSelfData() end
 --- @func Returns the simulation time
 --- @return number
 function LoGetModelTime() end
-
 
 --- @func Returns the mission start time
 --- @return number
@@ -108,27 +103,24 @@ function LoGetMCPState() end
 --- @return number
 function LoGetTWSInfo() end
 
-
-
 --- @func Returns atmospheric pressure
 --- @return number
 function LoGetBasicAtmospherePressure() end
-
 
 --- @func Returns navigational information
 --- @return number
 function LoGetNavigationInfo() end
 
 --- @func Returns whether own ships/aircraft data can be exported.
---- @return boolean 
+--- @return boolean
 function LoIsOwnshipExportAllowed() end
 
 --- @func Returns pilot's name
---- @return string 
+--- @return string
 function LoGetPilotName() end
 
 --- @func Returns indicated airspeed
---- @return number 
+--- @return number
 function LoGetIndicatedAirSpeed() end
 
 --- Contains acceleration info for all dimensions
@@ -141,14 +133,14 @@ function LoGetIndicatedAirSpeed() end
 --- @field z number
 AccelerationUnit = {}
 
---- @func Returns G Load 
---- @return AccelerationUnit 
+--- @func Returns G Load
+--- @return AccelerationUnit
 function LoGetAccelerationUnits() end
 
 --- @func Returns ADI pitch, band, yaw
 --- @return number
 function LoGetADIPitchBankYaw()
-    return unpack({0, 0, 0});
+	return unpack({ 0, 0, 0 })
 end
 
 --- @class CounterMeasures
@@ -159,7 +151,7 @@ end
 CounterMeasures = {}
 
 --- @func Returns information about countermeasures
---- @return CounterMeasures 
+--- @return CounterMeasures
 function LoGetSnares() end
 
 --- @func Returns a list of strings for a cockpit indicator (screen)
@@ -213,10 +205,9 @@ function LoGetSideDeviation() end
 --- @return number
 function LoGetSlipBallPosition() end
 
-
 --- @class EngineSide
 --- @diagnostic disable-next-line: duplicate-doc-field
---- @field right number 
+--- @field right number
 --- @diagnostic disable-next-line: duplicate-doc-field
 --- @field left number
 EngineSide = {}
@@ -251,6 +242,3 @@ MechanicalInformation = {}
 --- @func Returns mechanical information
 --- @return MechanicalInformation
 function LoGetMechInfo() end
-
-
-

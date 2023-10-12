@@ -3,7 +3,7 @@ module("Listener", package.seeall)
 local TCPServer = require("TCPServer")
 local socket = require("socket") --[[@as Socket]]
 local JSON = loadfile([[Scripts\JSON.lua]])()
-local Log = require("LogInsight")
+local LogInsight = require("LogInsight")
 
 --- @class Listener
 --- @field private host string the host to connect to
@@ -15,46 +15,47 @@ local Listener = {}
 --- @func Returns new Listener
 --- @return Listener
 function Listener:new(host, port, APIHandler)
-	
 	local o = {
 		host = host,
 		port = port,
 		APIHandler = APIHandler,
-		tcpServer = {}
+		tcpServer = {},
 	}
 	setmetatable(o, self)
 	self.__index = self
 	return o
 end
 
-Listener.ReadClientData = function (str)
-	Log:log_simple("Reading client request\n")
+Listener.ReadClientData = function(str)
+	LogInsight:log_simple("Reading client request\n")
 
-	if (str == nil) then return end
-	
-	if(str == "SENDAPI") then
+	if str == nil then
+		return
+	end
+
+	if str == "SENDAPI" then
 		local json = JSON:encode_pretty(ListenerGlobal.APIHandler.apiTable)
-		ListenerGlobal.tcpServer:send(json)	
+		ListenerGlobal.tcpServer:send(json)
 
-		if(Log_JSON == true)then
-			Log:log_simple("Sending API list request\n")
-			Log:log_simple("Outgoing JSON is\n"..json)	
+		if Log_JSON == true then
+			LogInsight:log_simple("Sending API list request\n")
+			LogInsight:log_simple("Outgoing JSON is\n" .. json)
 		end
 	else
-		local command = JSON:decode(str);
+		local command = JSON:decode(str)
 
-		if(Log_JSON == true)then			
-			local result_code, buffer = Log:dump_table(command, 100, 5000)
-			Log:log_simple("Incoming JSON is\n"..buffer)		
+		if Log_JSON == true then
+			local result_code, buffer = LogInsight:dump_table(command, 100, 5000)
+			LogInsight:log_simple("Incoming JSON is\n" .. buffer)
 		end
 
 		local api = ListenerGlobal.APIHandler:execute(command)
 		local json = JSON:encode_pretty(api)
 		ListenerGlobal.tcpServer:send(json)
 
-		if(Log_JSON == true)then			
-			Log:log_simple("Sending API execution result for command id="..command.id.."\n")
-			Log:log_simple("Outgoing JSON is\n"..json)
+		if Log_JSON == true then
+			LogInsight:log_simple("Sending API execution result for command id=" .. command.id .. "\n")
+			LogInsight:log_simple("Outgoing JSON is\n" .. json)
 		end
 	end
 end
@@ -64,7 +65,5 @@ function Listener:init()
 	self.APIHandler:init()
 	self.tcpServer = TCPServer:new(self.host, self.port, socket, self.ReadClientData)
 end
-
-
 
 return Listener

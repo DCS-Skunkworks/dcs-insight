@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
 
@@ -23,8 +24,9 @@ namespace DCSInsight.Events
         {
             OnSendCommand?.Invoke(new SendCommandEventArgs {APIObject = api});
         }
-
-
+        /*
+         *
+         */
         public delegate void ErrorEventHandler(ErrorEventArgs e);
         public static event ErrorEventHandler OnError;
 
@@ -41,6 +43,50 @@ namespace DCSInsight.Events
         public static void SendErrorMessage(string message, Exception ex)
         {
             OnError?.Invoke(new ErrorEventArgs { Message = message, Ex = ex});
+        }
+        /*
+         *
+         */
+        public delegate void ConnectionStatusEventHandler(ConnectionEventArgs e);
+        public static event ConnectionStatusEventHandler OnConnection;
+
+        public static void AttachConnectionListener(IConnectionListener listener)
+        {
+            OnConnection += listener.ConnectionStatus;
+        }
+
+        public static void DetachConnectionListener(IConnectionListener listener)
+        {
+            OnConnection -= listener.ConnectionStatus;
+        }
+
+        public static void SendConnectionStatus(bool isConnected)
+        {
+            OnConnection?.Invoke(new ConnectionEventArgs { IsConnected = isConnected});
+        }
+        /*
+         *
+         */
+        public delegate void DataEventHandler(DataEventArgs e);
+        public static event DataEventHandler OnData;
+
+        public static void AttachDataListener(IDataListener listener)
+        {
+            OnData += listener.DataReceived;
+        }
+
+        public static void DetachDataListener(IDataListener listener)
+        {
+            OnData -= listener.DataReceived;
+        }
+
+        public static void SendData(List<DCSAPI> dcsAPIs)
+        {
+            OnData?.Invoke(new DataEventArgs { DCSAPIS = dcsAPIs });
+        }
+        public static void SendData(DCSAPI dcsAPI)
+        {
+            OnData?.Invoke(new DataEventArgs { DCSApi = dcsAPI });
         }
     }
 }

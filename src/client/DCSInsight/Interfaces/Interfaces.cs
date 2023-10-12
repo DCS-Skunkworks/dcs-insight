@@ -11,4 +11,14 @@ namespace DCSInsight.Interfaces
     {
         void ErrorMessage(ErrorEventArgs args);
     }
+
+    public interface IConnectionListener
+    {
+        void ConnectionStatus(ConnectionEventArgs args);
+    }
+
+    public interface IDataListener
+    {
+        void DataReceived(DataEventArgs args);
+    }
 }

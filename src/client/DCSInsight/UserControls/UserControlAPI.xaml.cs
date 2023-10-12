@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,6 +84,7 @@ namespace DCSInsight.UserControls
             try
             {
                 _buttonSend.IsEnabled = !_textBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && _isConnected;
+
                 if (_dcsAPI.ReturnsData)
                 {
                     _checkBoxPolling.IsEnabled = _buttonSend.IsEnabled;
@@ -244,11 +244,11 @@ namespace DCSInsight.UserControls
             {
                 if (_keepResults)
                 {
-                    TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n-----------\n");
-                    TextBoxResult.Text = TextBoxResult.Text.Insert(0, dcsApi.Result);
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n-----------\n")));
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, dcsApi.Result)));
                     return;
                 }
-                TextBoxResult.Text = dcsApi.Result;
+                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = dcsApi.Result));
             }
             catch (Exception ex)
             {
@@ -272,7 +272,7 @@ namespace DCSInsight.UserControls
                     }
                 }
 
-                ICEventHandler.SendCommand( _dcsAPI);
+                ICEventHandler.SendCommand(_dcsAPI);
                 SetFormState();
             }
             catch (Exception ex)

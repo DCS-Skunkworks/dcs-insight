@@ -2,7 +2,7 @@ module("APIBase", package.seeall)
 
 local APIInfo = require("APIInfo")
 local Parameter = require("Parameter")
-local Log = require("LogInsight")
+local LogInsight = require("LogInsight")
 
 --- @class APIBase
 --- @field id number
@@ -17,7 +17,7 @@ function APIBase:new(o, id, returns_data, api_syntax, parameter_count)
 	--- @type APIBase
 	o = o or {}
 	local apiInfo = APIInfo:new(id, returns_data, api_syntax, parameter_count)
-	
+
 	o.id = id
 	o.parameter_count = parameter_count
 	o.apiInfo = apiInfo
@@ -48,15 +48,14 @@ function APIBase:add_param_def(id, name, type)
 	self.apiInfo.parameter_defs[#self.apiInfo.parameter_defs + 1] = Parameter:new(id, name, type)
 end
 
-
 --- @func Verifies that the parameter have values
 --- @return number result_code, string error_message
 function APIBase:verify_params()
-    for i, param in pairs(self.apiInfo.parameter_defs) do
-		if(param.value ~= nil) then
-			return 1, "Parameter "..param.id.." value is nil"
+	for i, param in pairs(self.apiInfo.parameter_defs) do
+		if param.value ~= nil then
+			return 1, "Parameter " .. param.id .. " value is nil"
 		end
-    end
+	end
 
 	return 0, ""
 end
@@ -65,41 +64,46 @@ end
 --- @param api APIInfo
 --- @param result any
 function APIBase:decode_result(api, result)
-
-    if (result == nil) then 
-		if(api.returns_data == true)then
+	if result == nil then
+		if api.returns_data == true then
 			api.result = "result is nil"
 		else
 			api.result = "api was called"
 		end
 		return api
 	end
-	
-    if(type(result) == "table")then
-        local result, str = Log:dump_table(result, 100, 2000)
-		if(string.len(str) == 0) then
+
+	if type(result) == "table" then
+		local result, str = LogInsight:dump_table(result, 100, 2000)
+		if string.len(str) == 0 then
 			api.result = "returned empty table"
 			return api
 		end
-        api.result = str
+		api.result = str
 		return api
-    end
-	
+	end
+
 	api.result = result
-    return api
+	return api
 end
 
 --- @func Checks that there is a device with that number
 --- @param device_id number
 --- @return boolean
 function APIBase:verify_device(device_id)
-
 	local device = GetDevice(device_id)
-	if(device == nil) then
+	if device == nil then
 		return false
 	else
 		return true
 	end
+end
+
+--- @func Returns the path of the caller (file system)
+--- @return string
+function APIBase:script_path()
+	local str = debug.getinfo(2, "S").source:sub(2)
+	return str:match("(.*[/\\])") or ""
 end
 
 return APIBase

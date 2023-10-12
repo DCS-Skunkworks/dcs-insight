@@ -4,60 +4,52 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DCSInsight.Events;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
 using DCSInsight.UserControls;
-using Newtonsoft.Json;
 using NLog;
 using NLog.Targets.Wrappers;
 using NLog.Targets;
 using DCSInsight.Misc;
 using ErrorEventArgs = DCSInsight.Events.ErrorEventArgs;
 using System.Windows.Media.Imaging;
+using DCSInsight.Communication;
+using DCSInsight.Windows;
 
 namespace DCSInsight
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, ICommandListener, IErrorListener, IDisposable
+    public partial class MainWindow : Window, IErrorListener, IConnectionListener, IDataListener, IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private TcpClient _tcpClient;
-        private Thread _clientThread;
-        private bool _isRunning;
         private List<DCSAPI> _dcsAPIList = new();
-
-        private readonly Channel<DCSAPI> _asyncCommandsChannel = Channel.CreateUnbounded<DCSAPI>();
-        private int _metaDataPollCounter;
         private readonly List<UserControlAPI> _loadedAPIUserControls = new();
-        private const int MAX_CONTROLS_ON_PAGE = 200;
         private bool _formLoaded;
-        private bool _logJSON = false;
-        private string _currentMessage = "";
+        private TCPClientHandler _tcpClientHandler;
+        private bool _isConnected;
+        private bool _rangeTesting;
+
 
         public MainWindow()
         {
             InitializeComponent();
-            ICEventHandler.AttachCommandListener(this);
             ICEventHandler.AttachErrorListener(this);
+            ICEventHandler.AttachConnectionListener(this);
+            ICEventHandler.AttachDataListener(this);
         }
 
         public void Dispose()
         {
-            ICEventHandler.DetachCommandListener(this);
             ICEventHandler.DetachErrorListener(this);
-            _tcpClient?.Dispose();
+            ICEventHandler.DetachConnectionListener(this);
+            ICEventHandler.DetachDataListener(this);
+            _tcpClientHandler?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -83,7 +75,7 @@ namespace DCSInsight
             try
             {
                 ButtonConnect.IsEnabled = !string.IsNullOrEmpty(TextBoxServer.Text) && !string.IsNullOrEmpty(TextBoxPort.Text);
-                _loadedAPIUserControls.ForEach(o => o.SetConnectionStatus(_isRunning));
+                ButtonRangeTest.IsEnabled = _isConnected && _dcsAPIList.Count > 0;
             }
             catch (Exception ex)
             {
@@ -98,13 +90,11 @@ namespace DCSInsight
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    IPEndPoint serverEndPoint = new(IPAddress.Loopback, Convert.ToInt32(TextBoxPort.Text));
-                    _isRunning = false;
-                    _tcpClient = new TcpClient();
-                    _tcpClient.Connect(serverEndPoint);
-                    _isRunning = true;
-                    _clientThread = new Thread(ClientThread);
-                    _clientThread.Start();
+                    _tcpClientHandler?.Disconnect();
+                    _isConnected = false;
+                    _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text);
+                    _tcpClientHandler.Connect();
+                    _tcpClientHandler.LogJSON = true;//TODO
                 }
                 catch (Exception ex)
                 {
@@ -124,14 +114,13 @@ namespace DCSInsight
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
-                    _isRunning = false;
-                    _tcpClient.Close();
+                    _isConnected = false;
+                    _tcpClientHandler?.Disconnect();
                     _dcsAPIList.Clear();
-                    _metaDataPollCounter = 0;
                     _loadedAPIUserControls.Clear();
                     ItemsControlAPI.ItemsSource = null;
                     ItemsControlAPI.Items.Clear();
-                    SetConnectionStatus(_isRunning);
+                    SetConnectionStatus(_isConnected);
                 }
                 catch (Exception ex)
                 {
@@ -144,118 +133,49 @@ namespace DCSInsight
             }
         }
 
-        private async void ClientThread()
-        {
-            Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(_isRunning)));
-            while (_isRunning)
-            {
-                try
-                {
-                    /* pear to the documentation on Poll:
-                     * When passing SelectMode.SelectRead as a parameter to the Poll method it will return
-                     * -either- true if Socket.Listen(Int32) has been called and a connection is pending;
-                     * -or- true if data is available for reading;
-                     * -or- true if the connection has been closed, reset, or terminated;
-                     * otherwise, returns false
-                     */
-
-                    // Detect if client disconnected
-                    if (_tcpClient.Client.Poll(0, SelectMode.SelectRead))
-                    {
-                        var buffer = new byte[1];
-                        if (_tcpClient.Client.Receive(buffer, SocketFlags.Peek) == 0)
-                        {
-                            // Client disconnected
-                            break;
-                        }
-                    }
-                    if (!_tcpClient.Connected) break;
-
-                    if (_dcsAPIList.Count == 0 && _metaDataPollCounter < 1)
-                    {
-                        Thread.Sleep(300);
-                        _metaDataPollCounter++;
-                        _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes("SENDAPI\n"));
-                        Thread.Sleep(1000);
-                    }
-
-                    if (_asyncCommandsChannel.Reader.Count > 0)
-                    {
-                        var cts = new CancellationTokenSource(100);
-                        var dcsApi = await _asyncCommandsChannel.Reader.ReadAsync(cts.Token);
-                        if (_logJSON) Logger.Info(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
-                        _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi) + "\n"));
-                    }
-
-                    if (_tcpClient.Available <= 0) continue;
-
-                    var bytes = new byte[_tcpClient.Available];
-                    var bytesRead = _tcpClient.GetStream().Read(bytes);
-                    var msg = Encoding.ASCII.GetString(bytes);
-                    if (_logJSON) Logger.Info(msg);
-                    Dispatcher?.BeginInvoke((Action)(() => HandleMessage(msg)));
-                    Thread.Sleep(100);
-                }
-                catch (SocketException ex)
-                {
-                    Dispatcher?.BeginInvoke((Action)(() => ErrorMessage(ex.Message, ex)));
-                }
-            }
-
-            _isRunning = false;
-            _tcpClient = null;
-            Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(_isRunning)));
-        }
-
-        private void SetConnectionStatus(bool connected)
-        {
-            ButtonConnect.Content = connected ? "Disconnect" : "Connect";
-            Title = connected ? "Connected" : "Disconnected";
-            SetFormState();
-        }
-
-        private void HandleMessage(string str)
+        public void ConnectionStatus(ConnectionEventArgs args)
         {
             try
             {
-                if (_dcsAPIList == null || _dcsAPIList.Count == 0)
-                {
-                    HandleAPIMessage(str);
-                    return;
-                }
-
-                if (str.Contains("\"returns_data\":") && str.EndsWith("}")) // regex?
-                {
-                    var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
-
-                    foreach (var userControlApi in _loadedAPIUserControls)
-                    {
-                        if (userControlApi.Id == dcsApi.Id)
-                        {
-                            userControlApi.SetResult(dcsApi);
-                        }
-                    }
-
-                    _currentMessage = "";
-                }
-                else
-                {
-                    _currentMessage += str;
-                }
+                _isConnected = args.IsConnected;
+                Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(args.IsConnected)));
+                Dispatcher?.BeginInvoke((Action)(SetFormState)); ;
             }
             catch (Exception ex)
             {
-                Common.ShowErrorMessageBox(ex, "HandleMessage()");
+                Dispatcher?.BeginInvoke((Action)(() => Common.ShowErrorMessageBox(ex)));
             }
         }
-
-        private void HandleAPIMessage(string str)
+        
+        public void ErrorMessage(ErrorEventArgs args)
         {
             try
             {
-                _dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
-                //Debug.WriteLine("Count is " + _dcsAPIList.Count);
-                Dispatcher?.BeginInvoke((Action)(() => ShowAPIs()));
+                if (_rangeTesting) return;
+
+                Logger.Error(args.Ex);
+                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{args.Message}. See log file."));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ErrorMessage() : " + ex.Message);
+            }
+        }
+
+        public void DataReceived(DataEventArgs args)
+        {
+            try
+            {
+                if (_rangeTesting) return;
+
+                if (args.DCSAPIS != null)
+                {
+                    HandleAPIMessage(args.DCSAPIS);
+                }
+                if (args.DCSApi != null)
+                {
+                    HandleMessage(args.DCSApi);
+                }
             }
             catch (Exception ex)
             {
@@ -263,41 +183,54 @@ namespace DCSInsight
             }
         }
 
-        public async void SendCommand(SendCommandEventArgs args)
+        private void SetConnectionStatus(bool connected)
+        {
+            ButtonConnect.Content = connected ? "Disconnect" : "Connect";
+            Title = connected ? "Connected" : "Disconnected";
+            SetFormState();
+            _loadedAPIUserControls.ForEach(o => o.SetConnectionStatus(_isConnected));
+        }
+
+        private void HandleMessage(DCSAPI dcsApi)
         {
             try
             {
-                await AddAsyncCommand(args.APIObject);
+                foreach (var userControlApi in _loadedAPIUserControls)
+                {
+                    if (userControlApi.Id == dcsApi.Id)
+                    {
+                        userControlApi.SetResult(dcsApi);
+                    }
+                }
+
+                Dispatcher?.BeginInvoke((Action)(SetFormState));
             }
             catch (Exception ex)
             {
-                Common.ShowErrorMessageBox(ex);
+                Common.ShowErrorMessageBox(ex, "HandleMessage()");
             }
         }
 
-        private async Task AddAsyncCommand(DCSAPI dcsApi)
-        {
-            var cts = new CancellationTokenSource(100);
-            await _asyncCommandsChannel.Writer.WriteAsync(dcsApi, cts.Token);
-        }
-
-        private void ButtonTest_OnClick(object sender, RoutedEventArgs e)
+        private void HandleAPIMessage(List<DCSAPI> dcsApis)
         {
             try
             {
-                _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes("SENDAPI\n"));
+                _dcsAPIList = dcsApis;
+                //Debug.WriteLine("Count is " + _dcsAPIList.Count);
+                Dispatcher?.BeginInvoke((Action)(() => ShowAPIs()));
+                Dispatcher?.BeginInvoke((Action)(SetFormState));
             }
             catch (Exception ex)
             {
-                Common.ShowErrorMessageBox(ex);
+                Dispatcher?.BeginInvoke((Action)(() => Common.ShowErrorMessageBox(ex)));
             }
         }
-
+        
         private void ButtonConnect_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!_isRunning)
+                if (!_isConnected)
                 {
                     Connect();
                     return;
@@ -335,8 +268,8 @@ namespace DCSInsight
         {
             try
             {
-                _isRunning = false;
-                _tcpClient?.Close();
+                _isConnected = false;
+                _tcpClientHandler?.Disconnect();
             }
             catch (Exception ex)
             {
@@ -409,32 +342,6 @@ namespace DCSInsight
                 throw new Exception("LogManager contains no configuration or there are no named targets. See NLog.config file to configure the logs.");
             }
             return fileName;
-        }
-
-        public void ErrorMessage(ErrorEventArgs args)
-        {
-            try
-            {
-                Logger.Error(args.Ex);
-                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{args.Message}. See log file."));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("ErrorMessage() : " + ex.Message);
-            }
-        }
-
-        public void ErrorMessage(string message, Exception ex)
-        {
-            try
-            {
-                Logger.Error(ex);
-                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{message}. See log file."));
-            }
-            catch (Exception ex2)
-            {
-                Debug.WriteLine("ErrorMessage() : " + ex2.Message);
-            }
         }
 
         private void CheckBoxTop_OnChecked(object sender, RoutedEventArgs e)
@@ -520,15 +427,9 @@ namespace DCSInsight
                         filteredAPIs = _dcsAPIList.Where(o => o.Syntax.ToLower().Contains(searchWord)).ToList();
                     }
 
-                    if (filteredAPIs.Count > MAX_CONTROLS_ON_PAGE)
-                    {
-                        Common.ShowMessageBox($"Query returned {filteredAPIs.Count} API. Max that can be displayed at any time is {MAX_CONTROLS_ON_PAGE}.");
-                        return;
-                    }
-
                     foreach (var dcsapi in filteredAPIs)
                     {
-                        var userControl = new UserControlAPI(dcsapi, _isRunning);
+                        var userControl = new UserControlAPI(dcsapi, _isConnected);
                         _loadedAPIUserControls.Add(userControl);
                     }
 
@@ -593,8 +494,31 @@ namespace DCSInsight
         {
             try
             {
-                _logJSON = true;
                 TryOpenLogFileWithTarget("logfile");
+                if (_tcpClientHandler == null) return;
+
+                _tcpClientHandler.LogJSON = true;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void ButtonRangeTest_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                try
+                {
+                    _rangeTesting = true;
+                    var windowRangeTest = new WindowRangeTest(_dcsAPIList);
+                    windowRangeTest.ShowDialog();
+                }
+                finally
+                {
+                    _rangeTesting = false;
+                }
             }
             catch (Exception ex)
             {

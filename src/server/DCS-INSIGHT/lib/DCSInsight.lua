@@ -1,8 +1,5 @@
-
-
-
-package.path  = package.path..";.\\LuaSocket\\?.lua"
-package.cpath = package.cpath..";.\\LuaSocket\\?.dll"
+package.path = package.path .. ";.\\LuaSocket\\?.lua"
+package.cpath = package.cpath .. ";.\\LuaSocket\\?.dll"
 
 package.path = lfs.writedir() .. [[Scripts\?.lua;]] .. package.path
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\?.lua;]] .. package.path
@@ -11,31 +8,28 @@ package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\?.lua;]] .. 
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\common\?.lua;]] .. package.path
 package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\?.lua;]] .. package.path
 
-dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\server_settings.lua]])
-dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
+dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\server_settings.lua]])
+dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
 
-local Log = require("LogInsight")
+local LogInsight = require("LogInsight")
 local APIHandler = require("APIHandler")
 local APIHandler = APIHandler:new()
 
-local Listener = require "Listener"
+local Listener = require("Listener")
 ListenerGlobal = Listener:new(TCP_address, TCP_port, APIHandler)
 ListenerGlobal:init()
 
-
-local counter = 0;
+local counter = 0
 local function step(arg, time)
-	if(ListenerGlobal.tcpServer.step) then
+	if ListenerGlobal.tcpServer.step then
 		ListenerGlobal.tcpServer:step()
 	end
 
-	if(counter % 50 == 0) then
+	if counter % 50 == 0 then
 		--Log:log_simple("STEP")
 	end
-	counter = counter + 1;
+	counter = counter + 1
 end
-
-
 
 -- Prev Export functions.
 local PrevExport = {}
@@ -66,12 +60,11 @@ LuaExportStop = function()
 end
 
 function LuaExportBeforeNextFrame()
-
-		-- Chain previously-included export as necessary
-		if PrevExport.LuaExportBeforeNextFrame then
-			PrevExport.LuaExportBeforeNextFrame()
-		end
+	-- Chain previously-included export as necessary
+	if PrevExport.LuaExportBeforeNextFrame then
+		PrevExport.LuaExportBeforeNextFrame()
 	end
+end
 
 function LuaExportAfterNextFrame()
 	local currentTime = LoGetModelTime()
@@ -80,9 +73,9 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			Log:log_simple("Listener.step() failed: "..err)
+			LogInsight:log_simple("Listener.step() failed: " .. err)
 		end
-		lastStepTime = currentTime + .1
+		lastStepTime = currentTime + 0.1
 	end
 
 	-- Chain previously-included export as necessary
