@@ -94,7 +94,6 @@ namespace DCSInsight
                     _isConnected = false;
                     _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text);
                     _tcpClientHandler.Connect();
-                    _tcpClientHandler.LogJSON = true;//TODO
                 }
                 catch (Exception ex)
                 {
