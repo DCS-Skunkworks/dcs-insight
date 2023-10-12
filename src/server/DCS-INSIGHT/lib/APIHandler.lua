@@ -218,10 +218,7 @@ function APIHandler:execute(api)
 					api.result = "Error but no error message"
 					return api
 				else
-					LogInsight:log(result)
-					LogInsight:log(v:script_path())
 					local path = v:script_path():gsub("%-", "%%-") -- escape any hyphen otherwise next gsub won't work
-					LogInsight:log(path)
 					LogInsight:log(result:gsub(path, ""))
 					api.result = result:gsub(path, "")
 					return api

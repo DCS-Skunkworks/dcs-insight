@@ -10,8 +10,7 @@ namespace DCSInsight.Misc
     internal enum RangeLimitsEnum
     {
         From,
-        To, 
-        None
+        To
     }
 
     internal class TextBoxParam : TextBox

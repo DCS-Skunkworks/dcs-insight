@@ -33,6 +33,8 @@ namespace DCSInsight
         private bool _formLoaded;
         private TCPClientHandler _tcpClientHandler;
         private bool _isConnected;
+        private bool _rangeTesting;
+
 
         public MainWindow()
         {
@@ -144,11 +146,28 @@ namespace DCSInsight
                 Dispatcher?.BeginInvoke((Action)(() => Common.ShowErrorMessageBox(ex)));
             }
         }
+        
+        public void ErrorMessage(ErrorEventArgs args)
+        {
+            try
+            {
+                if (_rangeTesting) return;
+
+                Logger.Error(args.Ex);
+                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{args.Message}. See log file."));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("ErrorMessage() : " + ex.Message);
+            }
+        }
 
         public void DataReceived(DataEventArgs args)
         {
             try
             {
+                if (_rangeTesting) return;
+
                 if (args.DCSAPIS != null)
                 {
                     HandleAPIMessage(args.DCSAPIS);
@@ -325,32 +344,6 @@ namespace DCSInsight
             return fileName;
         }
 
-        public void ErrorMessage(ErrorEventArgs args)
-        {
-            try
-            {
-                Logger.Error(args.Ex);
-                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{args.Message}. See log file."));
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("ErrorMessage() : " + ex.Message);
-            }
-        }
-
-        public void ErrorMessage(string message, Exception ex)
-        {
-            try
-            {
-                Logger.Error(ex);
-                Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{message}. See log file."));
-            }
-            catch (Exception ex2)
-            {
-                Debug.WriteLine("ErrorMessage() : " + ex2.Message);
-            }
-        }
-
         private void CheckBoxTop_OnChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -516,8 +509,16 @@ namespace DCSInsight
         {
             try
             {
-                var windowRangeTest = new WindowRangeTest(_dcsAPIList);
-                windowRangeTest.ShowDialog();
+                try
+                {
+                    _rangeTesting = true;
+                    var windowRangeTest = new WindowRangeTest(_dcsAPIList);
+                    windowRangeTest.ShowDialog();
+                }
+                finally
+                {
+                    _rangeTesting = false;
+                }
             }
             catch (Exception ex)
             {

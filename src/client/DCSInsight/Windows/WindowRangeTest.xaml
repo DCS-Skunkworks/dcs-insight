@@ -5,28 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DCSInsight.Windows"
         mc:Ignorable="d"
-        Title="Range Test API Calls" Height="450" Width="800" Closing="WindowRangeTest_OnClosing" WindowStartupLocation="CenterScreen" Loaded="WindowRangeTest_OnLoaded">
+        Title="Range Test API Calls" MaxHeight="600" MinHeight="200" Width="850" Closing="WindowRangeTest_OnClosing" WindowStartupLocation="CenterScreen" Loaded="WindowRangeTest_OnLoaded">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="35" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="10*" />
             <RowDefinition Height="10*" />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
 
-        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0">
             <Label Content="API " VerticalAlignment="Center" ></Label>
             <ComboBox Width="auto" MinWidth="200" Name="ComboBoxAPI" FontFamily="Consolas" SelectionChanged="ComboBoxAPI_OnSelectionChanged" ></ComboBox>
-            <Button  Content="Start" Margin="10,0,0,0" FontSize="14" Name="ButtonStart"  Click="ButtonStart_OnClick"></Button>
-            <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
+            <Button  Content="Start" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStart"  Click="ButtonStart_OnClick"></Button>
+            <Button  Content="Stop" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStop"  Click="ButtonStop_OnClick"></Button>
+            <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="120,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
             <Button Width="20" Content="?" Margin="10,0,0,0" BorderBrush="Black" FontSize="14" Name="ButtonInformation"  Click="ButtonInformation_OnClick"></Button>
         </ToolBar>
 
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" >
+            <StackPanel Name="StackPanelParameters" ></StackPanel>
+            <!--
         <ItemsControl Name="ItemsControlParameter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" >
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -34,9 +35,10 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-
-        <DockPanel Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" >
-            <TextBox Name="TextBoxResults" VerticalScrollBarVisibility="Auto"/>
-        </DockPanel>
+        -->
+            <StackPanel>
+                <TextBox Name="TextBoxResults" IsReadOnly="True" HorizontalScrollBarVisibility="Auto"  VerticalScrollBarVisibility="Visible" MaxHeight="400" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
