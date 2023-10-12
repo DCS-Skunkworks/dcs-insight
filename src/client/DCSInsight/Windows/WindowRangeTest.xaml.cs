@@ -468,6 +468,7 @@ namespace DCSInsight.Windows
             try
             {
                 _stopRunning = true;
+                AutoResetEvent1.Set();
                 SetFormState();
             }
             catch (Exception ex)
