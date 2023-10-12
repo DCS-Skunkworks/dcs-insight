@@ -19,5 +19,8 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 
 ![insight3](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/033d63a1-0757-4323-b6e2-63dda6f8b5c9)
 
+![range_test](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/67f5a7cc-1cc9-4f71-b92e-6dd1560eb100)
+
+
 
 
