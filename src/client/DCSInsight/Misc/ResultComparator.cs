@@ -8,8 +8,7 @@ namespace DCSInsight.Misc
     internal class ResultComparator
     {
         private readonly DCSAPI _dcsApi;
-        private bool _resultHasChanged;
-        private object _lockObject = new();
+        private readonly object _lockObject = new();
 
         public ResultComparator(DCSAPI dcsApi)
         {
@@ -61,7 +60,6 @@ namespace DCSInsight.Misc
                     if (dcsApi.Result != _dcsApi.Result)
                     {
                         _dcsApi.Result = dcsApi.Result;
-                        _resultHasChanged = true;
                         return true;
                     }
                 }
@@ -71,7 +69,6 @@ namespace DCSInsight.Misc
                 Common.ShowErrorMessageBox(ex);
             }
 
-            _resultHasChanged = false;
             return false;
         }
 
