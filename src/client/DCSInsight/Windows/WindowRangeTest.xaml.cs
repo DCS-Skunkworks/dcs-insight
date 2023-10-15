@@ -8,7 +8,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 using DCSInsight.Events;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
@@ -31,10 +30,13 @@ namespace DCSInsight.Windows
         private bool _isConnected = true;
         private bool _isRunning;
         private bool _stopRunning;
+        private bool _doLoop;
+        private bool _showChangesOnly;
         private static readonly AutoResetEvent AutoResetEvent1 = new AutoResetEvent(false);
         private Thread _thread;
-        private readonly StringBuilder _currentTestString = new StringBuilder();
         private int _threadLoopSleep = 50;
+        private readonly List<ResultComparator> _resultComparatorList = new();
+        private object _lockObject = new();
 
         public WindowRangeTest(List<DCSAPI> dcsAPIList)
         {
@@ -78,6 +80,8 @@ namespace DCSInsight.Windows
                 ButtonStart.IsEnabled = !_textBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && _isConnected && !_isRunning;
                 TextBoxResults.Visibility = !string.IsNullOrEmpty(TextBoxResults.Text) ? Visibility.Visible : Visibility.Collapsed;
                 ButtonStop.IsEnabled = _isRunning && !_stopRunning;
+                CheckBoxLoop.IsEnabled = _isConnected;
+                CheckBoxShowChangesOnly.IsEnabled = CheckBoxLoop.IsChecked == true;
             }
             catch (Exception ex)
             {
@@ -91,9 +95,7 @@ namespace DCSInsight.Windows
             {
                 if (!_isConnected || !_isRunning) return;
 
-                Debug.WriteLine("Error Message Received");
-                _currentTestString.Append(args.Message + "\n");
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += _currentTestString.ToString()));
+                Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += args.Message));
                 AutoResetEvent1.Set();
             }
             catch (Exception ex)
@@ -114,16 +116,39 @@ namespace DCSInsight.Windows
             }
         }
 
+        private void SetCurrentTestStructure(DCSAPI dcsApi)
+        {
+            lock (_lockObject)
+            {
+                if (_resultComparatorList.All(o => o.IsMatch(dcsApi) == false))
+                {
+                    _resultComparatorList.Add(new ResultComparator(dcsApi.CloneJson()));
+                }
+            }
+        }
+
         public void DataReceived(DataEventArgs args)
         {
             try
             {
-                if (!_isConnected || !_isRunning) return;
+                lock (_lockObject)
+                {
+                    if (!_isConnected || !_isRunning) return;
 
-                Debug.WriteLine("Data Received");
-                _currentTestString.Append(args.DCSApi.Result + "\n");
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += _currentTestString.ToString())); ;
-                AutoResetEvent1.Set();
+                    var hasChanged = _resultComparatorList.First(o => o.IsMatch(args.DCSApi)).SetResult(args.DCSApi);
+                    
+                    Debug.WriteLine($"Has Changed = {hasChanged}");
+                    if (_showChangesOnly && !hasChanged)
+                    {
+                        AutoResetEvent1.Set();
+                    }
+                    else
+                    {
+                        Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += _resultComparatorList.First(o => o.IsMatch(args.DCSApi)).GetResultString()));
+                        ;
+                        AutoResetEvent1.Set();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -137,6 +162,7 @@ namespace DCSInsight.Windows
 
             try
             {
+                _resultComparatorList.Clear();
                 TextBoxResults.Text = "";
                 var dynamicCount = _textBoxParameterList.Count(o => o.RangeLimit == RangeLimitsEnum.From);
                 if (dynamicCount == 0) return;
@@ -191,19 +217,22 @@ namespace DCSInsight.Windows
                 _isRunning = true;
                 try
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
-                    for (var b = i; b <= x; b++)
+                    do
                     {
-                        if (_stopRunning) return;
+                        Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
+                        for (var b = i; b <= x; b++)
+                        {
+                            if (_stopRunning) return;
 
-                        _dcsAPI.Parameters[0].Value = b.ToString();
+                            _dcsAPI.Parameters[0].Value = b.ToString();
 
-                        SetCurrentTestStringParameters(_dcsAPI);
-                        ICEventHandler.SendCommand(_dcsAPI);
-                        AutoResetEvent1.WaitOne();
-                        Thread.Sleep(_threadLoopSleep);
-                        Dispatcher?.BeginInvoke((Action)(SetFormState));
-                    }
+                            SetCurrentTestStructure(_dcsAPI);
+                            ICEventHandler.SendCommand(_dcsAPI);
+                            AutoResetEvent1.WaitOne();
+                            Thread.Sleep(_threadLoopSleep);
+                            Dispatcher?.BeginInvoke((Action)(SetFormState));
+                        }
+                    } while (_doLoop);
                 }
                 finally
                 {
@@ -228,22 +257,26 @@ namespace DCSInsight.Windows
                 {
                     Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
 
-                    for (var b = i; b <= x; b++)
+                    do
                     {
-                        for (var c = j; c <= y; c++)
+                        for (var b = i; b <= x; b++)
                         {
-                            if (_stopRunning) return;
+                            for (var c = j; c <= y; c++)
+                            {
+                                if (_stopRunning) return;
 
-                            _dcsAPI.Parameters[0].Value = b.ToString();
-                            _dcsAPI.Parameters[1].Value = c.ToString();
-
-                            SetCurrentTestStringParameters(_dcsAPI);
-                            ICEventHandler.SendCommand(_dcsAPI);
-                            AutoResetEvent1.WaitOne();
-                            Thread.Sleep(_threadLoopSleep);
-                            Dispatcher?.BeginInvoke((Action)(SetFormState));
+                                _dcsAPI.Parameters[0].Value = b.ToString();
+                                _dcsAPI.Parameters[1].Value = c.ToString();
+                                if(_resultComparatorList.Count > 0) _resultComparatorList[0].GetResultString();
+                                SetCurrentTestStructure(_dcsAPI);
+                                _resultComparatorList[0].GetResultString();
+                                ICEventHandler.SendCommand(_dcsAPI);
+                                AutoResetEvent1.WaitOne();
+                                Thread.Sleep(_threadLoopSleep);
+                                Dispatcher?.BeginInvoke((Action)(SetFormState));
+                            }
                         }
-                    }
+                    } while (_doLoop);
                 }
                 finally
                 {
@@ -267,27 +300,29 @@ namespace DCSInsight.Windows
                 try
                 {
                     Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
-
-                    for (var b = i; b <= x; b++)
+                    do
                     {
-                        for (var c = j; c <= y; c++)
+                        for (var b = i; b <= x; b++)
                         {
-                            for (var d = k; d <= z; d++)
+                            for (var c = j; c <= y; c++)
                             {
-                                if (_stopRunning) return;
+                                for (var d = k; d <= z; d++)
+                                {
+                                    if (_stopRunning) return;
 
-                                _dcsAPI.Parameters[0].Value = b.ToString();
-                                _dcsAPI.Parameters[1].Value = c.ToString();
-                                _dcsAPI.Parameters[2].Value = d.ToString();
+                                    _dcsAPI.Parameters[0].Value = b.ToString();
+                                    _dcsAPI.Parameters[1].Value = c.ToString();
+                                    _dcsAPI.Parameters[2].Value = d.ToString();
 
-                                SetCurrentTestStringParameters(_dcsAPI);
-                                ICEventHandler.SendCommand(_dcsAPI);
-                                AutoResetEvent1.WaitOne();
-                                Thread.Sleep(_threadLoopSleep);
-                                Dispatcher?.BeginInvoke((Action)(SetFormState));
+                                    SetCurrentTestStructure(_dcsAPI);
+                                    ICEventHandler.SendCommand(_dcsAPI);
+                                    AutoResetEvent1.WaitOne();
+                                    Thread.Sleep(_threadLoopSleep);
+                                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                                }
                             }
                         }
-                    }
+                    } while (_doLoop);
                 }
                 finally
                 {
@@ -301,18 +336,6 @@ namespace DCSInsight.Windows
             {
                 Common.ShowErrorMessageBox(ex);
             }
-        }
-
-        private void SetCurrentTestStringParameters(DCSAPI dcsApi)
-        {
-            //device_id = 10, command = 2, argument_id = 433  result : 
-            _currentTestString.Clear();
-            foreach (var dcsApiParameter in dcsApi.Parameters)
-            {
-                _currentTestString.Append($"{dcsApiParameter.ParameterName} [{dcsApiParameter.Value}], ");
-            }
-
-            _currentTestString.Append(" result : ");
         }
 
         private void BuildUI()
@@ -549,5 +572,56 @@ namespace DCSInsight.Windows
             }
         }
 
+        private void CheckBoxLoop_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _doLoop = true;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxLoop_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _doLoop = false;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowChangesOnly_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showChangesOnly = true;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowChangesOnly_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showChangesOnly = false;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
     }
 }

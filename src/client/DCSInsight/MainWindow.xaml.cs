@@ -242,27 +242,6 @@ namespace DCSInsight
             }
         }
 
-        /*
-        private static List<DCSBIOSControl> ReadControlsFromDocJson(string inputPath)
-        {
-            // input is a map from category string to a map from key string to control definition
-            // we read it all then flatten the grand children (the control definitions)
-            var input = File.ReadAllText(inputPath);
-            try
-            {
-                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, DCSBIOSControl>>>(input)!
-                    .Values
-                    .SelectMany(category => category.Values)
-                    .ToList();
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e, "ReadControlsFromDocJson : Failed to read DCS-BIOS JSON.");
-            }
-
-            return null;
-        }*/
-
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
             try

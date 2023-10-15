@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace DCSInsight.JSON
 {
+    [Serializable]
     public class DCSAPI
     {
         /// <summary>
