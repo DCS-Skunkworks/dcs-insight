@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,8 @@ namespace DCSInsight.Windows
         private readonly int _threadLoopSleep = 50;
         private readonly List<ResultComparator> _resultComparatorList = new();
         private readonly object _lockObject = new();
+        private Timer _timerLoopPulse;
+        private readonly int _pulseVisibilityTime = 500;
 
         public WindowRangeTest(List<DCSAPI> dcsAPIList)
         {
@@ -62,6 +65,9 @@ namespace DCSInsight.Windows
             {
                 if (_formLoaded) return;
 
+                _timerLoopPulse = new Timer(PulseTimerCallback);
+                _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
+                
                 CheckBoxTop.IsChecked = true;
                 PopulateAPIComboBox();
                 SetFormState();
@@ -82,6 +88,7 @@ namespace DCSInsight.Windows
                 ButtonStop.IsEnabled = _isRunning && !_stopRunning;
                 CheckBoxLoop.IsEnabled = _isConnected;
                 CheckBoxShowChangesOnly.IsEnabled = CheckBoxLoop.IsChecked == true;
+                LabelLoopPulse.Visibility = _isConnected && CheckBoxLoop.IsEnabled && _isRunning ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -218,11 +225,12 @@ namespace DCSInsight.Windows
                 {
                     do
                     {
+                        StartPulse(_pulseVisibilityTime);
                         Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
                         for (var b = i; b <= x; b++)
                         {
                             if (_stopRunning) return;
-
+                            
                             _dcsAPI.Parameters[0].Value = b.ToString();
 
                             SetCurrentTestStructure(_dcsAPI);
@@ -258,12 +266,14 @@ namespace DCSInsight.Windows
 
                     do
                     {
+                        StartPulse(_pulseVisibilityTime);
+
                         for (var b = i; b <= x; b++)
                         {
                             for (var c = j; c <= y; c++)
                             {
                                 if (_stopRunning) return;
-
+                                
                                 _dcsAPI.Parameters[0].Value = b.ToString();
                                 _dcsAPI.Parameters[1].Value = c.ToString();
                                 if(_resultComparatorList.Count > 0) _resultComparatorList[0].GetResultString();
@@ -301,6 +311,8 @@ namespace DCSInsight.Windows
                     Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
                     do
                     {
+                        StartPulse(_pulseVisibilityTime);
+
                         for (var b = i; b <= x; b++)
                         {
                             for (var c = j; c <= y; c++)
@@ -308,7 +320,7 @@ namespace DCSInsight.Windows
                                 for (var d = k; d <= z; d++)
                                 {
                                     if (_stopRunning) return;
-
+                                    
                                     _dcsAPI.Parameters[0].Value = b.ToString();
                                     _dcsAPI.Parameters[1].Value = c.ToString();
                                     _dcsAPI.Parameters[2].Value = d.ToString();
@@ -522,6 +534,36 @@ namespace DCSInsight.Windows
             catch (Exception ex)
             {
                 Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void StartPulse(int milliseconds)
+        {
+            try
+            {
+                Dispatcher?.BeginInvoke((Action)(() => LabelLoopPulse.Content = "*"));
+                
+                _timerLoopPulse.Change(milliseconds, milliseconds);
+                Dispatcher?.BeginInvoke((Action)( SetFormState)); 
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void PulseTimerCallback(object state)
+        {
+            try
+            {
+                Dispatcher?.BeginInvoke((Action)(() => LabelLoopPulse.Content = " "));
+                Dispatcher?.BeginInvoke((Action)(() => ToolBarMain.UpdateLayout()));
+                _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
+                Dispatcher?.BeginInvoke((Action)(SetFormState)); 
+            }
+            catch (Exception ex)
+            {
+                ICEventHandler.SendErrorMessage("Timer Polling Error", ex);
             }
         }
 
