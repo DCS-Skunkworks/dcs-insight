@@ -32,11 +32,11 @@ namespace DCSInsight.Windows
         private bool _stopRunning;
         private bool _doLoop;
         private bool _showChangesOnly;
-        private static readonly AutoResetEvent AutoResetEvent1 = new AutoResetEvent(false);
+        private static readonly AutoResetEvent AutoResetEvent1 = new(false);
         private Thread _thread;
-        private int _threadLoopSleep = 50;
+        private readonly int _threadLoopSleep = 50;
         private readonly List<ResultComparator> _resultComparatorList = new();
-        private object _lockObject = new();
+        private readonly object _lockObject = new();
 
         public WindowRangeTest(List<DCSAPI> dcsAPIList)
         {
@@ -137,7 +137,6 @@ namespace DCSInsight.Windows
 
                     var hasChanged = _resultComparatorList.First(o => o.IsMatch(args.DCSApi)).SetResult(args.DCSApi);
                     
-                    Debug.WriteLine($"Has Changed = {hasChanged}");
                     if (_showChangesOnly && !hasChanged)
                     {
                         AutoResetEvent1.Set();
@@ -351,8 +350,10 @@ namespace DCSInsight.Windows
 
                     foreach (var dcsAPIParameterType in _dcsAPI.Parameters)
                     {
-                        var stackPanel = new StackPanel();
-                        stackPanel.Orientation = Orientation.Horizontal;
+                        var stackPanel = new StackPanel
+                        {
+                            Orientation = Orientation.Horizontal
+                        };
 
                         var label = new Label
                         {
