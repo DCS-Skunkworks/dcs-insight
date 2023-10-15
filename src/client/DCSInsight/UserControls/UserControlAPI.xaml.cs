@@ -293,6 +293,19 @@ namespace DCSInsight.UserControls
             }
         }
 
+        private void StartPolling(int milliseconds)
+        {
+            try
+            {
+                _pollingTimer.Change(milliseconds, milliseconds);
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
         private void StopPolling()
         {
             try
@@ -318,19 +331,6 @@ namespace DCSInsight.UserControls
             catch (Exception ex)
             {
                 ICEventHandler.SendErrorMessage( "Timer Polling Error", ex);
-            }
-        }
-
-        private void StartPolling(int milliseconds)
-        {
-            try
-            {
-                _pollingTimer.Change(milliseconds, milliseconds);
-                SetFormState();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
             }
         }
 

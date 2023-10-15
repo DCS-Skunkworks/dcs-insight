@@ -21,6 +21,7 @@
             <ComboBox Width="auto" MinWidth="200" Name="ComboBoxAPI" FontFamily="Consolas" SelectionChanged="ComboBoxAPI_OnSelectionChanged" ></ComboBox>
             <Button  Content="Start" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStart"  Click="ButtonStart_OnClick"></Button>
             <Button  Content="Stop" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStop"  Click="ButtonStop_OnClick"></Button>
+            <Label Name="LabelLoopPulse" VerticalAlignment="Center" Content=" " FontSize="16" Height="22"  Margin="10,0,0,0" />
             <Label VerticalAlignment="Center" Content="Loop"  Margin="10,0,0,0" />
             <Label VerticalAlignment="Center" Margin="0,0,0,0" >
                 <CheckBox Name="CheckBoxLoop" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxLoop_OnChecked" Unchecked="CheckBoxLoop_OnUnchecked"/>
