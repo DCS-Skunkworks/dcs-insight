@@ -11,11 +11,11 @@ package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\?.lua;]] .. pa
 dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\server_settings.lua]])
 dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
 
-local LogInsight = require("LogInsight")
-local APIHandler = require("APIHandler")
+local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
+local APIHandler = require("Scripts.DCS-INSIGHT.lib.APIHandler")
 local APIHandler = APIHandler:new()
 
-local Listener = require("Listener")
+local Listener = require("Scripts.DCS-INSIGHT.lib.Listener")
 ListenerGlobal = Listener:new(TCP_address, TCP_port, APIHandler)
 ListenerGlobal:init()
 
