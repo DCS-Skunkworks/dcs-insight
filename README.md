@@ -6,7 +6,7 @@ You can test ```manually``` or do ```range testing``` to figure out how devices 
 ### Server
 Install server in ```Scripts``` folder and add entry to Export.lua.
 
-![export_lua](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/c0e16799-78a1-473a-94fc-6460a82b24ff)
+```dofile(lfs.writedir()..[[Scripts\DCS-INSIGHT\lib\DCSInsight.lua]])```
 
 ![scripts_folders](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/e4ee8c96-4c57-42f5-b9ef-a2edc6c0484f)
 
