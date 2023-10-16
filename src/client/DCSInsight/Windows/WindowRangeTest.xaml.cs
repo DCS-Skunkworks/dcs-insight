@@ -9,6 +9,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DCSInsight.Events;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
@@ -39,7 +41,7 @@ namespace DCSInsight.Windows
         private readonly List<ResultComparator> _resultComparatorList = new();
         private readonly object _lockObject = new();
         private Timer _timerLoopPulse;
-        private readonly int _pulseVisibilityTime = 500;
+        private readonly int _pulseVisibilityTime = 300;
 
         public WindowRangeTest(List<DCSAPI> dcsAPIList)
         {
@@ -88,7 +90,6 @@ namespace DCSInsight.Windows
                 ButtonStop.IsEnabled = _isRunning && !_stopRunning;
                 CheckBoxLoop.IsEnabled = _isConnected;
                 CheckBoxShowChangesOnly.IsEnabled = CheckBoxLoop.IsChecked == true;
-                LabelLoopPulse.Visibility = _isConnected && CheckBoxLoop.IsEnabled && _isRunning ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -541,7 +542,7 @@ namespace DCSInsight.Windows
         {
             try
             {
-                Dispatcher?.BeginInvoke((Action)(() => LabelLoopPulse.Content = "*"));
+                Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(true)));
                 
                 _timerLoopPulse.Change(milliseconds, milliseconds);
                 Dispatcher?.BeginInvoke((Action)( SetFormState)); 
@@ -556,7 +557,7 @@ namespace DCSInsight.Windows
         {
             try
             {
-                Dispatcher?.BeginInvoke((Action)(() => LabelLoopPulse.Content = " "));
+                Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(false)));
                 Dispatcher?.BeginInvoke((Action)(() => ToolBarMain.UpdateLayout()));
                 _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
                 Dispatcher?.BeginInvoke((Action)(SetFormState)); 
@@ -665,6 +666,16 @@ namespace DCSInsight.Windows
             {
                 Common.ShowErrorMessageBox(ex);
             }
+        }
+
+        private void SetPulseImage(bool setOn)
+        {
+            if (!setOn)
+            {
+                ImagePulse.Source = new BitmapImage(new Uri("/dcs-insight;component/Images/Icon_green_lamp_off.png", UriKind.Relative));
+                return;
+            }
+            ImagePulse.Source = new BitmapImage(new Uri("/dcs-insight;component/Images/Icon_green_lamp_on.png", UriKind.Relative));
         }
     }
 }

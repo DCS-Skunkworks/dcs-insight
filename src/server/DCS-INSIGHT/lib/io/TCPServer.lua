@@ -1,7 +1,7 @@
 module("TCPServer", package.seeall)
 
-local Server = require("Server")
-local TCPConnection = require("TCPConnection")
+local Server = require("Scripts.DCS-INSIGHT.lib.io.Server")
+local TCPConnection = require("Scripts.DCS-INSIGHT.lib.io.TCPConnection")
 
 --- @class TCPServer: Server
 --- @field private acceptor TCPSocketConnection the TCP connection acceptor
@@ -62,7 +62,9 @@ end
 --- @private
 --- Accepts any incoming connections
 function TCPServer:acceptConnections()
-	if(self.acceptor.accept == nil) then return end
+	if self.acceptor.accept == nil then
+		return
+	end
 
 	local new_connection = self.acceptor:accept()
 	if new_connection then

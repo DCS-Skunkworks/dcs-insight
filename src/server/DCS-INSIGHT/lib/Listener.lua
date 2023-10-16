@@ -1,9 +1,9 @@
 module("Listener", package.seeall)
 
-local TCPServer = require("TCPServer")
+local TCPServer = require("Scripts.DCS-INSIGHT.lib.io.TCPServer")
 local socket = require("socket") --[[@as Socket]]
 local JSON = loadfile([[Scripts\JSON.lua]])()
-local LogInsight = require("LogInsight")
+local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
 
 --- @class Listener
 --- @field private host string the host to connect to

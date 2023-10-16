@@ -1,8 +1,8 @@
 module("APIBase", package.seeall)
 
-local APIInfo = require("APIInfo")
-local Parameter = require("Parameter")
-local LogInsight = require("LogInsight")
+local APIInfo = require("Scripts.DCS-INSIGHT.lib.commands.common.APIInfo")
+local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
+local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
 
 --- @class APIBase
 --- @field id number
