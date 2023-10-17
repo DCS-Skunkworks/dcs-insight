@@ -15,7 +15,7 @@ package.cpath = package.cpath .. ";.\\LuaSocket\\?.dll"
 
 package.path = lfs.writedir() .. "?.lua;" .. package.path
 
-local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
+local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
 local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
 local APIHandler = require("Scripts.DCS-INSIGHT.lib.APIHandler")
 local APIHandler = APIHandler:new()
@@ -79,7 +79,7 @@ function LuaExportAfterNextFrame()
 		local bool, err = pcall(step)
 		err = err or "something failed"
 		if not bool then
-			LogInsight:log_simple("Listener.step() failed: " .. err)
+			Log:log_simple("Listener.step() failed: " .. err)
 		end
 		lastStepTime = currentTime + 0.1
 	end

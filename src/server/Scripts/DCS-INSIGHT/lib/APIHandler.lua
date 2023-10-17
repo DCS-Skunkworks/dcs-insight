@@ -1,6 +1,6 @@
 module("APIHandler", package.seeall)
 
-local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
+local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
 
 local GetArgumentValue = require("Scripts.DCS-INSIGHT.lib.commands.GetArgumentValue")
 local SetArgumentValue = require("Scripts.DCS-INSIGHT.lib.commands.SetArgumentValue")
@@ -219,7 +219,7 @@ function APIHandler:execute(api)
 					return api
 				else
 					local path = v:script_path():gsub("%-", "%%-") -- escape any hyphen otherwise next gsub won't work
-					LogInsight:log(result:gsub(path, ""))
+					Log:log(result:gsub(path, ""))
 					api.result = result:gsub(path, "")
 					return api
 				end
@@ -235,7 +235,7 @@ function APIHandler:verify_entries()
 	for i = 1, #self.commandsTable do
 		message = message .. self.commandsTable[i].id .. " : " .. self.commandsTable[i].apiInfo.api_syntax .. "\n"
 	end
-	LogInsight:log(message)
+	Log:log(message)
 
 	local seen = {}
 	local duplicated = {}
@@ -248,7 +248,7 @@ function APIHandler:verify_entries()
 		end
 
 		if command.apiInfo.parameter_count ~= #command.apiInfo.parameter_defs then
-			LogInsight:log("Parameter count mismatch in " .. command.apiInfo.api_syntax)
+			Log:log("Parameter count mismatch in " .. command.apiInfo.api_syntax)
 		end
 	end
 
@@ -260,7 +260,7 @@ function APIHandler:verify_entries()
 	end
 
 	if found then
-		LogInsight:log(message)
+		Log:log(message)
 		error("dcs-insight API Id conflicts found")
 	end
 
