@@ -4,15 +4,15 @@ $publishPath = $scriptPath + "\_PublishTemp_"
 $clientPublishPath = $scriptPath + "\_PublishTemp_\client"
 $serverPublishPath = $scriptPath + "\_PublishTemp_\server"
 $clientPath = $scriptPath + "\client\DCSInsight"
-$serverPath = $scriptPath + "\server"
+$serverPath = $scriptPath + "\server\Scripts"
 
 #---------------------------------
 # Pre-checks
 #---------------------------------
 #Checking destination folder first
-if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path $env:dcsinsightReleaseDestinationFolderPath))){
-	Write-Host "Fatal error. Destination folder does not exists. Please set environment variable 'dcsinsightReleaseDestinationFolderPath' to a valid value" -foregroundcolor "Red"
-	exit
+if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path $env:dcsinsightReleaseDestinationFolderPath))) {
+    Write-Host "Fatal error. Destination folder does not exists. Please set environment variable 'dcsinsightReleaseDestinationFolderPath' to a valid value" -foregroundcolor "Red"
+    exit
 }
 
 #---------------------------------
@@ -20,10 +20,10 @@ if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path
 #---------------------------------
 Write-Host "Starting release version management" -foregroundcolor "Green"
 #Get Path to csproj
-$projectFilePath = $clientPath+"\DCSInsight.csproj"
-If(-not(Test-Path $projectFilePath)){
-	Write-Host "Fatal error. Project path not found: $projectPath" -foregroundcolor "Red"
-	exit
+$projectFilePath = $clientPath + "\DCSInsight.csproj"
+If (-not(Test-Path $projectFilePath)) {
+    Write-Host "Fatal error. Project path not found: $projectPath" -foregroundcolor "Red"
+    exit
 }
 
 #Readind project file
@@ -31,7 +31,7 @@ $xml = [xml](Get-Content $projectFilePath)
 [string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
 
 #Split the Version Numbers
-$avMajor, $avMinor, $avPatch   = $assemblyVersion.Split('.')
+$avMajor, $avMinor, $avPatch = $assemblyVersion.Split('.')
 
 Write-Host "Current assembly version is: $assemblyVersion" -foregroundcolor "Green"
 
@@ -40,13 +40,11 @@ Write-Host "Current assembly version is: $assemblyVersion" -foregroundcolor "Gre
 Write-Host "What kind of release is this? If not minor then patch version will be incremented." -foregroundcolor "Green"
 $isMinorRelease = Read-Host "Minor release? Y/N"
 
-if($isMinorRelease.Trim().ToLower().Equals("y"))
-{
+if ($isMinorRelease.Trim().ToLower().Equals("y")) {
     [int]$avMinor = [int]$avMinor + 1
-	[int]$avPatch = 0
+    [int]$avPatch = 0
 }
-else
-{
+else {
     [int]$avPatch = [int]$avPatch + 1
 }
 
@@ -71,8 +69,9 @@ Set-Location -Path $clientPath
 #Check that client folder exists
 if (Test-Path -Path $clientPublishPath) {
     Write-Host "client folder exists" -foregroundcolor "Green"
-} else {
-	Write-Host "Creating client folder" -foregroundcolor "Green"
+}
+else {
+    Write-Host "Creating client folder" -foregroundcolor "Green"
     New-Item -ItemType Directory -Path $clientPublishPath
 }
 
@@ -87,10 +86,9 @@ $buildLastExitCode = $LastExitCode
 
 Write-Host "Build DCS-INSIGHT LastExitCode: $buildLastExitCode" -foregroundcolor "Green"
 
-if ( 0 -ne $buildLastExitCode )
-{
-  Write-Host "Fatal error. Build seems to have failed on DCS-INSIGHT. No Zip & copy will be done." -foregroundcolor "Red"
-  exit
+if ( 0 -ne $buildLastExitCode ) {
+    Write-Host "Fatal error. Build seems to have failed on DCS-INSIGHT. No Zip & copy will be done." -foregroundcolor "Red"
+    exit
 }
 
 #Getting file info & remove revision from file_version
@@ -98,14 +96,14 @@ Write-Host "Getting file info" -foregroundcolor "Green"
 $file_version = (Get-Command $clientPublishPath\dcs-insight.exe).FileVersionInfo.FileVersion
 Write-Host "File version is $file_version" -foregroundcolor "Green"
 
-
 #---------------------------------
 # Server publishing
 #---------------------------------
 if (Test-Path -Path $serverPublishPath) {
     Write-Host "server folder exists" -foregroundcolor "Green"
-} else {
-	Write-Host "Creating server folder" -foregroundcolor "Green"
+}
+else {
+    Write-Host "Creating server folder" -foregroundcolor "Green"
     New-Item -ItemType Directory -Path $serverPublishPath
 }
 
@@ -114,7 +112,6 @@ Remove-Item $serverPublishPath\* -Recurse
 
 Write-Host "Copying DCS-INSIGHT files to server folder" -foregroundcolor "Green"
 Copy-Item -Path $serverPath\* -Destination $serverPublishPath -Recurse
-
 
 #---------------------------------
 # Zipping
