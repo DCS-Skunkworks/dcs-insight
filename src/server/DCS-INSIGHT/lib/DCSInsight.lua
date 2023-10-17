@@ -1,22 +1,15 @@
 package.path = package.path .. ";.\\LuaSocket\\?.lua"
 package.cpath = package.cpath .. ";.\\LuaSocket\\?.dll"
 
-package.path = lfs.writedir() .. [[Scripts\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\io\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\commands\common\?.lua;]] .. package.path
-package.path = lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\?.lua;]] .. package.path
-
-dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\server_settings.lua]])
-dofile(lfs.writedir() .. [[Scripts\DCS-INSIGHT\lib\common\enums.lua]])
+package.path = lfs.writedir() .. "Scripts\\DCS-INSIGHT\\" .. "?.lua;" .. package.path
 
 local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
+local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
 local APIHandler = require("Scripts.DCS-INSIGHT.lib.APIHandler")
 local APIHandler = APIHandler:new()
 
 local Listener = require("Scripts.DCS-INSIGHT.lib.Listener")
-ListenerGlobal = Listener:new(TCP_address, TCP_port, APIHandler)
+ListenerGlobal = Listener:new(ServerSettings.TCP_address, ServerSettings.TCP_port, APIHandler)
 ListenerGlobal:init()
 
 local counter = 0
