@@ -1,7 +1,7 @@
 package.path = package.path .. ";.\\LuaSocket\\?.lua"
 package.cpath = package.cpath .. ";.\\LuaSocket\\?.dll"
 
-package.path = lfs.writedir() .. "Scripts\\DCS-INSIGHT\\" .. "?.lua;" .. package.path
+package.path = lfs.writedir() .. "?.lua;" .. package.path
 
 local LogInsight = require("Scripts.DCS-INSIGHT.lib.common.LogInsight")
 local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
@@ -9,19 +9,20 @@ local APIHandler = require("Scripts.DCS-INSIGHT.lib.APIHandler")
 local APIHandler = APIHandler:new()
 
 local Listener = require("Scripts.DCS-INSIGHT.lib.Listener")
+
 ListenerGlobal = Listener:new(ServerSettings.TCP_address, ServerSettings.TCP_port, APIHandler)
 ListenerGlobal:init()
 
-local counter = 0
+--local counter = 0
 local function step(arg, time)
 	if ListenerGlobal.tcpServer.step then
 		ListenerGlobal.tcpServer:step()
 	end
 
-	if counter % 50 == 0 then
-		--Log:log_simple("STEP")
+	--[[if counter % 50 == 0 then
+		Log:log_simple("STEP")
 	end
-	counter = counter + 1
+	counter = counter + 1]]
 end
 
 -- Prev Export functions.

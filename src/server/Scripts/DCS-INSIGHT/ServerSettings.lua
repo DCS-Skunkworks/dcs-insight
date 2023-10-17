@@ -5,10 +5,10 @@ module("ServerSettings", package.seeall)
 --- @field TCP_port integer
 local ServerSettings = {}
 
-TCP_address = "*"
-TCP_port = 7790
+ServerSettings.TCP_address = "*"
+ServerSettings.TCP_port = 7790
 
 -- Log incoming and outgoing JSON
-Log_JSON = false
+ServerSettings.Log_JSON = false
 
 return ServerSettings
