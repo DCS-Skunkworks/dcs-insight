@@ -1,9 +1,7 @@
-ParamType = {
-	number = 0,
-	string = 1,
-}
+module("ParamName", package.seeall)
 
-ParamName = {
+--- @enum ParamName
+local ParamName = {
 	device_id = "device_id",
 	command_id = "command_id",
 	argument_id = "argument_id",
@@ -11,3 +9,5 @@ ParamName = {
 	draw_argument_id = "draw_argument_id",
 	indicator_id = "indicator_id",
 }
+
+return ParamName

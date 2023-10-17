@@ -1,14 +1,14 @@
-module("LoggerIns", package.seeall)
+module("Logger", package.seeall)
 
---- @class LoggerIns
+--- @class Logger
 --- @field private logfile file*
 --- @field private maxBytesToLog number Used by log_table
 --- @field private bytesLogged number Used by log_table
-local LoggerIns = {}
+local Logger = {}
 
---- @func Returns new LoggerIns
---- @return LoggerIns
-function LoggerIns:new(logfile)
+--- @func Returns new Logger
+--- @return Logger
+function Logger:new(logfile)
 	local o = {
 		logfile = io.open(logfile, "w"),
 		maxBytesToLog = 50000,
@@ -21,7 +21,7 @@ end
 
 --- @func Tries to log the object
 --- @param obj any Object
-function LoggerIns:log(obj)
+function Logger:log(obj)
 	if obj == nil then
 		return
 	end
@@ -36,7 +36,7 @@ end
 
 --- @func Logs string or number
 --- @param data string|number
-function LoggerIns:log_simple(data)
+function Logger:log_simple(data)
 	if data == nil then
 		return
 	end
@@ -56,7 +56,7 @@ end
 --- @func Logs whether variable is nilstring or number
 --- @param variableName string
 --- @param variable any
-function LoggerIns:log_is_nil(variableName, variable)
+function Logger:log_is_nil(variableName, variable)
 	if variable == nil then
 		self:log_simple(variableName .. " is nil")
 		return
@@ -68,7 +68,7 @@ end
 --- @func Logs the type of the variable
 --- @param name string Name of variable
 --- @param variable any The variable to determine type of
-function LoggerIns:log_type(name, variable)
+function Logger:log_type(name, variable)
 	if type(variable) == "table" then
 		self:log_simple(name .. " is of type table")
 	elseif type(variable) == "string" then
@@ -91,13 +91,13 @@ end
 --- @func Logs a table (recursively if table contains tables)
 --- @param tab table Table to dump/log
 --- @param max_depth integer How deep recursively to go
-function LoggerIns:log_table(tab, max_depth, max_bytes_to_log)
+function Logger:log_table(tab, max_depth, max_bytes_to_log)
 	self.bytesLogged = 0
 	local return_code, buffer = self:dump_table(tab, max_depth, max_bytes_to_log)
 	self:log(buffer)
 end
 
-function LoggerIns:dump_table(tab, max_depth, max_bytes_to_log)
+function Logger:dump_table(tab, max_depth, max_bytes_to_log)
 	self.bytesLogged = 0
 	-- Inner function just to hide the depth argument
 	--- @func Recursive table dump
@@ -155,7 +155,7 @@ end
 
 --- @func Logs a table's indexes
 --- @require tab table Table to dump/log
-function LoggerIns:log_table_indexes(tab)
+function Logger:log_table_indexes(tab)
 	if tab == nil then
 		self:log_simple("Table to log was nil")
 		return
@@ -175,4 +175,4 @@ function LoggerIns:log_table_indexes(tab)
 	end
 end
 
-return LoggerIns
+return Logger

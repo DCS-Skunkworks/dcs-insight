@@ -1,6 +1,8 @@
 module("PerformClickableAction", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
+local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
+local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
 -- This is the unique ID for this particular API
 local API_ID = 2

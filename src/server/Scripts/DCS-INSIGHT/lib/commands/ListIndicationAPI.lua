@@ -1,20 +1,22 @@
-module("LoGetAircraftDrawArgumentValueAPI", package.seeall)
+module("ListIndicationAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
+local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
+local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
 -- This is the unique ID for this particular API
-local API_ID = 6
+local API_ID = 7
 
---- @class LoGetAircraftDrawArgumentValueAPI : APIBase
+--- @class ListIndicationAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetAircraftDrawArgumentValueAPI = APIBase:new()
+local ListIndicationAPI = APIBase:new()
 
---- @func Returns new LoGetAircraftDrawArgumentValueAPI
-function LoGetAircraftDrawArgumentValueAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "LoGetAircraftDrawArgumentValue(draw_argument_id)", 1)
+--- @func Returns new ListIndicationAPI
+function ListIndicationAPI:new(o)
+	o = o or APIBase:new(o, API_ID, true, "list_indication(indicator_id)", 1)
 
-	o:add_param_def(0, ParamName.draw_argument_id, ParamType.number)
+	o:add_param_def(0, ParamName.indicator_id, ParamType.number)
 
 	setmetatable(o, self)
 	self.__index = self
@@ -22,11 +24,11 @@ function LoGetAircraftDrawArgumentValueAPI:new(o)
 end
 
 --- @func Inits with internal data
-function LoGetAircraftDrawArgumentValueAPI:init() end
+function ListIndicationAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function LoGetAircraftDrawArgumentValueAPI:execute(api)
+function ListIndicationAPI:execute(api)
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
 		api.result = message
@@ -40,11 +42,11 @@ function LoGetAircraftDrawArgumentValueAPI:execute(api)
 		end
 	end
 
-	local result = LoGetAircraftDrawArgumentValue(param0)
+	local result = list_indication(param0)
 
 	api = self:decode_result(api, result)
 
 	return api
 end
 
-return LoGetAircraftDrawArgumentValueAPI
+return ListIndicationAPI
