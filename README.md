@@ -2,6 +2,7 @@
 
 [![license](https://img.shields.io/github/license/DCS-Skunkworks/dcs-insight.svg)](https://github.com/DCS-Skunkworks/dcs-insight/blob/main/LICENSE)
 [![GitHub release](https://img.shields.io/github/release/DCS-Skunkworks/dcs-insight.svg)](https://github.com/DCS-Skunkworks/dcs-insight/releases)
+[![Discord](https://img.shields.io/discord/533342958712258572)](https://discord.gg/5svGwKX)
 
 Application for executing DCS API.
 
