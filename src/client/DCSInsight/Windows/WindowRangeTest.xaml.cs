@@ -40,8 +40,6 @@ namespace DCSInsight.Windows
         private readonly int _threadLoopSleep = 50;
         private readonly List<ResultComparator> _resultComparatorList = new();
         private readonly object _lockObject = new();
-        private Timer _timerLoopPulse;
-        private readonly int _pulseVisibilityTime = 300;
 
         public WindowRangeTest(List<DCSAPI> dcsAPIList)
         {
@@ -66,9 +64,6 @@ namespace DCSInsight.Windows
             try
             {
                 if (_formLoaded) return;
-
-                _timerLoopPulse = new Timer(PulseTimerCallback);
-                _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
                 
                 CheckBoxTop.IsChecked = true;
                 PopulateAPIComboBox();
@@ -226,7 +221,7 @@ namespace DCSInsight.Windows
                 {
                     do
                     {
-                        StartPulse(_pulseVisibilityTime);
+                        PulseLed.Pulse();
                         Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
                         for (var b = i; b <= x; b++)
                         {
@@ -267,7 +262,7 @@ namespace DCSInsight.Windows
 
                     do
                     {
-                        StartPulse(_pulseVisibilityTime);
+                        PulseLed.Pulse();
 
                         for (var b = i; b <= x; b++)
                         {
@@ -312,7 +307,7 @@ namespace DCSInsight.Windows
                     Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
                     do
                     {
-                        StartPulse(_pulseVisibilityTime);
+                        PulseLed.Pulse();
 
                         for (var b = i; b <= x; b++)
                         {
@@ -429,8 +424,6 @@ namespace DCSInsight.Windows
                     }
 
                     StackPanelParameters.UpdateLayout();
-                    //ItemsControlParameter.ItemsSource = null;
-                    //ItemsControlParameter.ItemsSource = controlList;
                     SetFormState();
                 }
                 catch (Exception ex)
@@ -538,36 +531,6 @@ namespace DCSInsight.Windows
             }
         }
 
-        private void StartPulse(int milliseconds)
-        {
-            try
-            {
-                Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(true)));
-                
-                _timerLoopPulse.Change(milliseconds, milliseconds);
-                Dispatcher?.BeginInvoke((Action)( SetFormState)); 
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
-        private void PulseTimerCallback(object state)
-        {
-            try
-            {
-                Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(false)));
-                Dispatcher?.BeginInvoke((Action)(() => ToolBarMain.UpdateLayout()));
-                _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
-                Dispatcher?.BeginInvoke((Action)(SetFormState)); 
-            }
-            catch (Exception ex)
-            {
-                ICEventHandler.SendErrorMessage("Timer Polling Error", ex);
-            }
-        }
-
         private void TextBoxParameter_OnKeyDown_Number(object sender, KeyEventArgs e)
         {
             try
@@ -668,14 +631,5 @@ namespace DCSInsight.Windows
             }
         }
 
-        private void SetPulseImage(bool setOn)
-        {
-            if (!setOn)
-            {
-                ImagePulse.Source = new BitmapImage(new Uri("/dcs-insight;component/Images/Icon_green_lamp_off.png", UriKind.Relative));
-                return;
-            }
-            ImagePulse.Source = new BitmapImage(new Uri("/dcs-insight;component/Images/Icon_green_lamp_on.png", UriKind.Relative));
-        }
     }
 }
