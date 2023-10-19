@@ -1,4 +1,8 @@
 # dcs-insight
+
+[![license](https://img.shields.io/github/license/DCS-Skunkworks/dcs-insight.svg)](https://github.com/DCS-Skunkworks/dcs-insight/blob/main/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/DCS-Skunkworks/dcs-insight.svg)](https://github.com/DCS-Skunkworks/dcs-insight/releases)
+
 Application for executing DCS API.
 
 You can test ```manually``` or do ```range testing``` to figure out how devices / arguments etc behave.
