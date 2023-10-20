@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DCSInsight.Windows"
         xmlns:userControls="clr-namespace:DCSInsight.UserControls"
         mc:Ignorable="d"
-        Title="Range Test API Calls" MaxHeight="600" MinHeight="200" Width="850" Closing="WindowRangeTest_OnClosing" WindowStartupLocation="CenterScreen" Loaded="WindowRangeTest_OnLoaded">
+        Title="Range Test API Calls" MaxHeight="600" MinHeight="200" Width="1000" Closing="WindowRangeTest_OnClosing" WindowStartupLocation="CenterScreen" Loaded="WindowRangeTest_OnLoaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -27,10 +27,20 @@
             <Label VerticalAlignment="Center" Margin="0,0,0,0" >
                 <CheckBox Name="CheckBoxLoop" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxLoop_OnChecked" Unchecked="CheckBoxLoop_OnUnchecked"/>
             </Label>
-            <Label VerticalAlignment="Center" Content="Show changes only"  Margin="10,0,0,0" />
+            <Label VerticalAlignment="Center" Content="Changes only"  Margin="10,0,0,0" />
             <Label VerticalAlignment="Center" Margin="0,0,0,0" >
                 <CheckBox Name="CheckBoxShowChangesOnly" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxShowChangesOnly_OnChecked" Unchecked="CheckBoxShowChangesOnly_OnUnchecked"/>
             </Label>
+            <Label VerticalAlignment="Center" Content="Decimals" Margin="0,0,0,0" />
+            <ComboBox Name="ComboBoxDecimals" SelectedValuePath="Content"  IsReadOnly="True" SelectedIndex="0" SelectionChanged="ComboBoxDecimals_OnSelectionChanged">
+                <ComboBoxItem>*</ComboBoxItem>
+                <ComboBoxItem>0</ComboBoxItem>
+                <ComboBoxItem>1</ComboBoxItem>
+                <ComboBoxItem>2</ComboBoxItem>
+                <ComboBoxItem>3</ComboBoxItem>
+                <ComboBoxItem>4</ComboBoxItem>
+                <ComboBoxItem>5</ComboBoxItem>
+            </ComboBox>
             <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
             <Button Width="20" Content="?" Margin="10,0,0,0" BorderBrush="Black" FontSize="14" Name="ButtonInformation"  Click="ButtonInformation_OnClick"></Button>
         </ToolBar>

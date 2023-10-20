@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using DCSInsight.JSON;
 
@@ -9,6 +10,9 @@ namespace DCSInsight.Misc
     {
         private readonly DCSAPI _dcsApi;
         private readonly object _lockObject = new();
+        private static NumberFormatInfo _numberFormatInfoDecimals = NumberFormatInfo.InvariantInfo;
+        private static bool _limitDecimals;
+        private static int _decimalPlaces;
 
         public ResultComparator(DCSAPI dcsApi)
         {
@@ -57,6 +61,11 @@ namespace DCSInsight.Misc
                         throw new Exception("SetResult() : This is not the matching DCSAPI.");
                     }
 
+                    if (_limitDecimals && double.TryParse(dcsApi.Result, NumberStyles.AllowDecimalPoint | NumberStyles.Float, _numberFormatInfoDecimals, out _))
+                    {
+                        dcsApi.Result = Math.Round(decimal.Parse(dcsApi.Result, NumberStyles.AllowDecimalPoint | NumberStyles.Float, _numberFormatInfoDecimals), _decimalPlaces).ToString(CultureInfo.InvariantCulture);
+                    }
+
                     if (dcsApi.Result != _dcsApi.Result)
                     {
                         _dcsApi.Result = dcsApi.Result;
@@ -87,6 +96,17 @@ namespace DCSInsight.Misc
 
                 return currentTestString.ToString();
             }
+        }
+
+        public static void SetDecimals(bool limitDecimals, int decimalPlaces)
+        {
+            _limitDecimals = limitDecimals;
+            _decimalPlaces = decimalPlaces;
+            _numberFormatInfoDecimals = new NumberFormatInfo
+            {
+                NumberDecimalSeparator = ".",
+                NumberDecimalDigits = decimalPlaces
+            };
         }
     }
 }
