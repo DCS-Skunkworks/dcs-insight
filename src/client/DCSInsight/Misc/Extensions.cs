@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using Newtonsoft.Json;
 
 namespace DCSInsight.Misc

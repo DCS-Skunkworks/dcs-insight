@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using DCSInsight.Events;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
@@ -98,7 +94,7 @@ namespace DCSInsight.Windows
             {
                 if (!_isConnected || !_isRunning) return;
 
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += args.Message));
+                Dispatcher?.BeginInvoke((Action)(() => AddResultText(args.Message)));
                 AutoResetEvent1.Set();
             }
             catch (Exception ex)
@@ -146,7 +142,7 @@ namespace DCSInsight.Windows
                     }
                     else
                     {
-                        Dispatcher?.BeginInvoke((Action)(() => TextBoxResults.Text += _resultComparatorList.First(o => o.IsMatch(args.DCSApi)).GetResultString()));
+                        Dispatcher?.BeginInvoke((Action)(() => AddResultText(_resultComparatorList.First(o => o.IsMatch(args.DCSApi)).GetResultString())));
                         ;
                         AutoResetEvent1.Set();
                     }
@@ -584,6 +580,7 @@ namespace DCSInsight.Windows
             try
             {
                 _doLoop = true;
+                CheckBoxShowChangesOnly.IsChecked = true;
                 SetFormState();
             }
             catch (Exception ex)
@@ -631,5 +628,29 @@ namespace DCSInsight.Windows
             }
         }
 
+        private void AddResultText(string text)
+        {
+            TextBoxResults.Text += text;
+            TextBoxResults.ScrollToEnd();
+        }
+
+        private void ComboBoxDecimals_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var item = ComboBoxDecimals.SelectedValue.ToString();
+                if (item != null && item != "*")
+                {
+                    ResultComparator.SetDecimals(true, Convert.ToInt32(item));
+                    return;
+                }
+
+                ResultComparator.SetDecimals(false, 0);
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
     }
 }
