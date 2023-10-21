@@ -13,6 +13,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="35" />
+            <RowDefinition Height="35" />
             <RowDefinition Height="10*" />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
@@ -23,11 +24,16 @@
             <Button  Content="Start" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStart"  Click="ButtonStart_OnClick"></Button>
             <Button  Content="Stop" Width="50" Margin="10,0,0,0" BorderBrush="Gray" FontSize="14" Name="ButtonStop"  Click="ButtonStop_OnClick"></Button>
             <userControls:UserControlPulseLED x:Name="PulseLed" Margin="10,0,0,0"/>
+            <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
+            <Button Width="20" Content="?" Margin="10,0,0,0" BorderBrush="Black" FontSize="14" Name="ButtonInformation"  Click="ButtonInformation_OnClick"></Button>
+        </ToolBar>
+
+        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain2" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1">
             <Label VerticalAlignment="Center" Content="Loop"  Margin="10,0,0,0" />
             <Label VerticalAlignment="Center" Margin="0,0,0,0" >
                 <CheckBox Name="CheckBoxLoop" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxLoop_OnChecked" Unchecked="CheckBoxLoop_OnUnchecked"/>
             </Label>
-            <Label VerticalAlignment="Center" Content="Changes only"  Margin="10,0,0,0" />
+            <Label VerticalAlignment="Center" Content="Show Changes Only"  Margin="10,0,0,0" />
             <Label VerticalAlignment="Center" Margin="0,0,0,0" >
                 <CheckBox Name="CheckBoxShowChangesOnly" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxShowChangesOnly_OnChecked" Unchecked="CheckBoxShowChangesOnly_OnUnchecked"/>
             </Label>
@@ -41,11 +47,17 @@
                 <ComboBoxItem>4</ComboBoxItem>
                 <ComboBoxItem>5</ComboBoxItem>
             </ComboBox>
-            <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
-            <Button Width="20" Content="?" Margin="10,0,0,0" BorderBrush="Black" FontSize="14" Name="ButtonInformation"  Click="ButtonInformation_OnClick"></Button>
+            <Label VerticalAlignment="Center" Content="Show Errors"  Margin="10,0,0,0" />
+            <Label VerticalAlignment="Center" Margin="0,0,0,0" >
+                <CheckBox Name="CheckBoxShowErrors" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxShowErrors_OnChecked" Unchecked="CheckBoxShowErrors_OnUnchecked"/>
+            </Label>
+            <Label VerticalAlignment="Center" Content="Show nil Results"  Margin="10,0,0,0" />
+            <Label VerticalAlignment="Center" Margin="0,0,0,0" >
+                <CheckBox Name="CheckBoxShowNilResults" VerticalAlignment="Center" IsChecked="False" Checked="CheckBoxShowNilResults_OnChecked" Unchecked="CheckBoxShowNilResults_OnUnchecked"/>
+            </Label>
         </ToolBar>
 
-        <StackPanel Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" >
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" >
             <StackPanel Name="StackPanelParameters" ></StackPanel>
             <StackPanel>
                 <TextBox Name="TextBoxResults" IsReadOnly="True" HorizontalScrollBarVisibility="Auto"  VerticalScrollBarVisibility="Visible" MaxHeight="400" />

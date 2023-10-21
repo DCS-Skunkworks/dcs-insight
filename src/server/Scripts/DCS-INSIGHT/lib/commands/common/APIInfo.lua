@@ -8,12 +8,13 @@ local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
 --- @field api_syntax string
 --- @field parameter_count number
 --- @field parameter_defs table<APIParameter>
---- @field value any
+--- @field error_thrown boolean
+--- @field error_message string
 --- @field result any
 local APIInfo = {}
 
 --- Constructs a new APIInfo
-function APIInfo:new(id, returns_data, api_syntax, parameter_count, parameter_defs, value, result)
+function APIInfo:new(id, returns_data, api_syntax, parameter_count, parameter_defs, error_thrown, error_message, result)
 	--- @type APIInfo
 	local o = {
 		id = id,
@@ -21,7 +22,8 @@ function APIInfo:new(id, returns_data, api_syntax, parameter_count, parameter_de
 		api_syntax = api_syntax,
 		parameter_count = parameter_count,
 		parameter_defs = parameter_defs or {},
-		value = value,
+		error_thrown = false,
+		error_message = "",
 		result = result,
 	}
 	setmetatable(o, self)

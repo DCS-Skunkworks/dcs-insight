@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,10 +31,13 @@ namespace DCSInsight.Windows
         private bool _isRunning;
         private bool _stopRunning;
         private bool _doLoop;
+        private readonly int _longPulse = 10000000;
         private bool _showChangesOnly;
+        private bool _showErrors;
+        private bool _showNilResults;
         private static readonly AutoResetEvent AutoResetEvent1 = new(false);
         private Thread _thread;
-        private readonly int _threadLoopSleep = 50;
+        private readonly int _threadLoopSleep = 20;
         private readonly List<ResultComparator> _resultComparatorList = new();
         private readonly object _lockObject = new();
 
@@ -60,7 +64,9 @@ namespace DCSInsight.Windows
             try
             {
                 if (_formLoaded) return;
-                
+
+                CheckBoxShowErrors.IsChecked = true;
+                CheckBoxShowNilResults.IsChecked = true;
                 CheckBoxTop.IsChecked = true;
                 PopulateAPIComboBox();
                 SetFormState();
@@ -134,8 +140,21 @@ namespace DCSInsight.Windows
                 {
                     if (!_isConnected || !_isRunning) return;
 
+                    if (args.DCSApi.ErrorThrown)
+                    {
+                        if(_showErrors) Dispatcher?.BeginInvoke((Action)(() => AddResultText(GetResultString(args.DCSApi))));
+                        AutoResetEvent1.Set();
+                        return;
+                    }
+
+                    if (string.IsNullOrEmpty(args.DCSApi.Result) && !_showNilResults)
+                    {
+                        AutoResetEvent1.Set();
+                        return;
+                    }
+
                     var hasChanged = _resultComparatorList.First(o => o.IsMatch(args.DCSApi)).SetResult(args.DCSApi);
-                    
+
                     if (_showChangesOnly && !hasChanged)
                     {
                         AutoResetEvent1.Set();
@@ -143,7 +162,6 @@ namespace DCSInsight.Windows
                     else
                     {
                         Dispatcher?.BeginInvoke((Action)(() => AddResultText(_resultComparatorList.First(o => o.IsMatch(args.DCSApi)).GetResultString())));
-                        ;
                         AutoResetEvent1.Set();
                     }
                 }
@@ -154,13 +172,30 @@ namespace DCSInsight.Windows
             }
         }
 
+        private string GetResultString(DCSAPI dcsApi)
+        {
+            var currentTestString = new StringBuilder();
+
+            foreach (var dcsApiParameter in dcsApi.Parameters)
+            {
+                currentTestString.Append($"{dcsApiParameter.ParameterName} [{dcsApiParameter.Value}], ");
+            }
+
+            currentTestString.Append($" result : {(dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result))}");
+
+            return currentTestString.ToString();
+        }
+
         private void StartTesting()
         {
             _stopRunning = false;
 
             try
             {
-                _resultComparatorList.Clear();
+                lock (_lockObject)
+                {
+                    _resultComparatorList.Clear();
+                }
                 TextBoxResults.Text = "";
                 var dynamicCount = _textBoxParameterList.Count(o => o.RangeLimit == RangeLimitsEnum.From);
                 if (dynamicCount == 0) return;
@@ -217,12 +252,12 @@ namespace DCSInsight.Windows
                 {
                     do
                     {
-                        PulseLed.Pulse();
-                        Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
+                        PulseLed.Pulse(_doLoop ? 300 : _longPulse);
+
                         for (var b = i; b <= x; b++)
                         {
                             if (_stopRunning) return;
-                            
+
                             _dcsAPI.Parameters[0].Value = b.ToString();
 
                             SetCurrentTestStructure(_dcsAPI);
@@ -237,8 +272,8 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Arrow));
                     Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    PulseLed.Pulse();
                 }
             }
             catch (Exception ex)
@@ -254,23 +289,24 @@ namespace DCSInsight.Windows
                 _isRunning = true;
                 try
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
-
                     do
                     {
-                        PulseLed.Pulse();
+                        PulseLed.Pulse(_doLoop ? 300 : _longPulse);
 
                         for (var b = i; b <= x; b++)
                         {
                             for (var c = j; c <= y; c++)
                             {
                                 if (_stopRunning) return;
-                                
+
                                 _dcsAPI.Parameters[0].Value = b.ToString();
                                 _dcsAPI.Parameters[1].Value = c.ToString();
-                                if(_resultComparatorList.Count > 0) _resultComparatorList[0].GetResultString();
-                                SetCurrentTestStructure(_dcsAPI);
-                                _resultComparatorList[0].GetResultString();
+                                lock (_lockObject)
+                                {
+                                    if (_resultComparatorList.Count > 0) _resultComparatorList[0].GetResultString();
+                                    SetCurrentTestStructure(_dcsAPI);
+                                    _resultComparatorList[0].GetResultString();
+                                }
                                 ICEventHandler.SendCommand(_dcsAPI);
                                 AutoResetEvent1.WaitOne();
                                 Thread.Sleep(_threadLoopSleep);
@@ -283,8 +319,8 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Arrow));
                     Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    PulseLed.Pulse();
                 }
             }
             catch (Exception ex)
@@ -300,10 +336,9 @@ namespace DCSInsight.Windows
                 _isRunning = true;
                 try
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Wait));
                     do
                     {
-                        PulseLed.Pulse();
+                        PulseLed.Pulse(_doLoop ? 300 : _longPulse);
 
                         for (var b = i; b <= x; b++)
                         {
@@ -312,7 +347,7 @@ namespace DCSInsight.Windows
                                 for (var d = k; d <= z; d++)
                                 {
                                     if (_stopRunning) return;
-                                    
+
                                     _dcsAPI.Parameters[0].Value = b.ToString();
                                     _dcsAPI.Parameters[1].Value = c.ToString();
                                     _dcsAPI.Parameters[2].Value = d.ToString();
@@ -331,8 +366,8 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(() => Mouse.OverrideCursor = Cursors.Arrow));
                     Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    PulseLed.Pulse();
                 }
             }
             catch (Exception ex)
@@ -630,7 +665,7 @@ namespace DCSInsight.Windows
 
         private void AddResultText(string text)
         {
-            TextBoxResults.Text += text;
+            TextBoxResults.Text += text + "\n";
             TextBoxResults.ScrollToEnd();
         }
 
@@ -646,6 +681,54 @@ namespace DCSInsight.Windows
                 }
 
                 ResultComparator.SetDecimals(false, 0);
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowErrors_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showErrors = true;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowErrors_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showErrors = false;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowNilResults_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showNilResults = true;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void CheckBoxShowNilResults_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _showNilResults = false;
             }
             catch (Exception ex)
             {

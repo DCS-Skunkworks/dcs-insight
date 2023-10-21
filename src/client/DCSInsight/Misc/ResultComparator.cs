@@ -92,11 +92,26 @@ namespace DCSInsight.Misc
                     currentTestString.Append($"{dcsApiParameter.ParameterName} [{dcsApiParameter.Value}], ");
                 }
 
-                currentTestString.Append($" result : {_dcsApi.Result}\n");
+                currentTestString.Append($" result : {(string.IsNullOrEmpty(_dcsApi.Result) ? "nil" : _dcsApi.Result)}");
 
                 return currentTestString.ToString();
             }
         }
+
+        public static string GetResultString(DCSAPI dcsApi)
+        {
+            var currentTestString = new StringBuilder();
+
+            foreach (var dcsApiParameter in dcsApi.Parameters)
+            {
+                currentTestString.Append($"{dcsApiParameter.ParameterName} [{dcsApiParameter.Value}], ");
+            }
+
+            currentTestString.Append($" result : {dcsApi.Result}");
+
+            return currentTestString.ToString();
+        }
+
 
         public static void SetDecimals(bool limitDecimals, int decimalPlaces)
         {

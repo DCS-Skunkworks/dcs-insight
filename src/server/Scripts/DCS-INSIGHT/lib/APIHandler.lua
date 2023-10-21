@@ -212,15 +212,21 @@ function APIHandler:execute(api)
 		if api.id == v.id then
 			local result_code, result = pcall(v.execute, v, api) -- = v:execute(api)
 			if result_code == true then
+				result.error_thrown = false
+				result.error_message = ""
 				return result
 			else
 				if result == nil then
-					api.result = "Error but no error message"
+					api.error_thrown = true
+					api.error_message = "Error but no error message"
+					api.result = nil
 					return api
 				else
 					local path = v:script_path():gsub("%-", "%%-") -- escape any hyphen otherwise next gsub won't work
-					Log:log(result:gsub(path, ""))
-					api.result = result:gsub(path, "")
+					--Log:log(result:gsub(path, ""))
+					api.error_thrown = true
+					api.result = nil
+					api.error_message = result:gsub(path, "")
 					return api
 				end
 			end

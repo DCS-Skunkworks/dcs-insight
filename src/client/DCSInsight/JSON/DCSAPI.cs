@@ -28,6 +28,12 @@ namespace DCSInsight.JSON
         [JsonProperty("parameter_defs", Required = Required.Default)]
         public List<ParameterInfo> Parameters { get; set; }
 
+        [JsonProperty("error_thrown", Required = Required.Default)]
+        public bool ErrorThrown { get; set; }
+
+        [JsonProperty("error_message", Required = Required.Default)]
+        public string ErrorMessage { get; set; }
+
         [JsonProperty("result", Required = Required.Default)]
         public string Result { get; set; }
     }

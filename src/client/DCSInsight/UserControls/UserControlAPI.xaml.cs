@@ -242,13 +242,15 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
+
                 if (_keepResults)
                 {
                     Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n-----------\n")));
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, dcsApi.Result)));
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result)));
                     return;
                 }
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = dcsApi.Result));
+                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
             }
             catch (Exception ex)
             {

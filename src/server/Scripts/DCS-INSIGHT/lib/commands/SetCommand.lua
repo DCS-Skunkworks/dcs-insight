@@ -37,7 +37,8 @@ function SetCommand:execute(api)
 
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
-		api.result = message
+		api.error_thrown = true
+		api.error_message = message
 		return api
 	end
 
@@ -54,7 +55,8 @@ function SetCommand:execute(api)
 	end
 
 	if self:verify_device(param0) == false then
-		api.result = "Device not found"
+		api.error_thrown = true
+		api.error_message = "Device not found"
 		return api
 	end
 
