@@ -55,6 +55,9 @@ namespace DCSInsight.Windows
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
             ICEventHandler.DetachDataListener(this);
+            _stopRunning = true;
+            _doLoop = false;
+            AutoResetEvent1.Set();
             AutoResetEvent1.Set();
             GC.SuppressFinalize(this);
         }
@@ -602,6 +605,8 @@ namespace DCSInsight.Windows
         {
             try
             {
+                _stopRunning = true;
+                _doLoop = false;
                 AutoResetEvent1.Set();
             }
             catch (Exception ex)
