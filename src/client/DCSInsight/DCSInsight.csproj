@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>dcs-insight</AssemblyName>
     <Version>1.0.0</Version>
-    <AssemblyVersion>1.7.5</AssemblyVersion>
+    <AssemblyVersion>1.7.7</AssemblyVersion>
     <ApplicationIcon>Images\Magnifier_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>

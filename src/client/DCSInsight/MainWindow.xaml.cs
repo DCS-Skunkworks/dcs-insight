@@ -45,6 +45,7 @@ namespace DCSInsight
 
         public void Dispose()
         {
+            ItemsControlAPI.Items.Clear();
             _windowRangeTest?.Close();
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);

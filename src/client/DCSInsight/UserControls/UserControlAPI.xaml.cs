@@ -48,7 +48,6 @@ namespace DCSInsight.UserControls
 
         public void Dispose()
         {
-
             _pollingTimer?.Dispose();
             GC.SuppressFinalize(this);
         }
@@ -246,7 +245,7 @@ namespace DCSInsight.UserControls
 
                 if (_keepResults)
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n-----------\n")));
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n---\n")));
                     Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result)));
                     return;
                 }
