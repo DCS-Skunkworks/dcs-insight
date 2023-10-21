@@ -27,7 +27,8 @@ function LoGetIndicatedAirSpeedAPI:init() end
 function LoGetIndicatedAirSpeedAPI:execute(api)
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
-		api.result = message
+		api.error_thrown = true
+		api.error_message = message
 		return api
 	end
 
