@@ -33,7 +33,7 @@ namespace DCSInsight
         private bool _formLoaded;
         private TCPClientHandler _tcpClientHandler;
         private bool _isConnected;
-        private WindowRangeTest _windowRangeTest;
+        private bool _rangeTesting;
 
         public MainWindow()
         {
@@ -46,7 +46,6 @@ namespace DCSInsight
         public void Dispose()
         {
             ItemsControlAPI.Items.Clear();
-            _windowRangeTest?.Close();
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
             ICEventHandler.DetachDataListener(this);
@@ -151,7 +150,7 @@ namespace DCSInsight
         {
             try
             {
-                if (_windowRangeTest != null) return;
+                if (_rangeTesting) return;
 
                 Logger.Error(args.Ex);
                 Dispatcher?.BeginInvoke((Action)(() => TextBlockMessage.Text = $"{args.Message}. See log file."));
@@ -166,7 +165,7 @@ namespace DCSInsight
         {
             try
             {
-                if (_windowRangeTest != null) return;
+                if (_rangeTesting) return;
 
                 if (args.DCSAPIS != null)
                 {
@@ -488,8 +487,16 @@ namespace DCSInsight
         {
             try
             {
-                _windowRangeTest = new WindowRangeTest(_dcsAPIList);
-                _windowRangeTest.Show();
+                try
+                {
+                    _rangeTesting = true;
+                    var windowRangeTest = new WindowRangeTest(_dcsAPIList);
+                    windowRangeTest.ShowDialog();
+                }
+                finally
+                {
+                    _rangeTesting = false;
+                }
             }
             catch (Exception ex)
             {

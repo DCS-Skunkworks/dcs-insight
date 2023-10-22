@@ -59,6 +59,7 @@ namespace DCSInsight.Windows
             _doLoop = false;
             AutoResetEvent1.Set();
             AutoResetEvent1.Set();
+            _thread?.Join(10000000);
             GC.SuppressFinalize(this);
         }
 
@@ -605,9 +606,7 @@ namespace DCSInsight.Windows
         {
             try
             {
-                _stopRunning = true;
-                _doLoop = false;
-                AutoResetEvent1.Set();
+                Dispose();
             }
             catch (Exception ex)
             {

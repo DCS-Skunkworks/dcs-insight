@@ -2,12 +2,13 @@ module("APIHandler", package.seeall)
 
 local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
 
-local GetArgumentValue = require("Scripts.DCS-INSIGHT.lib.commands.GetArgumentValue")
-local SetArgumentValue = require("Scripts.DCS-INSIGHT.lib.commands.SetArgumentValue")
-local SetCommand = require("Scripts.DCS-INSIGHT.lib.commands.SetCommand")
-local SetFrequency = require("Scripts.DCS-INSIGHT.lib.commands.SetFrequency")
-local GetFrequency = require("Scripts.DCS-INSIGHT.lib.commands.GetFrequency")
-local PerformClickableAction = require("Scripts.DCS-INSIGHT.lib.commands.PerformClickableAction")
+local GetArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.commands.GetArgumentValueAPI")
+local SetArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.commands.SetArgumentValueAPI")
+local SetCommandAPI = require("Scripts.DCS-INSIGHT.lib.commands.SetCommandAPI")
+local SetFrequencyAPI = require("Scripts.DCS-INSIGHT.lib.commands.SetFrequencyAPI")
+local GetFrequencyAPI = require("Scripts.DCS-INSIGHT.lib.commands.GetFrequencyAPI")
+local UpdateArgumentsAPI = require("Scripts.DCS-INSIGHT.lib.commands.UpdateArgumentsAPI")
+local PerformClickableActionAPI = require("Scripts.DCS-INSIGHT.lib.commands.PerformClickableActionAPI")
 local LoGetAircraftDrawArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAircraftDrawArgumentValueAPI")
 local LoGetSelfDataAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetSelfDataAPI")
 local LoGetModelTimeAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetModelTimeAPI")
@@ -56,149 +57,163 @@ function APIHandler:new()
 	return o
 end
 
+local id = 0
+local function counter()
+	id = id + 1
+	return id
+end
+
 --- @func Fills the commands and api table
 function APIHandler:init()
-	local getArgumentValue = GetArgumentValue:new(nil)
-	self.commandsTable[#self.commandsTable + 1] = getArgumentValue
-	self.apiTable[#self.apiTable + 1] = getArgumentValue.apiInfo
+	local getArgumentValueAPI = GetArgumentValueAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = getArgumentValueAPI
+	self.apiTable[#self.apiTable + 1] = getArgumentValueAPI.apiInfo
 
-	local setArgumentValue = SetArgumentValue:new()
-	self.commandsTable[#self.commandsTable + 1] = setArgumentValue
-	self.apiTable[#self.apiTable + 1] = setArgumentValue.apiInfo
+	local setArgumentValueAPI = SetArgumentValueAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = setArgumentValueAPI
+	self.apiTable[#self.apiTable + 1] = setArgumentValueAPI.apiInfo
 
-	local performClickableAction = PerformClickableAction:new()
-	self.commandsTable[#self.commandsTable + 1] = performClickableAction
-	self.apiTable[#self.apiTable + 1] = performClickableAction.apiInfo
+	local performClickableActionAPI = PerformClickableActionAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = performClickableActionAPI
+	self.apiTable[#self.apiTable + 1] = performClickableActionAPI.apiInfo
 
-	local setCommand = SetCommand:new()
-	self.commandsTable[#self.commandsTable + 1] = setCommand
-	self.apiTable[#self.apiTable + 1] = setCommand.apiInfo
+	local setCommandAPI = SetCommandAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = setCommandAPI
+	self.apiTable[#self.apiTable + 1] = setCommandAPI.apiInfo
 
-	local getFrequency = GetFrequency:new()
-	self.commandsTable[#self.commandsTable + 1] = getFrequency
-	self.apiTable[#self.apiTable + 1] = getFrequency.apiInfo
+	local getFrequencyAPI = GetFrequencyAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = getFrequencyAPI
+	self.apiTable[#self.apiTable + 1] = getFrequencyAPI.apiInfo
 
-	local setFrequency = SetFrequency:new()
-	self.commandsTable[#self.commandsTable + 1] = setFrequency
-	self.apiTable[#self.apiTable + 1] = setFrequency.apiInfo
+	local setFrequencyAPI = SetFrequencyAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = setFrequencyAPI
+	self.apiTable[#self.apiTable + 1] = setFrequencyAPI.apiInfo
 
-	local loGetAircraftDrawArgumentValue = LoGetAircraftDrawArgumentValueAPI:new()
+	local updateArgumentsAPI = UpdateArgumentsAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = updateArgumentsAPI
+	self.apiTable[#self.apiTable + 1] = updateArgumentsAPI.apiInfo
+
+	--[[ APIs not requiring device parameter below ]]
+
+	local loGetAircraftDrawArgumentValue = LoGetAircraftDrawArgumentValueAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetAircraftDrawArgumentValue
 	self.apiTable[#self.apiTable + 1] = loGetAircraftDrawArgumentValue.apiInfo
 
-	local listIndicationAPI = ListIndicationAPI:new()
+	local listIndicationAPI = ListIndicationAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
 	self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
 
-	local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil)
+	--[[ APIs not requiring parameters below ]]
+
+	local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = listCockpitParamsAPI
 	self.apiTable[#self.apiTable + 1] = listCockpitParamsAPI.apiInfo
 
-	local loGetSelfData = LoGetSelfDataAPI:new()
+	local loGetSelfData = LoGetSelfDataAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetSelfData
 	self.apiTable[#self.apiTable + 1] = loGetSelfData.apiInfo
 
-	local loGetModelTimeAPI = LoGetModelTimeAPI:new()
+	local loGetModelTimeAPI = LoGetModelTimeAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetModelTimeAPI
 	self.apiTable[#self.apiTable + 1] = loGetModelTimeAPI.apiInfo
 
-	local loGetMissionStartTimeAPI = LoGetMissionStartTimeAPI:new()
+	local loGetMissionStartTimeAPI = LoGetMissionStartTimeAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetMissionStartTimeAPI
 	self.apiTable[#self.apiTable + 1] = loGetMissionStartTimeAPI.apiInfo
 
-	local loIsOwnshipExportAllowedAPI = LoIsOwnshipExportAllowedAPI:new()
+	local loIsOwnshipExportAllowedAPI = LoIsOwnshipExportAllowedAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loIsOwnshipExportAllowedAPI
 	self.apiTable[#self.apiTable + 1] = loIsOwnshipExportAllowedAPI.apiInfo
 
-	local loGetPilotName = LoGetPilotNameAPI:new()
+	local loGetPilotName = LoGetPilotNameAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetPilotName
 	self.apiTable[#self.apiTable + 1] = loGetPilotName.apiInfo
 
-	local loGetIndicatedAirSpeedAPI = LoGetIndicatedAirSpeedAPI:new()
+	local loGetIndicatedAirSpeedAPI = LoGetIndicatedAirSpeedAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetIndicatedAirSpeedAPI
 	self.apiTable[#self.apiTable + 1] = loGetIndicatedAirSpeedAPI.apiInfo
 
-	local loGetAccelerationUnitsAPI = LoGetAccelerationUnitsAPI:new()
+	local loGetAccelerationUnitsAPI = LoGetAccelerationUnitsAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetAccelerationUnitsAPI
 	self.apiTable[#self.apiTable + 1] = loGetAccelerationUnitsAPI.apiInfo
 
-	local loGetADIPitchBankYawAPI = LoGetADIPitchBankYawAPI:new()
+	local loGetADIPitchBankYawAPI = LoGetADIPitchBankYawAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetADIPitchBankYawAPI
 	self.apiTable[#self.apiTable + 1] = loGetADIPitchBankYawAPI.apiInfo
 
-	local loGetSnaresAPI = LoGetSnaresAPI:new()
+	local loGetSnaresAPI = LoGetSnaresAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetSnaresAPI
 	self.apiTable[#self.apiTable + 1] = loGetSnaresAPI.apiInfo
 
-	local loGetAltitudeAboveSeaLevelAPI = LoGetAltitudeAboveSeaLevelAPI:new()
+	local loGetAltitudeAboveSeaLevelAPI = LoGetAltitudeAboveSeaLevelAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetAltitudeAboveSeaLevelAPI
 	self.apiTable[#self.apiTable + 1] = loGetAltitudeAboveSeaLevelAPI.apiInfo
 
-	local loGetAltitudeAboveGroundLevelAPI = LoGetAltitudeAboveGroundLevelAPI:new()
+	local loGetAltitudeAboveGroundLevelAPI = LoGetAltitudeAboveGroundLevelAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetAltitudeAboveGroundLevelAPI
 	self.apiTable[#self.apiTable + 1] = loGetAltitudeAboveGroundLevelAPI.apiInfo
 
-	local loGetVerticalVelocityAPI = LoGetVerticalVelocityAPI:new()
+	local loGetVerticalVelocityAPI = LoGetVerticalVelocityAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetVerticalVelocityAPI
 	self.apiTable[#self.apiTable + 1] = loGetVerticalVelocityAPI.apiInfo
 
-	local loGetTrueAirSpeedAPI = LoGetTrueAirSpeedAPI:new()
+	local loGetTrueAirSpeedAPI = LoGetTrueAirSpeedAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetTrueAirSpeedAPI
 	self.apiTable[#self.apiTable + 1] = loGetTrueAirSpeedAPI.apiInfo
 
-	local loGetMachNumberAPI = LoGetMachNumberAPI:new()
+	local loGetMachNumberAPI = LoGetMachNumberAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetMachNumberAPI
 	self.apiTable[#self.apiTable + 1] = loGetMachNumberAPI.apiInfo
 
-	local loGetAngleOfAttackAPI = LoGetAngleOfAttackAPI:new()
+	local loGetAngleOfAttackAPI = LoGetAngleOfAttackAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetAngleOfAttackAPI
 	self.apiTable[#self.apiTable + 1] = loGetAngleOfAttackAPI.apiInfo
 
-	local loGetGlideDeviationAPI = LoGetGlideDeviationAPI:new()
+	local loGetGlideDeviationAPI = LoGetGlideDeviationAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetGlideDeviationAPI
 	self.apiTable[#self.apiTable + 1] = loGetGlideDeviationAPI.apiInfo
 
-	local loGetSideDeviationAPI = LoGetSideDeviationAPI:new()
+	local loGetSideDeviationAPI = LoGetSideDeviationAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetSideDeviationAPI
 	self.apiTable[#self.apiTable + 1] = loGetSideDeviationAPI.apiInfo
 
-	local loGetSlipBallPositionAPI = LoGetSlipBallPositionAPI:new()
+	local loGetSlipBallPositionAPI = LoGetSlipBallPositionAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetSlipBallPositionAPI
 	self.apiTable[#self.apiTable + 1] = loGetSlipBallPositionAPI.apiInfo
 
-	local loGetEngineInfoAPI = LoGetEngineInfoAPI:new()
+	local loGetEngineInfoAPI = LoGetEngineInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetEngineInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetEngineInfoAPI.apiInfo
 
-	local loGetMechInfoAPI = LoGetMechInfoAPI:new()
+	local loGetMechInfoAPI = LoGetMechInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetMechInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetMechInfoAPI.apiInfo
 
-	local loGetControlPanel_HSI_API = LoGetControlPanel_HSI_API:new()
+	local loGetControlPanel_HSI_API = LoGetControlPanel_HSI_API:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetControlPanel_HSI_API
 	self.apiTable[#self.apiTable + 1] = loGetControlPanel_HSI_API.apiInfo
 
-	local loGetPayloadInfoAPI = LoGetPayloadInfoAPI:new()
+	local loGetPayloadInfoAPI = LoGetPayloadInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetPayloadInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetPayloadInfoAPI.apiInfo
 
-	local loGetNavigationInfoAPI = LoGetNavigationInfoAPI:new()
+	local loGetNavigationInfoAPI = LoGetNavigationInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetNavigationInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetNavigationInfoAPI.apiInfo
 
-	local loGetMagneticYawAPI = LoGetMagneticYawAPI:new()
+	local loGetMagneticYawAPI = LoGetMagneticYawAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetMagneticYawAPI
 	self.apiTable[#self.apiTable + 1] = loGetMagneticYawAPI.apiInfo
 
-	local loGetBasicAtmospherePressureAPI = LoGetBasicAtmospherePressureAPI:new()
+	local loGetBasicAtmospherePressureAPI = LoGetBasicAtmospherePressureAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetBasicAtmospherePressureAPI
 	self.apiTable[#self.apiTable + 1] = loGetBasicAtmospherePressureAPI.apiInfo
 
-	local loGetMCPStateAPI = LoGetMCPStateAPI:new()
+	local loGetMCPStateAPI = LoGetMCPStateAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetMCPStateAPI
 	self.apiTable[#self.apiTable + 1] = loGetMCPStateAPI.apiInfo
 
-	local loGetTWSInfoAPI = LoGetTWSInfoAPI:new()
+	local loGetTWSInfoAPI = LoGetTWSInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetTWSInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetTWSInfoAPI.apiInfo
 

@@ -1,22 +1,24 @@
-module("LoGetAircraftDrawArgumentValueAPI", package.seeall)
+module("SetCommandAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
---- @class LoGetAircraftDrawArgumentValueAPI : APIBase
+--- @class SetCommandAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetAircraftDrawArgumentValueAPI = APIBase:new()
+local SetCommandAPI = APIBase:new()
 
---- @func Returns new LoGetAircraftDrawArgumentValueAPI
+--- @func Returns new SetCommandAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
-function LoGetAircraftDrawArgumentValueAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, true, "LoGetAircraftDrawArgumentValue(draw_argument_id)", 1)
+function SetCommandAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):SetCommandAPI(command_id, new_value)", 3)
 
-	o:add_param_def(0, ParamName.draw_argument_id, ParamType.number)
+	o:add_param_def(0, ParamName.device_id, ParamType.number)
+	o:add_param_def(1, ParamName.command_id, ParamType.number)
+	o:add_param_def(2, ParamName.new_value, ParamType.number)
 
 	setmetatable(o, self)
 	self.__index = self
@@ -24,11 +26,15 @@ function LoGetAircraftDrawArgumentValueAPI:new(o, apiId)
 end
 
 --- @func Inits with internal data
-function LoGetAircraftDrawArgumentValueAPI:init() end
+function SetCommandAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function LoGetAircraftDrawArgumentValueAPI:execute(api)
+function SetCommandAPI:execute(api)
+	local param0
+	local param1
+	local param2
+
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
 		api.error_thrown = true
@@ -36,18 +42,28 @@ function LoGetAircraftDrawArgumentValueAPI:execute(api)
 		return api
 	end
 
-	local param0
 	for i, param in pairs(api.parameter_defs) do
 		if param.id == 0 then
 			param0 = param.value
 		end
+		if param.id == 1 then
+			param1 = param.value
+		end
+		if param.id == 2 then
+			param2 = param.value
+		end
 	end
 
-	local result = LoGetAircraftDrawArgumentValue(param0)
+	if self:verify_device(param0) == false then
+		api.error_thrown = true
+		api.error_message = "Device not found"
+		return api
+	end
 
+	local result = GetDevice(param0):SetCommand(param1, param2)
 	api = self:decode_result(api, result)
 
 	return api
 end
 
-return LoGetAircraftDrawArgumentValueAPI
+return SetCommandAPI

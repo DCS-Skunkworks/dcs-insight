@@ -2,17 +2,17 @@ module("LoGetMissionStartTimeAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
--- This is the unique ID for this particular API
-local API_ID = 11
-
 --- @class LoGetMissionStartTimeAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
 local LoGetMissionStartTimeAPI = APIBase:new()
 
 --- @func Returns new LoGetMissionStartTimeAPI
-function LoGetMissionStartTimeAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "LoGetMissionStartTime()", 0)
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function LoGetMissionStartTimeAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "LoGetMissionStartTime()", 0)
 
 	setmetatable(o, self)
 	self.__index = self

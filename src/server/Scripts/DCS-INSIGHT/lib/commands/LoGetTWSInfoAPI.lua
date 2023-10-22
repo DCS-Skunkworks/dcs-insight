@@ -2,17 +2,17 @@ module("LoGetTWSInfoAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
--- This is the unique ID for this particular API
-local API_ID = 35
-
 --- @class LoGetTWSInfoAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
 local LoGetTWSInfoAPI = APIBase:new()
 
 --- @func Returns new LoGetTWSInfoAPI
-function LoGetTWSInfoAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "LoGetTWSInfo()", 0)
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function LoGetTWSInfoAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "LoGetTWSInfo()", 0)
 
 	setmetatable(o, self)
 	self.__index = self
