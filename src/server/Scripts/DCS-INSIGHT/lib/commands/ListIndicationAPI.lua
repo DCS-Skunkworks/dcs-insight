@@ -4,17 +4,17 @@ local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
--- This is the unique ID for this particular API
-local API_ID = 7
-
 --- @class ListIndicationAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
 local ListIndicationAPI = APIBase:new()
 
 --- @func Returns new ListIndicationAPI
-function ListIndicationAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "list_indication(indicator_id)", 1)
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function ListIndicationAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "list_indication(indicator_id)", 1)
 
 	o:add_param_def(0, ParamName.indicator_id, ParamType.number)
 

@@ -13,6 +13,9 @@ end
 --- DCS Cockpit Device
 CockpitDevice = {}
 
+--- Updates device's arguments (mainpanel device 0)
+function CockpitDevice:update_arguments() end
+
 --- @func Sets command for a device
 --- @param command_id integer
 --- @param value integer

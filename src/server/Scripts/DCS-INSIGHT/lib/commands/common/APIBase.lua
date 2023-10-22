@@ -9,7 +9,7 @@ local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
 --- @field returns_data boolean
 --- @field api_syntax string
 --- @field parameter_count number
---- @field private apiInfo APIInfo
+--- @field apiInfo APIInfo
 local APIBase = {}
 
 --- Constructs a new APIBase

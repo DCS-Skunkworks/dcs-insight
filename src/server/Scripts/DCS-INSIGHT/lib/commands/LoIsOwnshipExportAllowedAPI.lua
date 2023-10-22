@@ -2,17 +2,17 @@ module("LoIsOwnshipExportAllowedAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
--- This is the unique ID for this particular API
-local API_ID = 12
-
 --- @class LoIsOwnshipExportAllowedAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
 local LoIsOwnshipExportAllowedAPI = APIBase:new()
 
 --- @func Returns new LoIsOwnshipExportAllowedAPI
-function LoIsOwnshipExportAllowedAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "LoIsOwnshipExportAllowed()", 0)
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function LoIsOwnshipExportAllowedAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "LoIsOwnshipExportAllowed()", 0)
 
 	setmetatable(o, self)
 	self.__index = self

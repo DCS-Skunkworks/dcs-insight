@@ -1,24 +1,24 @@
-module("GetArgumentValue", package.seeall)
+module("SetFrequencyAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
+local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
--- This is the unique ID for this particular API
-local API_ID = 0
-
---- @class GetArgumentValue : APIBase
+--- @class SetFrequencyAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local GetArgumentValue = APIBase:new()
+local SetFrequencyAPI = APIBase:new()
 
---- @func Returns new GetArgumentValue
---- @return GetArgumentValue
-function GetArgumentValue:new(o)
-	o = o or APIBase:new(o, API_ID, true, "GetDevice(device_id):get_argument_value(argument_id)", 2)
+--- @func Returns new SetFrequencyAPI
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function SetFrequencyAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):set_frequency(new_value)", 2)
 
 	o:add_param_def(0, ParamName.device_id, ParamType.number)
-	o:add_param_def(1, ParamName.argument_id, ParamType.number)
+	o:add_param_def(1, ParamName.new_value, ParamType.number)
 
 	setmetatable(o, self)
 	self.__index = self
@@ -26,11 +26,14 @@ function GetArgumentValue:new(o)
 end
 
 --- @func Inits with internal data
-function GetArgumentValue:init() end
+function SetFrequencyAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function GetArgumentValue:execute(api)
+function SetFrequencyAPI:execute(api)
+	local param0
+	local param1
+
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
 		api.error_thrown = true
@@ -38,7 +41,6 @@ function GetArgumentValue:execute(api)
 		return api
 	end
 
-	local param0, param1
 	for i, param in pairs(api.parameter_defs) do
 		if param.id == 0 then
 			param0 = param.value
@@ -54,11 +56,10 @@ function GetArgumentValue:execute(api)
 		return api
 	end
 
-	local result = GetDevice(param0):get_argument_value(param1)
-
+	local result = GetDevice(param0):set_frequency(param1)
 	api = self:decode_result(api, result)
 
 	return api
 end
 
-return GetArgumentValue
+return SetFrequencyAPI

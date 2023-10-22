@@ -1,20 +1,20 @@
-module("SetArgumentValue", package.seeall)
+module("SetArgumentValueAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
--- This is the unique ID for this particular API
-local API_ID = 1
-
---- @class SetArgumentValue : APIBase
+--- @class SetArgumentValueAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local SetArgumentValue = APIBase:new()
+local SetArgumentValueAPI = APIBase:new()
 
---- @func Returns new SetArgumentValue
-function SetArgumentValue:new(o)
-	o = o or APIBase:new(o, API_ID, false, "GetDevice(device_id):set_argument_value(argument_id, new_value)", 3)
+--- @func Returns new SetArgumentValueAPI
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function SetArgumentValueAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):set_argument_value(argument_id, new_value)", 3)
 
 	o:add_param_def(0, ParamName.device_id, ParamType.number)
 	o:add_param_def(1, ParamName.argument_id, ParamType.number)
@@ -26,11 +26,11 @@ function SetArgumentValue:new(o)
 end
 
 --- @func Inits with internal data
-function SetArgumentValue:init() end
+function SetArgumentValueAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function SetArgumentValue:execute(api)
+function SetArgumentValueAPI:execute(api)
 	local param0
 	local param1
 	local param2
@@ -67,4 +67,4 @@ function SetArgumentValue:execute(api)
 	return api
 end
 
-return SetArgumentValue
+return SetArgumentValueAPI

@@ -1,20 +1,20 @@
-module("PerformClickableAction", package.seeall)
+module("PerformClickableActionAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
--- This is the unique ID for this particular API
-local API_ID = 2
-
---- @class PerformClickableAction : APIBase
+--- @class PerformClickableActionAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local PerformClickableAction = APIBase:new()
+local PerformClickableActionAPI = APIBase:new()
 
---- @func Returns new PerformClickableAction
-function PerformClickableAction:new(o)
-	o = o or APIBase:new(o, API_ID, false, "GetDevice(device_id):performClickableAction(command_id, argument_id)", 3)
+--- @func Returns new PerformClickableActionAPI
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function PerformClickableActionAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):performClickableAction(command_id, argument_id)", 3)
 
 	o:add_param_def(0, ParamName.device_id, ParamType.number)
 	o:add_param_def(1, ParamName.command_id, ParamType.number)
@@ -26,11 +26,11 @@ function PerformClickableAction:new(o)
 end
 
 --- @func Inits with internal data
-function PerformClickableAction:init() end
+function PerformClickableActionAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function PerformClickableAction:execute(api)
+function PerformClickableActionAPI:execute(api)
 	local param0
 	local param1
 	local param2
@@ -66,4 +66,4 @@ function PerformClickableAction:execute(api)
 	return api
 end
 
-return PerformClickableAction
+return PerformClickableActionAPI

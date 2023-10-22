@@ -2,17 +2,17 @@ module("LoGetPayloadInfoAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
--- This is the unique ID for this particular API
-local API_ID = 30
-
 --- @class LoGetPayloadInfoAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
 local LoGetPayloadInfoAPI = APIBase:new()
 
 --- @func Returns new LoGetPayloadInfoAPI
-function LoGetPayloadInfoAPI:new(o)
-	o = o or APIBase:new(o, API_ID, true, "LoGetPayloadInfo()", 0)
+--- @param o table|nil Parent
+--- @param apiId integer API ID, must be unique
+--- @return APIBase
+function LoGetPayloadInfoAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "LoGetPayloadInfo()", 0)
 
 	setmetatable(o, self)
 	self.__index = self
