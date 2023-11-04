@@ -15,7 +15,7 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 
 ![scripts_folders](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/e4ee8c96-4c57-42f5-b9ef-a2edc6c0484f)
 
-
+* Start the mission
 * Connect client, once connected dcs-insight server sends all APIs it has
 * You can poll an API for changes
 * You can search for API
