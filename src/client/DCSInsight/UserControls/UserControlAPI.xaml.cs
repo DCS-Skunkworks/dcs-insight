@@ -241,6 +241,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
+
                 var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
 
                 if (_keepResults)

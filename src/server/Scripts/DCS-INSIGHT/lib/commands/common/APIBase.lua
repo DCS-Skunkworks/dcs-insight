@@ -73,6 +73,8 @@ function APIBase:decode_result(api, result)
 		return api
 	end
 
+	api.result_type = type(result)
+
 	if type(result) == "table" then
 		local result, str = Log:dump_table(result, 100, 2000)
 		if string.len(str) == 0 then

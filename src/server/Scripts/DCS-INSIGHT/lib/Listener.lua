@@ -54,6 +54,8 @@ Listener.ReadClientData = function(str)
 		end
 
 		local api = Listener.Instance.APIHandler:execute(command)
+		Log:log_simple("Returning " .. api.result_type .. "\n")
+
 		local json = JSON:encode_pretty(api)
 		Listener.Instance.tcpServer:send(json)
 

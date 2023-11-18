@@ -39,6 +39,17 @@ local LoGetMagneticYawAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetMagne
 local LoGetBasicAtmospherePressureAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetBasicAtmospherePressureAPI")
 local LoGetMCPStateAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetMCPStateAPI")
 local LoGetTWSInfoAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetTWSInfoAPI")
+local LoGetAngleOfSideSlipAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAngleOfSideSlipAPI")
+local LoGetRadarAltimeterAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetRadarAltimeterAPI")
+local LoSetCommand1API = require("Scripts.DCS-INSIGHT.lib.commands.LoSetCommand1API")
+local LoSetCommand2API = require("Scripts.DCS-INSIGHT.lib.commands.LoSetCommand2API")
+local LoGetRouteAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetRouteAPI")
+local LoGetWingInfoAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetWingInfoAPI")
+local LoGetRadioBeaconsStatusAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetRadioBeaconsStatusAPI")
+local LoGetVectorVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetVectorVelocityAPI")
+local LoGetVectorWindVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetVectorWindVelocityAPI")
+local LoGetAngularVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAngularVelocityAPI")
+local LoGetFMDataAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetFMDataAPI")
 
 --- @class APIHandler
 --- @field public commandsTable table<APIBase>
@@ -102,6 +113,14 @@ function APIHandler:init()
 	local listIndicationAPI = ListIndicationAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
 	self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
+
+	local loSetCommand1API = LoSetCommand1API:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loSetCommand1API
+	self.apiTable[#self.apiTable + 1] = loSetCommand1API.apiInfo
+
+	local loSetCommand2API = LoSetCommand2API:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loSetCommand2API
+	self.apiTable[#self.apiTable + 1] = loSetCommand2API.apiInfo
 
 	--[[ APIs not requiring parameters below ]]
 
@@ -216,6 +235,42 @@ function APIHandler:init()
 	local loGetTWSInfoAPI = LoGetTWSInfoAPI:new(nil, counter())
 	self.commandsTable[#self.commandsTable + 1] = loGetTWSInfoAPI
 	self.apiTable[#self.apiTable + 1] = loGetTWSInfoAPI.apiInfo
+
+	local loGetAngleOfSideSlipAPI = LoGetAngleOfSideSlipAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetAngleOfSideSlipAPI
+	self.apiTable[#self.apiTable + 1] = loGetAngleOfSideSlipAPI.apiInfo
+
+	local loGetRadarAltimeterAPI = LoGetRadarAltimeterAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetRadarAltimeterAPI
+	self.apiTable[#self.apiTable + 1] = loGetRadarAltimeterAPI.apiInfo
+
+	local loGetRouteAPI = LoGetRouteAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetRouteAPI
+	self.apiTable[#self.apiTable + 1] = loGetRouteAPI.apiInfo
+
+	local loGetWingInfoAPI = LoGetWingInfoAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetWingInfoAPI
+	self.apiTable[#self.apiTable + 1] = loGetWingInfoAPI.apiInfo
+
+	local loGetRadioBeaconsStatusAPI = LoGetRadioBeaconsStatusAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetRadioBeaconsStatusAPI
+	self.apiTable[#self.apiTable + 1] = loGetRadioBeaconsStatusAPI.apiInfo
+
+	local loGetVectorVelocityAPI = LoGetVectorVelocityAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetVectorVelocityAPI
+	self.apiTable[#self.apiTable + 1] = loGetVectorVelocityAPI.apiInfo
+
+	local loGetVectorWindVelocityAPI = LoGetVectorWindVelocityAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetVectorWindVelocityAPI
+	self.apiTable[#self.apiTable + 1] = loGetVectorWindVelocityAPI.apiInfo
+
+	local loGetAngularVelocityAPI = LoGetAngularVelocityAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetAngularVelocityAPI
+	self.apiTable[#self.apiTable + 1] = loGetAngularVelocityAPI.apiInfo
+
+	local loGetFMDataAPI = LoGetFMDataAPI:new(nil, counter())
+	self.commandsTable[#self.commandsTable + 1] = loGetFMDataAPI
+	self.apiTable[#self.apiTable + 1] = loGetFMDataAPI.apiInfo
 
 	self:verify_entries()
 end

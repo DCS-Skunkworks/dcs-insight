@@ -8,6 +8,7 @@ local ParamName = {
 	new_value = "new_value",
 	draw_argument_id = "draw_argument_id",
 	indicator_id = "indicator_id",
+	iCommand = "iCommand",
 }
 
 return ParamName
