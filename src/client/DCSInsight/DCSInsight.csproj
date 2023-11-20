@@ -16,6 +16,7 @@
     <None Remove="Images\Magnifier_icon.ico" />
     <None Remove="Images\Magnifier_icon.png" />
     <None Remove="Images\search_api.png" />
+    <None Remove="Items\iCommands.txt" />
     <None Remove="Magnifier_icon.png" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +33,17 @@
     <Resource Include="Images\Magnifier_icon.ico" />
     <Resource Include="Images\Magnifier_icon.png" />
     <Resource Include="Images\search_api.png" />
+    <Resource Include="Items\iCommands.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="UserControls\UserControlLoSetCommandAPI.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UserControls\UserControlAPIBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="NLog.config">

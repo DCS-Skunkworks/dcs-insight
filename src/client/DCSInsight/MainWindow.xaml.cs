@@ -29,7 +29,7 @@ namespace DCSInsight
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private List<DCSAPI> _dcsAPIList = new();
-        private readonly List<UserControlAPI> _loadedAPIUserControls = new();
+        private readonly List<UserControlAPIBase> _loadedAPIUserControls = new();
         private bool _formLoaded;
         private TCPClientHandler _tcpClientHandler;
         private bool _isConnected;
@@ -407,8 +407,16 @@ namespace DCSInsight
 
                     foreach (var dcsapi in filteredAPIs)
                     {
-                        var userControl = new UserControlAPI(dcsapi, _isConnected);
-                        _loadedAPIUserControls.Add(userControl);
+                        if (dcsapi.Syntax.ToLower().Contains("losetcommand("))
+                        {
+                            var userControl = new UserControlLoSetCommandAPI(dcsapi, _isConnected);
+                            _loadedAPIUserControls.Add(userControl);
+                        }
+                        else
+                        {
+                            var userControl = new UserControlAPI(dcsapi, _isConnected);
+                            _loadedAPIUserControls.Add(userControl);
+                        }
                     }
 
                     ItemsControlAPI.ItemsSource = null;

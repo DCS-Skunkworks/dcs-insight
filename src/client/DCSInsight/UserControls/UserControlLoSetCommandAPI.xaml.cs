@@ -12,12 +12,12 @@ using DCSInsight.Misc;
 namespace DCSInsight.UserControls
 {
     /// <summary>
-    /// Interaction logic for UserControlAPI.xaml
+    /// Interaction logic for UserControlLoSetCommandAPI.xaml
     /// </summary>
-    public partial class UserControlAPI : UserControlAPIBase
+    public partial class UserControlLoSetCommandAPI : UserControlAPIBase
     {
 
-        public UserControlAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
+        public UserControlLoSetCommandAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
         }
@@ -34,7 +34,7 @@ namespace DCSInsight.UserControls
             GC.SuppressFinalize(this);
         }
 
-        private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
+        private void UserControlLoSetCommandAPI_OnLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -92,24 +92,44 @@ namespace DCSInsight.UserControls
                         };
                         controlList.Add(label);
 
-                        var textBox = new TextBox
+                        if (dcsAPIParameterType.ParameterName == "iCommand")
                         {
-                            Name = "TextBox" + dcsAPIParameterType.Id,
-                            Tag = dcsAPIParameterType.Id,
-                            MinWidth = 50,
-                            MaxWidth = 100,
-                            Height = 20,
-                            IsTabStop = true
-                        };
-
-                        if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
-                        {
-                            textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+                            var commands = LoSetCommand.LoadCommands();
+                            var comboBox = new ComboBox
+                            {
+                                Name = "ComboBox" + dcsAPIParameterType.Id,
+                                Tag = dcsAPIParameterType.Id,
+                                MinWidth = 50,
+                                MaxWidth = 100,
+                                Height = 20,
+                                IsReadOnly = true,
+                                DisplayMemberPath = "Description",
+                                ItemsSource = commands
+                            };
+                            controlList.Add(comboBox);
+                            ComboBoxParameterList.Add(comboBox);
                         }
-                        textBox.KeyUp += TextBoxParameter_OnKeyUp;
+                        else
+                        {
+                            var textBox = new TextBox
+                            {
+                                Name = "TextBox" + dcsAPIParameterType.Id,
+                                Tag = dcsAPIParameterType.Id,
+                                MinWidth = 50,
+                                MaxWidth = 100,
+                                Height = 20,
+                                IsTabStop = true
+                            };
 
-                        controlList.Add(textBox);
-                        TextBoxParameterList.Add(textBox);
+                            if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
+                            {
+                                textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+                            }
+                            textBox.KeyUp += TextBoxParameter_OnKeyUp;
+
+                            controlList.Add(textBox);
+                            TextBoxParameterList.Add(textBox);
+                        }
                     }
 
                     ButtonSend = new Button
@@ -196,7 +216,7 @@ namespace DCSInsight.UserControls
                 Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
-
+        
         public override void SetResult(DCSAPI dcsApi)
         {
             try
