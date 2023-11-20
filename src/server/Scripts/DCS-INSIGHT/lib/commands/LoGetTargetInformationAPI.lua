@@ -1,18 +1,20 @@
-module("LoGetTrueAirSpeedAPI", package.seeall)
+module("LoGetTargetInformationAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
+local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
+local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
---- @class LoGetTrueAirSpeedAPI : APIBase
+--- @class LoGetTargetInformationAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local LoGetTrueAirSpeedAPI = APIBase:new()
+local LoGetTargetInformationAPI = APIBase:new()
 
---- @func Returns new LoGetTrueAirSpeedAPI
+--- @func Returns new LoGetTargetInformationAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
-function LoGetTrueAirSpeedAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, true, "LoGetTrueAirSpeed()", 0)
+function LoGetTargetInformationAPI:new(o, apiId)
+	o = o or APIBase:new(o, apiId, true, "LoGetTargetInformation()", 0)
 
 	setmetatable(o, self)
 	self.__index = self
@@ -20,11 +22,11 @@ function LoGetTrueAirSpeedAPI:new(o, apiId)
 end
 
 --- @func Inits with internal data
-function LoGetTrueAirSpeedAPI:init() end
+function LoGetTargetInformationAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function LoGetTrueAirSpeedAPI:execute(api)
+function LoGetTargetInformationAPI:execute(api)
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
 		api.error_thrown = true
@@ -32,11 +34,11 @@ function LoGetTrueAirSpeedAPI:execute(api)
 		return api
 	end
 
-	local result = LoGetTrueAirSpeed()
+	local result = LoGetTargetInformation()
 
 	api = self:decode_result(api, result, nil)
 
 	return api
 end
 
-return LoGetTrueAirSpeedAPI
+return LoGetTargetInformationAPI

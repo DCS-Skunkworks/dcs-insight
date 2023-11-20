@@ -34,7 +34,7 @@ function LoGetMCPStateAPI:execute(api)
 
 	local result = LoGetMCPState()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

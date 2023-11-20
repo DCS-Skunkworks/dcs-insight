@@ -173,6 +173,71 @@ function LoGetAngleOfSideSlip() end
 --- @return number
 function LoGetRadarAltimeter() end
 
+--- Returns whether object export is allowed
+--- @return boolean
+function LoIsObjectExportAllowed() end
+
+--- Returns whether sensor export is allowed
+--- @return boolean
+function LoIsSensorExportAllowed() end
+
+--- Returns object
+--- @param object_id integer
+--- @return table
+function LoGetObjectById(object_id) end
+
+--- Returns all world objects
+--- @return table
+function LoGetWorldObjects() end
+
+--- Returns target information
+--- @return table
+function LoGetTargetInformation() end
+
+--- Returns locked target information
+--- @return table
+function LoGetLockedTargetInformation() end
+
+--- Returns F-15 TWS contacts
+--- @return table
+function LoGetF15_TWS_Contacts() end
+
+--- Returns Sighting system information
+--- @return table
+function LoGetSightingSystemInfo() end
+
+--- Returns wing's targets
+--- @return table
+function LoGetWingTargets() end
+
+--- Returns player's aircraft id
+--- @return string
+function LoGetPlayerPlaneId() end
+
+--- Returns altitude
+--- @return number
+function LoGetAltitude() end
+
+--- Returns name by type
+--- @param weapon_level1 integer
+--- @param weapon_level2 integer
+--- @param weapon_level3 integer
+--- @param weapon_level4 integer
+--- @return string
+function LoGetNameByType(weapon_level1, weapon_level2, weapon_level3, weapon_level4) end
+
+--- Converts lat long to x y z
+--- @param longitude_degrees number
+--- @param latitude_degrees number
+--- @return number, number, number
+function LoGeoCoordinatesToLoCoordinates(longitude_degrees, latitude_degrees) end
+
+--- Converts x, z to lat long
+--- @param x number
+--- @param z number
+--- @return number, number
+function LoCoordinatesToGeoCoordinates(x, z) end
+
 --- Contains acceleration info for all dimensions
 --- @class AccelerationUnit
 --- @diagnostic disable-next-line: duplicate-doc-field

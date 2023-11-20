@@ -46,7 +46,7 @@ function LoSetCommand1API:execute(api)
 
 	local result = LoSetCommand(param0)
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

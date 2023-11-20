@@ -34,7 +34,7 @@ function LoGetMissionStartTimeAPI:execute(api)
 
 	local result = LoGetMissionStartTime()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

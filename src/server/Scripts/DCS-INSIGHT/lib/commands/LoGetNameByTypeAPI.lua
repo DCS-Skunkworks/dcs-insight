@@ -1,24 +1,26 @@
-module("SetCommandAPI", package.seeall)
+module("LoGetNameByTypeAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
---- @class SetCommandAPI : APIBase
+--- @class LoGetNameByTypeAPI : APIBase
 --- @field id number API ID
 --- @field apiInfo APIInfo
-local SetCommandAPI = APIBase:new()
+local LoGetNameByTypeAPI = APIBase:new()
 
---- @func Returns new SetCommandAPI
+--- @func Returns new LoGetNameByTypeAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
-function SetCommandAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):SetCommandAPI(command_id, new_value)", 3)
+function LoGetNameByTypeAPI:new(o, apiId)
+	o = o
+		or APIBase:new(o, apiId, true, "LoGetNameByType(weapon_level1, weapon_level2, weapon_level3, weapon_level4)", 4)
 
-	o:add_param_def(0, ParamName.device_id, ParamType.number)
-	o:add_param_def(1, ParamName.command_id, ParamType.number)
-	o:add_param_def(2, ParamName.new_value, ParamType.number)
+	o:add_param_def(0, ParamName.weapon_level1, ParamType.number)
+	o:add_param_def(1, ParamName.weapon_level2, ParamType.number)
+	o:add_param_def(2, ParamName.weapon_level3, ParamType.number)
+	o:add_param_def(3, ParamName.weapon_level4, ParamType.number)
 
 	setmetatable(o, self)
 	self.__index = self
@@ -26,15 +28,11 @@ function SetCommandAPI:new(o, apiId)
 end
 
 --- @func Inits with internal data
-function SetCommandAPI:init() end
+function LoGetNameByTypeAPI:init() end
 
 --- @func Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
-function SetCommandAPI:execute(api)
-	local param0
-	local param1
-	local param2
-
+function LoGetNameByTypeAPI:execute(api)
 	local result_code, message = self:verify_params()
 	if result_code == 1 then
 		api.error_thrown = true
@@ -42,6 +40,10 @@ function SetCommandAPI:execute(api)
 		return api
 	end
 
+	local param0
+	local param1
+	local param2
+	local param3
 	for i, param in pairs(api.parameter_defs) do
 		if param.id == 0 then
 			param0 = param.value
@@ -52,18 +54,16 @@ function SetCommandAPI:execute(api)
 		if param.id == 2 then
 			param2 = param.value
 		end
+		if param.id == 3 then
+			param3 = param.value
+		end
 	end
 
-	if self:verify_device(param0) == false then
-		api.error_thrown = true
-		api.error_message = "Device not found"
-		return api
-	end
+	local result = LoGetNameByType(param0, param1, param2, param3)
 
-	local result = GetDevice(param0):SetCommand(param1, param2)
 	api = self:decode_result(api, result, nil)
 
 	return api
 end
 
-return SetCommandAPI
+return LoGetNameByTypeAPI

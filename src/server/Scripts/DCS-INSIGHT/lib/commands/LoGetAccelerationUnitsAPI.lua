@@ -34,7 +34,7 @@ function LoGetAccelerationUnitsAPI:execute(api)
 
 	local result = LoGetAccelerationUnits()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

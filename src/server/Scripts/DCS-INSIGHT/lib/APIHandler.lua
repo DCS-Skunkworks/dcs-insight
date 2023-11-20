@@ -13,7 +13,6 @@ local LoGetAircraftDrawArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.comma
 local LoGetSelfDataAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetSelfDataAPI")
 local LoGetModelTimeAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetModelTimeAPI")
 local LoGetMissionStartTimeAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetMissionStartTimeAPI")
-local LoIsOwnshipExportAllowedAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoIsOwnshipExportAllowedAPI")
 local LoGetPilotNameAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetPilotNameAPI")
 local LoGetIndicatedAirSpeedAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetIndicatedAirSpeedAPI")
 local LoGetAccelerationUnitsAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAccelerationUnitsAPI")
@@ -50,6 +49,20 @@ local LoGetVectorVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetVe
 local LoGetVectorWindVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetVectorWindVelocityAPI")
 local LoGetAngularVelocityAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAngularVelocityAPI")
 local LoGetFMDataAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetFMDataAPI")
+local LoIsOwnshipExportAllowedAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoIsOwnshipExportAllowedAPI")
+local LoIsObjectExportAllowedAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoIsObjectExportAllowedAPI")
+local LoIsSensorExportAllowedAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoIsSensorExportAllowedAPI")
+local LoGetObjectByIdAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetObjectByIdAPI")
+local LoGetWorldObjectsAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetWorldObjectsAPI")
+local LoGetTargetInformationAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetTargetInformationAPI")
+local LoGetLockedTargetInformationAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetLockedTargetInformationAPI")
+local LoGetF15_TWS_ContactsAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetF15_TWS_ContactsAPI")
+local LoGetSightingSystemInfoAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetSightingSystemInfoAPI")
+local LoGetWingTargetsAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetWingTargetsAPI")
+local LoGeoCoordinatesToLoCoordinatesAPI =
+	require("Scripts.DCS-INSIGHT.lib.commands.LoGeoCoordinatesToLoCoordinatesAPI")
+local LoGetAltitudeAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAltitudeAPI")
+local LoCoordinatesToGeoCoordinatesAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoCoordinatesToGeoCoordinatesAPI")
 
 --- @class APIHandler
 --- @field public commandsTable table<APIBase>
@@ -74,204 +87,202 @@ local function counter()
 	return id
 end
 
+--- @func Fills the commands and api table with APIs having device_id as parameter
+function APIHandler:addDeviceAPIs()
+	self.commandsTable[#self.commandsTable + 1] = GetArgumentValueAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = SetArgumentValueAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = PerformClickableActionAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = SetCommandAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = GetFrequencyAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = SetFrequencyAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = UpdateArgumentsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+end
+
+--- @func Fills the commands and api table with APIs taking parameters but not device_id
+function APIHandler:addParameterAPIs()
+	self.commandsTable[#self.commandsTable + 1] = LoGetAircraftDrawArgumentValueAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetObjectByIdAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = ListIndicationAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoSetCommand1API:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoSetCommand2API:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGeoCoordinatesToLoCoordinatesAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoCoordinatesToGeoCoordinatesAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+end
+
+--- @func Fills the commands and api table with APIs not taking parameters
+function APIHandler:addParameterlessAPIs()
+	self.commandsTable[#self.commandsTable + 1] = ListCockpitParamsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetSelfDataAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetModelTimeAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetMissionStartTimeAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetPilotNameAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetIndicatedAirSpeedAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAccelerationUnitsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetADIPitchBankYawAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetSnaresAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAltitudeAboveSeaLevelAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAltitudeAboveGroundLevelAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetVerticalVelocityAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetTrueAirSpeedAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetMachNumberAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAngleOfAttackAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetGlideDeviationAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetSideDeviationAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetSlipBallPositionAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetEngineInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetMechInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetControlPanel_HSI_API:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetPayloadInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetNavigationInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetMagneticYawAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetBasicAtmospherePressureAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetMCPStateAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetTWSInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAngleOfSideSlipAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetRadarAltimeterAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetRouteAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetWingInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetRadioBeaconsStatusAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetVectorVelocityAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetVectorWindVelocityAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAngularVelocityAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetFMDataAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetWorldObjectsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetTargetInformationAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetLockedTargetInformationAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetF15_TWS_ContactsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetSightingSystemInfoAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetWingTargetsAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoGetAltitudeAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	-- LoIs.. APIs
+
+	self.commandsTable[#self.commandsTable + 1] = LoIsOwnshipExportAllowedAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoIsObjectExportAllowedAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoIsSensorExportAllowedAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+end
+
 --- @func Fills the commands and api table
 function APIHandler:init()
-	local getArgumentValueAPI = GetArgumentValueAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = getArgumentValueAPI
-	self.apiTable[#self.apiTable + 1] = getArgumentValueAPI.apiInfo
-
-	local setArgumentValueAPI = SetArgumentValueAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = setArgumentValueAPI
-	self.apiTable[#self.apiTable + 1] = setArgumentValueAPI.apiInfo
-
-	local performClickableActionAPI = PerformClickableActionAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = performClickableActionAPI
-	self.apiTable[#self.apiTable + 1] = performClickableActionAPI.apiInfo
-
-	local setCommandAPI = SetCommandAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = setCommandAPI
-	self.apiTable[#self.apiTable + 1] = setCommandAPI.apiInfo
-
-	local getFrequencyAPI = GetFrequencyAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = getFrequencyAPI
-	self.apiTable[#self.apiTable + 1] = getFrequencyAPI.apiInfo
-
-	local setFrequencyAPI = SetFrequencyAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = setFrequencyAPI
-	self.apiTable[#self.apiTable + 1] = setFrequencyAPI.apiInfo
-
-	local updateArgumentsAPI = UpdateArgumentsAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = updateArgumentsAPI
-	self.apiTable[#self.apiTable + 1] = updateArgumentsAPI.apiInfo
-
-	--[[ APIs not requiring device parameter below ]]
-
-	local loGetAircraftDrawArgumentValue = LoGetAircraftDrawArgumentValueAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAircraftDrawArgumentValue
-	self.apiTable[#self.apiTable + 1] = loGetAircraftDrawArgumentValue.apiInfo
-
-	local listIndicationAPI = ListIndicationAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = listIndicationAPI
-	self.apiTable[#self.apiTable + 1] = listIndicationAPI.apiInfo
-
-	local loSetCommand1API = LoSetCommand1API:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loSetCommand1API
-	self.apiTable[#self.apiTable + 1] = loSetCommand1API.apiInfo
-
-	local loSetCommand2API = LoSetCommand2API:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loSetCommand2API
-	self.apiTable[#self.apiTable + 1] = loSetCommand2API.apiInfo
-
-	--[[ APIs not requiring parameters below ]]
-
-	local listCockpitParamsAPI = ListCockpitParamsAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = listCockpitParamsAPI
-	self.apiTable[#self.apiTable + 1] = listCockpitParamsAPI.apiInfo
-
-	local loGetSelfData = LoGetSelfDataAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetSelfData
-	self.apiTable[#self.apiTable + 1] = loGetSelfData.apiInfo
-
-	local loGetModelTimeAPI = LoGetModelTimeAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetModelTimeAPI
-	self.apiTable[#self.apiTable + 1] = loGetModelTimeAPI.apiInfo
-
-	local loGetMissionStartTimeAPI = LoGetMissionStartTimeAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetMissionStartTimeAPI
-	self.apiTable[#self.apiTable + 1] = loGetMissionStartTimeAPI.apiInfo
-
-	local loIsOwnshipExportAllowedAPI = LoIsOwnshipExportAllowedAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loIsOwnshipExportAllowedAPI
-	self.apiTable[#self.apiTable + 1] = loIsOwnshipExportAllowedAPI.apiInfo
-
-	local loGetPilotName = LoGetPilotNameAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetPilotName
-	self.apiTable[#self.apiTable + 1] = loGetPilotName.apiInfo
-
-	local loGetIndicatedAirSpeedAPI = LoGetIndicatedAirSpeedAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetIndicatedAirSpeedAPI
-	self.apiTable[#self.apiTable + 1] = loGetIndicatedAirSpeedAPI.apiInfo
-
-	local loGetAccelerationUnitsAPI = LoGetAccelerationUnitsAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAccelerationUnitsAPI
-	self.apiTable[#self.apiTable + 1] = loGetAccelerationUnitsAPI.apiInfo
-
-	local loGetADIPitchBankYawAPI = LoGetADIPitchBankYawAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetADIPitchBankYawAPI
-	self.apiTable[#self.apiTable + 1] = loGetADIPitchBankYawAPI.apiInfo
-
-	local loGetSnaresAPI = LoGetSnaresAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetSnaresAPI
-	self.apiTable[#self.apiTable + 1] = loGetSnaresAPI.apiInfo
-
-	local loGetAltitudeAboveSeaLevelAPI = LoGetAltitudeAboveSeaLevelAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAltitudeAboveSeaLevelAPI
-	self.apiTable[#self.apiTable + 1] = loGetAltitudeAboveSeaLevelAPI.apiInfo
-
-	local loGetAltitudeAboveGroundLevelAPI = LoGetAltitudeAboveGroundLevelAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAltitudeAboveGroundLevelAPI
-	self.apiTable[#self.apiTable + 1] = loGetAltitudeAboveGroundLevelAPI.apiInfo
-
-	local loGetVerticalVelocityAPI = LoGetVerticalVelocityAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetVerticalVelocityAPI
-	self.apiTable[#self.apiTable + 1] = loGetVerticalVelocityAPI.apiInfo
-
-	local loGetTrueAirSpeedAPI = LoGetTrueAirSpeedAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetTrueAirSpeedAPI
-	self.apiTable[#self.apiTable + 1] = loGetTrueAirSpeedAPI.apiInfo
-
-	local loGetMachNumberAPI = LoGetMachNumberAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetMachNumberAPI
-	self.apiTable[#self.apiTable + 1] = loGetMachNumberAPI.apiInfo
-
-	local loGetAngleOfAttackAPI = LoGetAngleOfAttackAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAngleOfAttackAPI
-	self.apiTable[#self.apiTable + 1] = loGetAngleOfAttackAPI.apiInfo
-
-	local loGetGlideDeviationAPI = LoGetGlideDeviationAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetGlideDeviationAPI
-	self.apiTable[#self.apiTable + 1] = loGetGlideDeviationAPI.apiInfo
-
-	local loGetSideDeviationAPI = LoGetSideDeviationAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetSideDeviationAPI
-	self.apiTable[#self.apiTable + 1] = loGetSideDeviationAPI.apiInfo
-
-	local loGetSlipBallPositionAPI = LoGetSlipBallPositionAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetSlipBallPositionAPI
-	self.apiTable[#self.apiTable + 1] = loGetSlipBallPositionAPI.apiInfo
-
-	local loGetEngineInfoAPI = LoGetEngineInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetEngineInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetEngineInfoAPI.apiInfo
-
-	local loGetMechInfoAPI = LoGetMechInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetMechInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetMechInfoAPI.apiInfo
-
-	local loGetControlPanel_HSI_API = LoGetControlPanel_HSI_API:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetControlPanel_HSI_API
-	self.apiTable[#self.apiTable + 1] = loGetControlPanel_HSI_API.apiInfo
-
-	local loGetPayloadInfoAPI = LoGetPayloadInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetPayloadInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetPayloadInfoAPI.apiInfo
-
-	local loGetNavigationInfoAPI = LoGetNavigationInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetNavigationInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetNavigationInfoAPI.apiInfo
-
-	local loGetMagneticYawAPI = LoGetMagneticYawAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetMagneticYawAPI
-	self.apiTable[#self.apiTable + 1] = loGetMagneticYawAPI.apiInfo
-
-	local loGetBasicAtmospherePressureAPI = LoGetBasicAtmospherePressureAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetBasicAtmospherePressureAPI
-	self.apiTable[#self.apiTable + 1] = loGetBasicAtmospherePressureAPI.apiInfo
-
-	local loGetMCPStateAPI = LoGetMCPStateAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetMCPStateAPI
-	self.apiTable[#self.apiTable + 1] = loGetMCPStateAPI.apiInfo
-
-	local loGetTWSInfoAPI = LoGetTWSInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetTWSInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetTWSInfoAPI.apiInfo
-
-	local loGetAngleOfSideSlipAPI = LoGetAngleOfSideSlipAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAngleOfSideSlipAPI
-	self.apiTable[#self.apiTable + 1] = loGetAngleOfSideSlipAPI.apiInfo
-
-	local loGetRadarAltimeterAPI = LoGetRadarAltimeterAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetRadarAltimeterAPI
-	self.apiTable[#self.apiTable + 1] = loGetRadarAltimeterAPI.apiInfo
-
-	local loGetRouteAPI = LoGetRouteAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetRouteAPI
-	self.apiTable[#self.apiTable + 1] = loGetRouteAPI.apiInfo
-
-	local loGetWingInfoAPI = LoGetWingInfoAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetWingInfoAPI
-	self.apiTable[#self.apiTable + 1] = loGetWingInfoAPI.apiInfo
-
-	local loGetRadioBeaconsStatusAPI = LoGetRadioBeaconsStatusAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetRadioBeaconsStatusAPI
-	self.apiTable[#self.apiTable + 1] = loGetRadioBeaconsStatusAPI.apiInfo
-
-	local loGetVectorVelocityAPI = LoGetVectorVelocityAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetVectorVelocityAPI
-	self.apiTable[#self.apiTable + 1] = loGetVectorVelocityAPI.apiInfo
-
-	local loGetVectorWindVelocityAPI = LoGetVectorWindVelocityAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetVectorWindVelocityAPI
-	self.apiTable[#self.apiTable + 1] = loGetVectorWindVelocityAPI.apiInfo
-
-	local loGetAngularVelocityAPI = LoGetAngularVelocityAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetAngularVelocityAPI
-	self.apiTable[#self.apiTable + 1] = loGetAngularVelocityAPI.apiInfo
-
-	local loGetFMDataAPI = LoGetFMDataAPI:new(nil, counter())
-	self.commandsTable[#self.commandsTable + 1] = loGetFMDataAPI
-	self.apiTable[#self.apiTable + 1] = loGetFMDataAPI.apiInfo
-
+	self:addDeviceAPIs()
+	self:addParameterAPIs()
+	self:addParameterlessAPIs()
 	self:verify_entries()
 end
 

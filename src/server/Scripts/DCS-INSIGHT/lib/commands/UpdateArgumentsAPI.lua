@@ -52,7 +52,7 @@ function UpdateArgumentsAPI:execute(api)
 	end
 
 	local result = GetDevice(param0):update_arguments()
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

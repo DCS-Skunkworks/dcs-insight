@@ -34,7 +34,7 @@ function LoGetPilotNameAPI:execute(api)
 
 	local result = LoGetPilotName()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

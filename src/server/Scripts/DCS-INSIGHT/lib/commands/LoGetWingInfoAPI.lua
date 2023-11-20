@@ -34,7 +34,7 @@ function LoGetWingInfoAPI:execute(api)
 
 	local result = LoGetWingInfo()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

@@ -34,7 +34,7 @@ function LoGetControlPanel_HSI_API:execute(api)
 
 	local result = LoGetControlPanel_HSI()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

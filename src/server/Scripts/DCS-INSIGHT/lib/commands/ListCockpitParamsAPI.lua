@@ -28,7 +28,7 @@ function ListCockpitParamsAPI:init() end
 function ListCockpitParamsAPI:execute(api)
 	local result = list_cockpit_params()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

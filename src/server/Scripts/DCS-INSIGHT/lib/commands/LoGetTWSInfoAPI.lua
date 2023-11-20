@@ -34,7 +34,7 @@ function LoGetTWSInfoAPI:execute(api)
 
 	local result = LoGetTWSInfo()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

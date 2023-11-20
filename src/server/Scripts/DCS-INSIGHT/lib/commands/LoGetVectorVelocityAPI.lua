@@ -34,7 +34,7 @@ function LoGetVectorVelocityAPI:execute(api)
 
 	local result = LoGetVectorVelocity()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

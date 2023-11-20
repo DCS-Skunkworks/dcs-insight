@@ -34,7 +34,7 @@ function LoGetRadioBeaconsStatusAPI:execute(api)
 
 	local result = LoGetRadioBeaconsStatus()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

@@ -34,7 +34,7 @@ function LoGetAngleOfAttackAPI:execute(api)
 
 	local result = LoGetAngleOfAttack()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

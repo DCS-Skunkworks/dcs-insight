@@ -34,7 +34,7 @@ function LoIsOwnshipExportAllowedAPI:execute(api)
 
 	local result = LoIsOwnshipExportAllowed()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

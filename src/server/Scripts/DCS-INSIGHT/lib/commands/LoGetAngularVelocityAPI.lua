@@ -34,7 +34,7 @@ function LoGetAngularVelocityAPI:execute(api)
 
 	local result = LoGetAngularVelocity()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

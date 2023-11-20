@@ -34,7 +34,7 @@ function LoGetAngleOfSideSlipAPI:execute(api)
 
 	local result = LoGetAngleOfSideSlip()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

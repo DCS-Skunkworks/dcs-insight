@@ -34,7 +34,7 @@ function LoGetFMDataAPI:execute(api)
 
 	local result = LoGetFMData()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end
