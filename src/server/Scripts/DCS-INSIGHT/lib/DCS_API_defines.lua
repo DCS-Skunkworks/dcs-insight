@@ -16,40 +16,40 @@ CockpitDevice = {}
 --- Updates device's arguments (mainpanel device 0)
 function CockpitDevice:update_arguments() end
 
---- @func Sets command for a device
+--- Sets command for a device
 --- @param command_id integer
 --- @param value integer
 function CockpitDevice:SetCommand(command_id, value) end
 
---- @func Sets a device's argument?
+--- Sets a device's argument?
 --- @param argument_id integer
 --- @param value integer
 function CockpitDevice:set_argument_value(argument_id, value) end
 
---- @func Sets a device's frequency
+--- Sets a device's frequency
 --- @param frequency number
 function CockpitDevice:set_frequency(frequency) end
 
---- @func Gets a device's frequency
+--- Gets a device's frequency
 --- @return number
 function CockpitDevice:get_frequency() end
 
---- @func Gets a device based on the device ID as specified in devices.lua
+--- Gets a device based on the device ID as specified in devices.lua
 --- @param argument_id integer
 --- @return number The current value of the CockpitDevice
 function CockpitDevice:get_argument_value(argument_id) end
 
---- @func Makes the device perform an action
+--- Makes the device perform an action
 --- @param command_id integer
 --- @param argument number
 function CockpitDevice:performClickableAction(command_id, argument) end
 
---- @func Gets a device based on the device ID as specified in devices.lua
+--- Gets a device based on the device ID as specified in devices.lua
 --- @param device_id integer
 --- @return CockpitDevice
 function GetDevice(device_id) end
 
---- @func Gets the draw value for a certain animation
+--- Gets the draw value for a certain animation
 --- @param draw_argument_id integer
 --- @return number
 function LoGetAircraftDrawArgumentValue(draw_argument_id) end
@@ -74,57 +74,169 @@ LatLongAlt = {}
 --- @field LatLongAlt LatLongAlt
 AicraftData = {}
 
---- @func Returns SelfData that holds information about the aircraft
+--- Returns SelfData that holds information about the aircraft
 --- @return AicraftData
 function LoGetSelfData() end
 
---- @func Returns the simulation time
+--- Returns the simulation time
 --- @return number
 function LoGetModelTime() end
 
---- @func Returns the mission start time
+--- Returns the mission start time
 --- @return number
 function LoGetMissionStartTime() end
 
---- @func Returns HSI data
+--- Returns HSI data
 --- @return number
 function LoGetControlPanel_HSI() end
 
---- @func Returns payload information
+--- Returns payload information
 --- @return number
 function LoGetPayloadInfo() end
 
---- @func Returns magnetic yaw
+--- Returns magnetic yaw
 --- @return number
 function LoGetMagneticYaw() end
 
---- @func Returns mode control panel state
+--- Returns mode control panel state
 --- @return number
 function LoGetMCPState() end
 
---- @func Returns track while scan information
+--- Returns track while scan information
 --- @return number
 function LoGetTWSInfo() end
 
---- @func Returns atmospheric pressure
+--- Returns atmospheric pressure
 --- @return number
 function LoGetBasicAtmospherePressure() end
 
---- @func Returns navigational information
+--- Returns navigational information
 --- @return number
 function LoGetNavigationInfo() end
 
---- @func Returns whether own ships/aircraft data can be exported.
+--- Returns whether own ships/aircraft data can be exported.
 --- @return boolean
 function LoIsOwnshipExportAllowed() end
 
---- @func Returns pilot's name
+--- Returns pilot's name
 --- @return string
 function LoGetPilotName() end
 
---- @func Returns indicated airspeed
+--- Returns indicated airspeed
 --- @return number
 function LoGetIndicatedAirSpeed() end
+
+--- Returns route information
+--- @return table
+function LoGetRoute() end
+
+--- Returns information on wingman
+--- @return table
+function LoGetWingInfo() end
+
+--- Returns wind velocity
+--- @return table
+function LoGetVectorWindVelocity() end
+
+--- Returns angular velocity
+--- @return table
+function LoGetAngularVelocity() end
+
+--- Returns FM data
+--- @return table
+function LoGetFMData() end
+
+--- Returns radio beacon status
+--- @return table
+function LoGetRadioBeaconsStatus() end
+
+--- Returns vector velocity
+--- @return integer
+function LoGetVectorVelocity() end
+
+--- Set command using keyboard iCommand
+--- @param iCommand integer from DCS keyboard export list
+--- @return number
+function LoSetCommand(iCommand) end
+
+--- Set command using keyboard iCommand
+--- @param iCommand integer from DCS keyboard export list
+--- @param new_value integer for the iCommand
+--- @return number
+function LoSetCommand(iCommand, new_value) end
+
+--- Returns side slip angle
+--- @return number
+function LoGetAngleOfSideSlip() end
+
+--- Returns radar altitude
+--- @return number
+function LoGetRadarAltimeter() end
+
+--- Returns whether object export is allowed
+--- @return boolean
+function LoIsObjectExportAllowed() end
+
+--- Returns whether sensor export is allowed
+--- @return boolean
+function LoIsSensorExportAllowed() end
+
+--- Returns object
+--- @param object_id integer
+--- @return table
+function LoGetObjectById(object_id) end
+
+--- Returns all world objects
+--- @return table
+function LoGetWorldObjects() end
+
+--- Returns target information
+--- @return table
+function LoGetTargetInformation() end
+
+--- Returns locked target information
+--- @return table
+function LoGetLockedTargetInformation() end
+
+--- Returns F-15 TWS contacts
+--- @return table
+function LoGetF15_TWS_Contacts() end
+
+--- Returns Sighting system information
+--- @return table
+function LoGetSightingSystemInfo() end
+
+--- Returns wing's targets
+--- @return table
+function LoGetWingTargets() end
+
+--- Returns player's aircraft id
+--- @return string
+function LoGetPlayerPlaneId() end
+
+--- Returns altitude
+--- @return number
+function LoGetAltitude() end
+
+--- Returns name by type
+--- @param weapon_level1 integer
+--- @param weapon_level2 integer
+--- @param weapon_level3 integer
+--- @param weapon_level4 integer
+--- @return string
+function LoGetNameByType(weapon_level1, weapon_level2, weapon_level3, weapon_level4) end
+
+--- Converts lat long to x y z
+--- @param longitude_degrees number
+--- @param latitude_degrees number
+--- @return number, number, number
+function LoGeoCoordinatesToLoCoordinates(longitude_degrees, latitude_degrees) end
+
+--- Converts x, z to lat long
+--- @param x number
+--- @param z number
+--- @return number, number
+function LoCoordinatesToGeoCoordinates(x, z) end
 
 --- Contains acceleration info for all dimensions
 --- @class AccelerationUnit
@@ -136,11 +248,11 @@ function LoGetIndicatedAirSpeed() end
 --- @field z number
 AccelerationUnit = {}
 
---- @func Returns G Load
+--- Returns G Load
 --- @return AccelerationUnit
 function LoGetAccelerationUnits() end
 
---- @func Returns ADI pitch, band, yaw
+--- Returns ADI pitch, band, yaw
 --- @return number
 function LoGetADIPitchBankYaw()
 	return unpack({ 0, 0, 0 })
@@ -153,58 +265,58 @@ end
 --- @field flare number
 CounterMeasures = {}
 
---- @func Returns information about countermeasures
+--- Returns information about countermeasures
 --- @return CounterMeasures
 function LoGetSnares() end
 
---- @func Returns a list of strings for a cockpit indicator (screen)
+--- Returns a list of strings for a cockpit indicator (screen)
 --- @return string
 function list_indication(indicator_id) end
 
---- @func Returns a list of pages (cockpit screens)
+--- Returns a list of pages (cockpit screens)
 --- @return string
 function list_cockpit_params() end
 
---- @func Maps value to from input_range to output_range
+--- Maps value to from input_range to output_range
 --- @param argument_value number
 --- @param input_range table
 --- @param output_range table
 --- @return number
 function ValueConvert(argument_value, input_range, output_range) end
 
---- @func Returns  altitude above sea level
+--- Returns  altitude above sea level
 --- @return number
 function LoGetAltitudeAboveSeaLevel() end
 
---- @func Returns  altitude above ground level
+--- Returns  altitude above ground level
 --- @return number
 function LoGetAltitudeAboveGroundLevel() end
 
---- @func Returns vertical velocity
+--- Returns vertical velocity
 --- @return number
 function LoGetVerticalVelocity() end
 
---- @func Returns true air speed
+--- Returns true air speed
 --- @return number
 function LoGetTrueAirSpeed() end
 
---- @func Returns mach number
+--- Returns mach number
 --- @return number
 function LoGetMachNumber() end
 
---- @func Returns angle of attack
+--- Returns angle of attack
 --- @return number
 function LoGetAngleOfAttack() end
 
---- @func Returns glide deviation
+--- Returns glide deviation
 --- @return number
 function LoGetGlideDeviation() end
 
---- @func Returns side deviation
+--- Returns side deviation
 --- @return number
 function LoGetSideDeviation() end
 
---- @func Returns slip ball position
+--- Returns slip ball position
 --- @return number
 function LoGetSlipBallPosition() end
 
@@ -226,7 +338,7 @@ EngineSide = {}
 --- @field FuelConsumption EngineSide
 EngineInformation = {}
 
---- @func Returns engine information
+--- Returns engine information
 --- @return EngineInformation
 function LoGetEngineInfo() end
 
@@ -242,6 +354,6 @@ GearValue = {}
 --- @field gear GearValue
 MechanicalInformation = {}
 
---- @func Returns mechanical information
+--- Returns mechanical information
 --- @return MechanicalInformation
 function LoGetMechInfo() end

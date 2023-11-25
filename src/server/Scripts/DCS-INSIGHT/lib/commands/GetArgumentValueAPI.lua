@@ -55,7 +55,7 @@ function GetArgumentValueAPI:execute(api)
 
 	local result = GetDevice(param0):get_argument_value(param1)
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

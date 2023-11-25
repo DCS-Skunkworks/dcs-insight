@@ -63,7 +63,8 @@ end
 --- @func Decodes result based on whether it is a function or procedure and sets api.result accordingly
 --- @param api APIInfo
 --- @param result any
-function APIBase:decode_result(api, result)
+--- @param result_type string|nil
+function APIBase:decode_result(api, result, result_type)
 	if result == nil then
 		if api.returns_data == true then
 			api.result = "result is nil"
@@ -71,6 +72,12 @@ function APIBase:decode_result(api, result)
 			api.result = "api was called"
 		end
 		return api
+	end
+
+	if result_type == nil then
+		api.result_type = type(result)
+	else
+		api.result_type = result_type
 	end
 
 	if type(result) == "table" then

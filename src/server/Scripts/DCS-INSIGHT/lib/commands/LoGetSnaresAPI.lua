@@ -34,7 +34,7 @@ function LoGetSnaresAPI:execute(api)
 
 	local result = LoGetSnares()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

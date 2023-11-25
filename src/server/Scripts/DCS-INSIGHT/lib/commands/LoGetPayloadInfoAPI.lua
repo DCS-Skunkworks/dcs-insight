@@ -34,7 +34,7 @@ function LoGetPayloadInfoAPI:execute(api)
 
 	local result = LoGetPayloadInfo()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

@@ -36,6 +36,9 @@ namespace DCSInsight.JSON
 
         [JsonProperty("result", Required = Required.Default)]
         public string Result { get; set; }
+
+        [JsonProperty("result_type", Required = Required.Default)]
+        public string ResultType { get; set; }
     }
 
 

@@ -34,7 +34,7 @@ function LoGetMechInfoAPI:execute(api)
 
 	local result = LoGetMechInfo()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

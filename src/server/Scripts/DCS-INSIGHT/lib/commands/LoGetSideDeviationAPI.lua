@@ -34,7 +34,7 @@ function LoGetSideDeviationAPI:execute(api)
 
 	local result = LoGetSideDeviation()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

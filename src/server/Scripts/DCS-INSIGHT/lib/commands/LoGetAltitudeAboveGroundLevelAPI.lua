@@ -34,7 +34,7 @@ function LoGetAltitudeAboveGroundLevelAPI:execute(api)
 
 	local result = LoGetAltitudeAboveGroundLevel()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

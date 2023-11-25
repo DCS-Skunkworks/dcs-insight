@@ -34,7 +34,7 @@ function LoGetBasicAtmospherePressureAPI:execute(api)
 
 	local result = LoGetBasicAtmospherePressure()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

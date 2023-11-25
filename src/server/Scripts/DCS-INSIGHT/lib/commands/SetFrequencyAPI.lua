@@ -57,7 +57,7 @@ function SetFrequencyAPI:execute(api)
 	end
 
 	local result = GetDevice(param0):set_frequency(param1)
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

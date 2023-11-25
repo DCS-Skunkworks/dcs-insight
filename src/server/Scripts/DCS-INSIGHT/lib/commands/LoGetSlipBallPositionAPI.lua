@@ -34,7 +34,7 @@ function LoGetSlipBallPositionAPI:execute(api)
 
 	local result = LoGetSlipBallPosition()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

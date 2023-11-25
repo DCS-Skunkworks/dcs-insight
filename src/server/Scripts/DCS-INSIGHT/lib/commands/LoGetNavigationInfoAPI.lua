@@ -34,7 +34,7 @@ function LoGetNavigationInfoAPI:execute(api)
 
 	local result = LoGetNavigationInfo()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

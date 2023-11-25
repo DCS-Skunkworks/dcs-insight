@@ -34,7 +34,7 @@ function LoGetTrueAirSpeedAPI:execute(api)
 
 	local result = LoGetTrueAirSpeed()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

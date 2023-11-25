@@ -34,7 +34,7 @@ function LoGetModelTimeAPI:execute(api)
 
 	local result = LoGetModelTime()
 
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end

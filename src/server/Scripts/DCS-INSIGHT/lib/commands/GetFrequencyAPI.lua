@@ -52,7 +52,7 @@ function GetFrequencyAPI:execute(api)
 	end
 
 	local result = GetDevice(param0):get_frequency()
-	api = self:decode_result(api, result)
+	api = self:decode_result(api, result, nil)
 
 	return api
 end
