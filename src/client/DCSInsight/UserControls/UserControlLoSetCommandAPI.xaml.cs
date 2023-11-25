@@ -99,8 +99,8 @@ namespace DCSInsight.UserControls
                             {
                                 Name = "ComboBox" + dcsAPIParameterType.Id,
                                 Tag = dcsAPIParameterType.Id,
-                                MinWidth = 50,
-                                MaxWidth = 100,
+                                MinWidth = 100,
+                                MaxWidth = 350,
                                 Height = 20,
                                 IsReadOnly = true,
                                 DisplayMemberPath = "Description",
@@ -243,6 +243,18 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                foreach (var comboBox in ComboBoxParameterList)
+                {
+                    var parameterId = (int)comboBox.Tag;
+                    foreach (var parameter in DCSAPI.Parameters)
+                    {
+                        if (parameter.Id == parameterId)
+                        {
+                            var loSetCommand = (LoSetCommand)comboBox.SelectedItem;
+                            parameter.Value = loSetCommand.Code;
+                        }
+                    }
+                }
                 foreach (var textBox in TextBoxParameterList)
                 {
                     var parameterId = (int)textBox.Tag;
