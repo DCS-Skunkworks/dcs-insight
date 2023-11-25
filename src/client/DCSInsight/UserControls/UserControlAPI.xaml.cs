@@ -175,6 +175,7 @@ namespace DCSInsight.UserControls
                             VerticalAlignment = VerticalAlignment.Center
                         };
                         ComboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
+                        ComboBoxPollTimes.Items.Add(50);
                         ComboBoxPollTimes.Items.Add(100);
                         ComboBoxPollTimes.Items.Add(500);
                         ComboBoxPollTimes.Items.Add(1000);
