@@ -19,7 +19,7 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 * Connect client, once connected dcs-insight server sends all APIs it has
 * You can poll an API for changes
 * You can search for API
-
+```
 * 1 : GetDevice(device_id):get_argument_value(argument_id)
 * 2 : GetDevice(device_id):set_argument_value(argument_id, new_value)
 * 3 : GetDevice(device_id):performClickableAction(command_id, argument_id)
@@ -80,7 +80,7 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 * 58 : LoIsOwnshipExportAllowed()
 * 59 : LoIsObjectExportAllowed()
 * 60 : LoIsSensorExportAllowed()
-
+```
 ![insight1](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/a99b72b9-b13b-4b3e-b35b-35188b907bd5)
 
 ![insight2](https://github.com/DCS-Skunkworks/dcs-insight/assets/10453261/3cf176f8-011b-43b6-bc44-4b84feefa9a0)
