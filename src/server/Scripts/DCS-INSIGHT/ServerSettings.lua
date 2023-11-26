@@ -9,6 +9,6 @@ ServerSettings.TCP_address = "*"
 ServerSettings.TCP_port = 7790
 
 -- Log incoming and outgoing JSON
-ServerSettings.Log_JSON = false
+ServerSettings.Log_JSON = true
 
 return ServerSettings

@@ -320,7 +320,12 @@ end
 function APIHandler:verify_entries()
 	local message = "Following api have been loaded :\n"
 	for i = 1, #self.commandsTable do
-		message = message .. self.commandsTable[i].id .. " : " .. self.commandsTable[i].apiInfo.api_syntax .. "\n"
+		message = message
+			.. "* "
+			.. self.commandsTable[i].id
+			.. " : "
+			.. self.commandsTable[i].apiInfo.api_syntax
+			.. "\n"
 	end
 	Log:log(message)
 

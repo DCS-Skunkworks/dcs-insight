@@ -22,7 +22,6 @@ namespace DCSInsight.UserControls
         protected readonly DCSAPI DCSAPI;
         protected bool IsControlLoaded;
         protected readonly List<TextBox> TextBoxParameterList = new();
-        protected readonly List<ComboBox> ComboBoxParameterList = new();
         protected bool IsConnected;
         protected readonly Timer PollingTimer;
         protected bool CanSend;

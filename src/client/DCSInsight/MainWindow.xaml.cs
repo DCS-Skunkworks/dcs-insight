@@ -511,5 +511,24 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
+
+        private void TextBlockAppWiki_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/DCS-Skunkworks/dcs-insight/wiki",
+                UseShellExecute = true
+            });
+        }
+
+        private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Hand;
+        }
+
+        private void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
     }
 }
