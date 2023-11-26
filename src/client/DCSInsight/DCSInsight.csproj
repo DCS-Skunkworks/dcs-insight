@@ -11,12 +11,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\clear_search_result.png" />
+    <None Remove="Images\cue_banner_search.png" />
     <None Remove="Images\Icon_green_lamp_off.png" />
     <None Remove="Images\Icon_green_lamp_on.png" />
     <None Remove="Images\Magnifier_icon.ico" />
     <None Remove="Images\Magnifier_icon.png" />
     <None Remove="Images\search_api.png" />
-    <None Remove="Items\iCommands.txt" />
     <None Remove="Magnifier_icon.png" />
   </ItemGroup>
   <ItemGroup>
@@ -28,14 +28,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\clear_search_result.png" />
+    <Resource Include="Images\cue_banner_search.png" />
     <Resource Include="Images\Icon_green_lamp_off.png" />
     <Resource Include="Images\Icon_green_lamp_on.png" />
     <Resource Include="Images\Magnifier_icon.ico" />
     <Resource Include="Images\Magnifier_icon.png" />
     <Resource Include="Images\search_api.png" />
-    <Resource Include="Items\iCommands.txt">
+    <Content Include="iCommands.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Update="UserControls\UserControlLoSetCommandAPI.xaml.cs">

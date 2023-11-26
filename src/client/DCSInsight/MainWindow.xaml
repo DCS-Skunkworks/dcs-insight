@@ -43,6 +43,9 @@
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" >
                     <TextBlock Name="TextBlockAppInfo" MouseDown="TextBlockAppInfo_OnMouseDown">dcs-insight</TextBlock>
                 </StatusBarItem>
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave">
+                    <TextBlock Name="TextBlockAppWiki" MouseDown="TextBlockAppWiki_OnMouseDown">wiki</TextBlock>
+                </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>
                 </StatusBarItem>
