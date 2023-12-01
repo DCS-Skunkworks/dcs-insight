@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using DCSInsight.Events;
@@ -19,6 +20,8 @@ using ErrorEventArgs = DCSInsight.Events.ErrorEventArgs;
 using System.Windows.Media.Imaging;
 using DCSInsight.Communication;
 using DCSInsight.Windows;
+using Octokit;
+using ProductHeaderValue = System.Net.Http.Headers.ProductHeaderValue;
 
 namespace DCSInsight
 {
@@ -529,6 +532,53 @@ namespace DCSInsight
         private void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
+        }
+
+        private async void TextBlockCheckNewVersion_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                await CheckForNewVersion();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private async Task CheckForNewVersion()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            if (string.IsNullOrEmpty(fileVersionInfo.FileVersion)) return;
+
+            var thisVersion = new Version(fileVersionInfo.FileVersion);
+
+            try
+            {
+                var client = new GitHubClient(new Octokit.ProductHeaderValue("dcs-insight"));
+                var lastRelease = await client.Repository.Release.GetLatest("DCS-Skunkworks", "dcs-insight");
+                var githubVersion = new Version(lastRelease.TagName.Replace("v.", "").Replace("v",""));
+                if (githubVersion.CompareTo(thisVersion) > 0)
+                {
+                    if (MessageBox.Show(this, $"Newer version can be downloaded ({lastRelease.TagName}).\nGo to download page?", "New Version Available", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "https://github.com/DCS-Skunkworks/dcs-insight/releases",
+                            UseShellExecute = true
+                        });
+                    }
+                }
+                else if (githubVersion.CompareTo(thisVersion) == 0)
+                {
+                    MessageBox.Show(this, $"You have the latest version.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error checking for newer releases.");
+            }
         }
     }
 }
