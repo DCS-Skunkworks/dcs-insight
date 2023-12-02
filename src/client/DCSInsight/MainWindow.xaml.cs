@@ -471,7 +471,7 @@ namespace DCSInsight
             try
             {
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-                TextBlockAppInfo.Text = $"dcs-insight v.{fileVersionInfo.FileVersion}";
+                TextBlockAppInfo.Text = $"dcs-insight v{fileVersionInfo.FileVersion}";
             }
             catch (Exception ex)
             {
