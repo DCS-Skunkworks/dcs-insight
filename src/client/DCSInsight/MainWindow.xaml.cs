@@ -572,7 +572,7 @@ namespace DCSInsight
                 }
                 else if (githubVersion.CompareTo(thisVersion) == 0)
                 {
-                    MessageBox.Show(this, $"You have the latest version.", "", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(this, $"You have the latest version.", "All Set", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
