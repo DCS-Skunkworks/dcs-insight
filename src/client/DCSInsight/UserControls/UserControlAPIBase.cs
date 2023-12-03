@@ -33,6 +33,8 @@ namespace DCSInsight.UserControls
         protected CheckBox CheckBoxPolling;
         protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
+        protected static readonly AutoResetEvent AutoResetEventPolling = new(false);
+
         public int Id { get; protected set; }
         protected abstract void BuildUI();
         public abstract void SetResult(DCSAPI dcsApi);
@@ -50,7 +52,10 @@ namespace DCSInsight.UserControls
 
         public void Dispose()
         {
+            AutoResetEventPolling.Set();
+            AutoResetEventPolling.Set();
             PollingTimer?.Dispose();
+            AutoResetEventPolling.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -58,7 +63,10 @@ namespace DCSInsight.UserControls
         {
             if (PollingTimer != null)
             {
+                AutoResetEventPolling.Set();
+                AutoResetEventPolling.Set();
                 await PollingTimer.DisposeAsync();
+                AutoResetEventPolling.Dispose();
                 GC.SuppressFinalize(this);
             }
         }
@@ -68,6 +76,10 @@ namespace DCSInsight.UserControls
             try
             {
                 IsConnected = connected;
+                if (!IsConnected)
+                {
+                    PollingTimer.Change(Timeout.Infinite, 10000);
+                }
                 SetFormState();
             }
             catch (Exception ex)
@@ -93,6 +105,7 @@ namespace DCSInsight.UserControls
             try
             {
                 PollingTimer.Change(milliseconds, milliseconds);
+                AutoResetEventPolling.Set();
                 SetFormState();
             }
             catch (Exception ex)
@@ -118,6 +131,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                AutoResetEventPolling.WaitOne();
                 if (CanSend)
                 {
                     Dispatcher?.BeginInvoke((Action)(SendCommand));

@@ -253,6 +253,7 @@ namespace DCSInsight.UserControls
                     return;
                 }
                 Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
+                AutoResetEventPolling.Set();
             }
             catch (Exception ex)
             {
