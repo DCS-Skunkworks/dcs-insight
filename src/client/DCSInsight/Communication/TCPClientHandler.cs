@@ -101,6 +101,7 @@ namespace DCSInsight.Communication
                 catch (SocketException ex)
                 {
                     Logger.Error(ex);
+                    break;
                 }
             }
 

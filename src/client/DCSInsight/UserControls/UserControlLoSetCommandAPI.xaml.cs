@@ -240,6 +240,8 @@ namespace DCSInsight.UserControls
                 Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
 
                 var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
+                
+                AutoResetEventPolling.Set();
 
                 if (KeepResults)
                 {
@@ -248,7 +250,6 @@ namespace DCSInsight.UserControls
                     return;
                 }
                 Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
-                AutoResetEventPolling.Set();
             }
             catch (Exception ex)
             {
