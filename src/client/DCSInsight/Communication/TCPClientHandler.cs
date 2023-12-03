@@ -29,6 +29,7 @@ namespace DCSInsight.Communication
         private int _metaDataPollCounter;
         public bool LogJSON { get; set; }
         private string _currentMessage = "";
+        private volatile bool _responseReceived;
 
         public TCPClientHandler(string host, string port)
         {
@@ -48,6 +49,7 @@ namespace DCSInsight.Communication
         private async void ClientThread()
         {
             ICEventHandler.SendConnectionStatus(_isRunning);
+            _responseReceived = true;
             while (_isRunning)
             {
                 try
@@ -81,12 +83,13 @@ namespace DCSInsight.Communication
                         Thread.Sleep(1000);
                     }
 
-                    if (_asyncCommandsChannel.Reader.Count > 0)
+                    if (_asyncCommandsChannel.Reader.Count > 0 && _responseReceived)
                     {
                         var cts = new CancellationTokenSource(100);
                         var dcsApi = await _asyncCommandsChannel.Reader.ReadAsync(cts.Token);
                         if (LogJSON) Logger.Info(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
                         _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi) + "\n"));
+                        _responseReceived = false;
                     }
 
                     if (_tcpClient.Available <= 0) continue;
@@ -125,6 +128,7 @@ namespace DCSInsight.Communication
                     var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
                     _currentMessage = "";
                     ICEventHandler.SendData(dcsApi);
+                    _responseReceived = true;
                 }
                 else
                 {
@@ -143,6 +147,7 @@ namespace DCSInsight.Communication
             {
                 var dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
                 ICEventHandler.SendData(dcsAPIList);
+                _responseReceived = true;
                 _apiListReceived = true;
             }
             catch (Exception ex)
