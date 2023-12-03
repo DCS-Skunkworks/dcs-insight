@@ -233,11 +233,6 @@ namespace DCSInsight.UserControls
             }
         }
 
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetResult(DCSAPI dcsApi)
         {
             try
