@@ -233,11 +233,6 @@ namespace DCSInsight.UserControls
             }
         }
 
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetResult(DCSAPI dcsApi)
         {
             try
@@ -245,6 +240,8 @@ namespace DCSInsight.UserControls
                 Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
 
                 var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
+                
+                AutoResetEventPolling.Set();
 
                 if (KeepResults)
                 {

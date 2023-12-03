@@ -140,6 +140,13 @@ namespace DCSInsight
             try
             {
                 _isConnected = args.IsConnected;
+                if (!_isConnected)
+                {
+                    Dispatcher?.BeginInvoke((Action)(Disconnect));
+                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    return;
+                }
+
                 Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(args.IsConnected)));
                 Dispatcher?.BeginInvoke((Action)(SetFormState)); ;
             }
