@@ -41,8 +41,8 @@ function CockpitDevice:get_argument_value(argument_id) end
 
 --- Makes the device perform an action
 --- @param command_id integer
---- @param argument number
-function CockpitDevice:performClickableAction(command_id, argument) end
+--- @param value number
+function CockpitDevice:performClickableAction(command_id, value) end
 
 --- Gets a device based on the device ID as specified in devices.lua
 --- @param device_id integer
@@ -336,6 +336,10 @@ EngineSide = {}
 --- @field HydraulicPressure EngineSide
 --- @diagnostic disable-next-line: duplicate-doc-field
 --- @field FuelConsumption EngineSide
+--- @diagnostic disable-next-line: duplicate-doc-field
+--- @field fuel_internal number
+--- @diagnostic disable-next-line: duplicate-doc-field
+--- @field fuel_external number
 EngineInformation = {}
 
 --- Returns engine information
