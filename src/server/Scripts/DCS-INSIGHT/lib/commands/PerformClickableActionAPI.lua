@@ -14,11 +14,11 @@ local PerformClickableActionAPI = APIBase:new()
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
 function PerformClickableActionAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):performClickableAction(command_id, argument_id)", 3)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):performClickableAction(command_id, new_value)", 3)
 
 	o:add_param_def(0, ParamName.device_id, ParamType.number)
 	o:add_param_def(1, ParamName.command_id, ParamType.number)
-	o:add_param_def(2, ParamName.argument_id, ParamType.number)
+	o:add_param_def(2, ParamName.new_value, ParamType.number)
 
 	setmetatable(o, self)
 	self.__index = self
