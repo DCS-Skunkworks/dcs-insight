@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
+using DCSInsight.Misc;
 
 namespace DCSInsight.Events
 {
@@ -22,7 +23,10 @@ namespace DCSInsight.Events
 
         public static void SendCommand(DCSAPI api)
         {
-            OnSendCommand?.Invoke(new SendCommandEventArgs {APIObject = api});
+            // remove earlier result, no need to send that to server
+            var command = api.CloneJson();
+            command.Result = "";
+            OnSendCommand?.Invoke(new SendCommandEventArgs {APIObject = command});
         }
         /*
          *
