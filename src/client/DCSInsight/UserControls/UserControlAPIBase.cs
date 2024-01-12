@@ -100,7 +100,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void StartPolling(int milliseconds)
+        private void StartPolling(int milliseconds)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void StopPolling()
+        private void StopPolling()
         {
             try
             {
@@ -142,7 +142,7 @@ namespace DCSInsight.UserControls
                 ICEventHandler.SendErrorMessage( "Timer Polling Error", ex);
             }
         }
-
+        
         protected void CheckBoxPolling_OnUnchecked(object sender, RoutedEventArgs e)
         {
             try

@@ -178,7 +178,7 @@ namespace DCSInsight.UserControls
 
                         LabelPolling = new Label
                         {
-                            Content = "Polling",
+                            Content = "Poll",
                             VerticalAlignment = VerticalAlignment.Center,
                             Margin = new Thickness(10, 0, 0, 0)
                         };
@@ -243,10 +243,16 @@ namespace DCSInsight.UserControls
                 
                 AutoResetEventPolling.Set();
 
+                if (dcsApi.Result == DCSAPI.Result)
+                {
+                    return;
+                }
+
+                DCSAPI.Result = dcsApi.Result;
+
                 if (KeepResults)
                 {
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, "\n---\n")));
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result)));
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result + "\n")));
                     return;
                 }
                 Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
