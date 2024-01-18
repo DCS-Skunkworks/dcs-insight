@@ -24,7 +24,7 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 * 1 : GetDevice(device_id):get_argument_value(argument_id)
 * 2 : GetDevice(device_id):set_argument_value(argument_id, new_value)
 * 3 : GetDevice(device_id):performClickableAction(command_id, argument_id)
-* 4 : GetDevice(device_id):SetCommandAPI(command_id, new_value)
+* 4 : GetDevice(device_id):SetCommand(command_id, new_value)
 * 5 : GetDevice(device_id):get_frequency()
 * 6 : GetDevice(device_id):set_frequency(new_value)
 * 7 : GetDevice(device_id):update_arguments()

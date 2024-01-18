@@ -14,7 +14,7 @@ local SetCommandAPI = APIBase:new()
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
 function SetCommandAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):SetCommandAPI(command_id, new_value)", 3)
+	o = o or APIBase:new(o, apiId, false, "GetDevice(device_id):SetCommand(command_id, new_value)", 3)
 
 	o:add_param_def(0, ParamName.device_id, ParamType.number)
 	o:add_param_def(1, ParamName.command_id, ParamType.number)
