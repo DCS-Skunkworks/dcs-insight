@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using ControlReference.CustomControls;
+using DCSInsight.Lua;
 using DCSInsight.Misc;
+using DCSInsight.Properties;
 using Cursors = System.Windows.Input.Cursors;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
@@ -17,16 +21,13 @@ namespace DCSInsight.Windows
     public partial class LuaWindow
     {
         private bool _isLoaded;
-        private string _aircraftId;
-        private string _dcsbiosControlId;
-        private string _luaCommand;
+        private List<string> _aircraftList = new();
+        private List<KeyValuePair<string, string>> _luaControls = new();
+        private TextBlockSelectable _textBlockSelectable;
 
-        public LuaWindow(string aircraftId, string dcsbiosControlId)
+        public LuaWindow()
         {
             InitializeComponent();
-            _aircraftId = aircraftId;
-            _dcsbiosControlId = dcsbiosControlId;
-            LabelControl.Content = _dcsbiosControlId.Replace("_", "__");
         }
 
         private void SetFormState()
@@ -41,32 +42,34 @@ namespace DCSInsight.Windows
                 {
                     return;
                 }
-                
-                var textBlock = new TextBlockSelectable(_luaCommand);
-                textBlock.MouseEnter += TextBlock_OnMouseEnter;
-                textBlock.MouseLeave += TextBlock_OnMouseLeave;
-                SetContextMenu(textBlock);
 
-                textBlock.FontFamily = new System.Windows.Media.FontFamily("Consolas");
-                textBlock.Width = Double.NaN;
+                _textBlockSelectable = new TextBlockSelectable("");
+                _textBlockSelectable.MouseEnter += TextBlock_OnMouseEnter;
+                _textBlockSelectable.MouseLeave += TextBlock_OnMouseLeave;
+                SetContextMenu(_textBlockSelectable);
+
+                _textBlockSelectable.FontFamily = new System.Windows.Media.FontFamily("Consolas");
+                _textBlockSelectable.Width = Double.NaN;
                 
                 var border = new Border();
-                border.Child = textBlock;
+                border.Child = _textBlockSelectable;
                 StackPanelLuaCommand.Children.Add(border);
                 StackPanelLuaCommand.Children.Add(new Line());
 
                 StackPanelLuaCommand.UpdateLayout();
+
+                LoadAircraft();
 
                 SetFormState();
                 _isLoaded = true;
             }
             catch (Exception exception)
             {
-                System.Windows.MessageBox.Show(exception.Message + Environment.NewLine + exception.StackTrace);
+                Common.ShowErrorMessageBox(exception);
             }
         }
 
-        private void LuaWindow_OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void LuaWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
 
         }
@@ -152,6 +155,91 @@ namespace DCSInsight.Windows
 
             Clipboard.SetText(textBlock.SelectedText ?? "");
             SystemSounds.Asterisk.Play();
+        }
+
+        private void LoadAircraft()
+        {
+            _aircraftList = LuaAssistant.GetAircraftList(Settings.Default.DCSBiosJSONLocation);
+            ComboBoxAircraft.DataContext = _aircraftList;
+            ComboBoxAircraft.ItemsSource = _aircraftList;
+            ComboBoxAircraft.Items.Refresh();
+
+            if (_aircraftList.Count <= 0) return;
+            ComboBoxAircraft.SelectionChanged += ComboBoxAircraft_OnSelectionChanged;
+            ComboBoxAircraft.SelectedIndex = 0;
+        }
+
+        private void LoadLuaControls(string aircraftId)
+        {
+            ComboBoxLuaControls.SelectionChanged -= ComboBoxLuaControls_OnSelectionChanged;
+            _luaControls = LuaAssistant.GetLuaControls(aircraftId);
+            ComboBoxLuaControls.DataContext = _luaControls;
+            ComboBoxLuaControls.ItemsSource = _luaControls;
+            ComboBoxLuaControls.DisplayMemberPath = "Key";
+            ComboBoxLuaControls.Items.Refresh();
+
+            if (_luaControls.Count > 0)
+            {
+                ComboBoxLuaControls.SelectionChanged += ComboBoxLuaControls_OnSelectionChanged;
+                ComboBoxLuaControls.SelectedIndex = 0;
+            }
+        }
+
+        private void ComboBoxAircraft_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                LoadLuaControls((string)ComboBoxAircraft.SelectedItem);
+            }
+            catch (Exception exception)
+            {
+                Common.ShowErrorMessageBox(exception);
+            }
+        }
+
+        private void ComboBoxLuaControls_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var luaControl = (KeyValuePair<string,string>)ComboBoxLuaControls.SelectedItem;
+
+                var luaSignatures = LuaAssistant.GetModuleFunctionSignatures();
+
+                //A_10C:definePotentiometer("HARS_LATITUDE", 44, 3005, 271, { 0, 1 }, "HARS", "HARS Latitude Dial")
+                var startIndex = luaControl.Value.IndexOf(":", StringComparison.Ordinal);
+                var endIndex = luaControl.Value.IndexOf("(", StringComparison.Ordinal) - startIndex;
+                var functionName = "function Module" + luaControl.Value.Substring(startIndex, endIndex);
+
+                var luaSignature = luaSignatures.Find(o => o.StartsWith(functionName + "("));
+                _textBlockSelectable.Text = string.IsNullOrEmpty(luaSignature) ? luaControl.Value : $"{luaSignature.Replace("function ","")}\n{luaControl.Value}";
+            }
+            catch (Exception exception)
+            {
+                Common.ShowErrorMessageBox(exception);
+            }
+        }
+
+        private void TextBoxSearch_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(TextBoxSearch);
+        }
+
+        private void TextBoxSearch_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                //TextBoxSearchCommon.AdjustShownPopupData(TextBoxSearch, _popupSearch, _dataGridValues, _luaControls);
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBoxSearch_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            
         }
     }
 }

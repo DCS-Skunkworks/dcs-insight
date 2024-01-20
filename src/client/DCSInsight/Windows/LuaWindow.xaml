@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:customControls="clr-namespace:ControlReference.CustomControls"
         mc:Ignorable="d"
-        Title="" Height="400" Width="Auto"
+        Title="" Height="400" Width="Auto" MaxWidth="800"
         Loaded="LuaWindow_OnLoaded"
         WindowStartupLocation="CenterScreen" 
         KeyDown="LuaWindow_OnKeyDown" Icon="/Images/Magnifier_icon.png">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="26" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
@@ -21,8 +21,10 @@
 
 
         <DockPanel Grid.Row="0" Grid.Column="0" Background="#7ebbfc">
-
-            <Label Name="LabelControl" Width="Auto" Content="" Margin="10,0,0,0" DockPanel.Dock="Left"/>
+            <ComboBox Name="ComboBoxAircraft" Width="Auto" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
+            <ComboBox Name="ComboBoxLuaControls" Width="Auto" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
+            <Label Content="Search" Width="Auto" Margin="10,0,0,0" DockPanel.Dock="Left"></Label>
+            <TextBox Name="TextBoxSearch" Width="Auto" MinWidth="100" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" TextChanged="TextBoxSearch_OnTextChanged" KeyUp="TextBoxSearch_OnKeyUp" PreviewKeyDown="TextBoxSearch_OnPreviewKeyDown"></TextBox>
         </DockPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0">

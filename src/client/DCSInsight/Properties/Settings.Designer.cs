@@ -25,7 +25,7 @@ namespace DCSInsight.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("%userprofile%\\Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json")]
+        [global::System.Configuration.DefaultSettingValueAttribute("%USERPROFILE%\\Saved Games\\DCS\\Scripts\\DCS-BIOS\\doc\\json")]
         public string DCSBiosJSONLocation {
             get {
                 return ((string)(this["DCSBiosJSONLocation"]));

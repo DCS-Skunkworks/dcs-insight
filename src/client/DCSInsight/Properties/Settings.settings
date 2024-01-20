@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="DCSBiosJSONLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">%userprofile%\Saved Games\DCS\Scripts\DCS-BIOS\doc\json</Value>
+      <Value Profile="(Default)">%USERPROFILE%\Saved Games\DCS\Scripts\DCS-BIOS\doc\json</Value>
     </Setting>
   </Settings>
 </SettingsFile>

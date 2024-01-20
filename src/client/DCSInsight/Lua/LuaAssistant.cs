@@ -13,10 +13,20 @@ namespace DCSInsight.Lua
         private static string _dcsbiosAircraftsLuaLocation;
         private static string _dcsbiosModuleLuaFilePath;
         private static readonly List<KeyValuePair<string, string>> LuaControls = new();
+        private static readonly List<string> LuaModuleSignatures = new();
         private static string _aircraftId = "";
         private const string DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE = "Error loading DCS-BIOS lua.";
 
-        internal static string GetLuaCommand(string controlId)
+        internal static List<KeyValuePair<string, string>> GetLuaControls(string aircraftId)
+        {
+            if (aircraftId == null || (_aircraftId == aircraftId && LuaControls.Count > 0)) return LuaControls;
+
+            ReadLuaCommandsFromFile(aircraftId);
+
+            return LuaControls;
+        }
+
+        /*internal static string GetLuaCommand(string controlId)
         {
             if (_aircraftId == null || string.IsNullOrEmpty(controlId)) return "";
 
@@ -30,10 +40,11 @@ namespace DCSInsight.Lua
             if (result.Key != controlId) return "";
 
             return result.Value;
-        }
+        }*/
 
         internal static List<string> GetAircraftList(string dcsbiosJSONPath)
         {
+            dcsbiosJSONPath = Environment.ExpandEnvironmentVariables(dcsbiosJSONPath);
             _dcsbiosAircraftsLuaLocation = $"{dcsbiosJSONPath}\\..\\..\\lib\\modules\\aircraft_modules\\";
             _dcsbiosModuleLuaFilePath = $"{dcsbiosJSONPath}\\..\\..\\lib\\modules\\Module.lua";
             var directoryInfo = new DirectoryInfo(_dcsbiosAircraftsLuaLocation);
@@ -63,7 +74,7 @@ namespace DCSInsight.Lua
 
             // input is a map from category string to a map from key string to control definition
             // we read it all then flatten the grand children (the control definitions)
-            var lineArray = File.ReadAllLines(_dcsbiosModuleLuaFilePath + aircraftId + ".lua");
+            var lineArray = File.ReadAllLines(_dcsbiosAircraftsLuaLocation + aircraftId + ".lua");
             try
             {
                 var luaBuffer = "";
@@ -73,7 +84,7 @@ namespace DCSInsight.Lua
                     //s.StartsWith("--") 
                     if (string.IsNullOrEmpty(s)) continue;
 
-                    if (s.StartsWith(aircraftId + ":define"))
+                    if (s.StartsWith(DCSNameToLuaName(aircraftId) + ":define"))
                     {
                         luaBuffer = s;
 
@@ -100,6 +111,11 @@ namespace DCSInsight.Lua
             {
                 Logger.Error(e, "ReadControlsFromLua : Failed to read DCS-BIOS lua.");
             }
+        }
+
+        private static string DCSNameToLuaName(string aircraftId)
+        {
+            return aircraftId.Replace("-", "_").Replace(" ", "_");
         }
 
         private static KeyValuePair<string, string> CopyControlFromLuaBuffer(string luaBuffer)
@@ -139,7 +155,7 @@ namespace DCSInsight.Lua
         /// Load all lua controls
         /// </summary>
         /// <exception cref="Exception"></exception>
-        private static void ReadLuaCommandsFromFile()
+        private static void ReadLuaCommandsFromFile(string aircraftId)
         {
             LuaControls.Clear();
 
@@ -147,13 +163,61 @@ namespace DCSInsight.Lua
             {
                 lock (LockObject)
                 {
-                    ReadControlsFromLua(_aircraftId);
+                    ReadControlsFromLua(aircraftId);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"{DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE} ==>[{_dcsbiosModuleLuaFilePath}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                throw new Exception($"{DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE} ==>[{_dcsbiosAircraftsLuaLocation}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
+        }
+
+        internal static List<string> GetModuleFunctionSignatures()
+        {
+            if (LuaModuleSignatures.Count > 0) return LuaModuleSignatures;
+
+            LuaModuleSignatures.Clear();
+
+
+            var lineArray = File.ReadAllLines(_dcsbiosModuleLuaFilePath);
+            try
+            {
+                var luaBuffer = "";
+
+                foreach (var s in lineArray)
+                {
+                    //s.StartsWith("--") 
+                    if (string.IsNullOrEmpty(s)) continue;
+
+                    if (s.StartsWith("function Module:define"))
+                    {
+                        luaBuffer = s;
+
+                        if (CountParenthesis(true, luaBuffer) == CountParenthesis(false, luaBuffer))
+                        {
+                            LuaModuleSignatures.Add(luaBuffer);
+                            luaBuffer = "";
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(luaBuffer))
+                    {
+                        //We have incomplete data from previously
+                        luaBuffer = luaBuffer + "\n" + s;
+                        if (CountParenthesis(true, luaBuffer) == CountParenthesis(false, luaBuffer))
+                        {
+                            LuaModuleSignatures.Add(luaBuffer);
+                            luaBuffer = "";
+                        }
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "ReadModuleFunctions : Failed to read Module.lua.");
+            }
+
+            return LuaModuleSignatures;
         }
     }
 }

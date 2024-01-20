@@ -105,7 +105,7 @@ namespace DCSInsight.UserControls
                             _textBoxSearch.TextChanged += TextBoxSearch_OnTextChanged;
                             _textBoxSearch.KeyUp += TextBoxSearch_OnKeyUp;
                             _textBoxSearch.PreviewKeyDown += TextBoxSearch_PreviewKeyDown;
-                            TextBoxSearchCommon.SetBackgroundSearchBanner(_textBoxSearch);
+                            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(_textBoxSearch);
                             controlList.Add(_textBoxSearch);
                             TextBoxParameterList.Add(_textBoxSearch);
                         }
@@ -332,7 +332,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                TextBoxSearchCommon.AdjustShownPopupData(((TextBox)sender), _popupSearch, _dataGridValues, _loSetCommands);
+                TextBoxSearchLoSetCommands.AdjustShownPopupData(((TextBox)sender), _popupSearch, _dataGridValues, _loSetCommands);
                 SetFormState();
             }
             catch (Exception ex)
@@ -343,12 +343,12 @@ namespace DCSInsight.UserControls
 
         private void TextBoxSearch_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBoxSearchCommon.SetBackgroundSearchBanner(((TextBox)sender));
+            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(((TextBox)sender));
         }
         
         private void TextBoxSearch_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            TextBoxSearchCommon.HandleFirstSpace(sender, e);
+            TextBoxSearchLoSetCommands.HandleFirstSpace(sender, e);
         }
     }
 }

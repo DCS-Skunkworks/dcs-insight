@@ -602,5 +602,18 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
+
+        private void ButtonLuaWindow_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var luaWindow = new LuaWindow();
+                luaWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
     }
 }
