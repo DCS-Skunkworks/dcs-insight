@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -28,18 +26,6 @@ namespace DCSInsight.UserControls
         public UserControlLoSetCommandAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
-        }
-
-        public new void Dispose()
-        {
-            base.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
-        public new async ValueTask DisposeAsync()
-        {
-            await base.DisposeAsync();
-            GC.SuppressFinalize(this);
         }
 
         private void UserControlLoSetCommandAPI_OnLoaded(object sender, RoutedEventArgs e)

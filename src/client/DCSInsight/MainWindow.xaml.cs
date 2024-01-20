@@ -19,9 +19,9 @@ using DCSInsight.Misc;
 using ErrorEventArgs = DCSInsight.Events.ErrorEventArgs;
 using System.Windows.Media.Imaging;
 using DCSInsight.Communication;
+using DCSInsight.Properties;
 using DCSInsight.Windows;
 using Octokit;
-using ProductHeaderValue = System.Net.Http.Headers.ProductHeaderValue;
 
 namespace DCSInsight
 {
@@ -585,6 +585,21 @@ namespace DCSInsight
             catch (Exception ex)
             {
                 Logger.Error(ex, "Error checking for newer releases.");
+            }
+        }
+
+        private void TextBlockSetDCSBIOSLocation_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var settingsWindow = new SettingsWindow();
+                settingsWindow.ShowDialog();
+                Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
             }
         }
     }

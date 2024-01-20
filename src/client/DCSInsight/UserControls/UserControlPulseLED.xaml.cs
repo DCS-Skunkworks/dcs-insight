@@ -26,11 +26,16 @@ namespace DCSInsight.UserControls
         public void Dispose()
         {
             _timerLoopPulse?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (_timerLoopPulse != null) await _timerLoopPulse.DisposeAsync();
+            if (_timerLoopPulse != null)
+            {
+                await _timerLoopPulse.DisposeAsync();
+                GC.SuppressFinalize(this);
+            }
         }
 
         private void SetPulseImage(bool setOn)
