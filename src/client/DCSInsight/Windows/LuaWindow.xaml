@@ -7,8 +7,25 @@
         mc:Ignorable="d"
         Title="" Height="400" Width="Auto" MaxWidth="800"
         Loaded="LuaWindow_OnLoaded"
-        WindowStartupLocation="CenterScreen" 
-        KeyDown="LuaWindow_OnKeyDown" Icon="/Images/Magnifier_icon.png">
+        WindowStartupLocation="Manual" 
+        KeyDown="LuaWindow_OnKeyDown" Icon="/Images/Magnifier_icon.png"
+        Closing="LuaWindow_OnClosing">
+    <Window.Resources>
+        <Popup x:Key="PopUpSearchResults" Width="500" Height="150" PlacementTarget="{Binding ElementName=text}" StaysOpen="False">
+            <Grid HorizontalAlignment="Stretch">
+                <DataGrid AutoGenerateColumns="false" 
+                          Background="White" ItemsSource="{Binding}" SelectionMode="Single" SelectionUnit="FullRow" 
+                          HorizontalAlignment="Stretch" Name="DataGridValues" VerticalAlignment="Stretch" 
+                          VerticalScrollBarVisibility="Visible" MouseDown="DataGridValues_OnMouseDown" MouseDoubleClick="DataGridValues_OnMouseDoubleClick" 
+                          SelectionChanged="DataGridValues_OnSelectionChanged" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserSortColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn IsReadOnly="True" Binding="{Binding Path=Key}" Width="*" />
+                        <DataGridTextColumn IsReadOnly="True" Binding="{Binding Path=Value}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Popup>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="26" />
@@ -24,7 +41,11 @@
             <ComboBox Name="ComboBoxAircraft" Width="Auto" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
             <ComboBox Name="ComboBoxLuaControls" Width="Auto" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" />
             <Label Content="Search" Width="Auto" Margin="10,0,0,0" DockPanel.Dock="Left"></Label>
-            <TextBox Name="TextBoxSearch" Width="Auto" MinWidth="100" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" TextChanged="TextBoxSearch_OnTextChanged" KeyUp="TextBoxSearch_OnKeyUp" PreviewKeyDown="TextBoxSearch_OnPreviewKeyDown"></TextBox>
+            <TextBox Name="TextBoxSearch" Width="Auto" MinWidth="100" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" TextChanged="TextBoxSearch_OnTextChanged" KeyUp="TextBoxSearch_OnKeyUp" PreviewKeyDown="TextBoxSearch_OnPreviewKeyDown">
+                <TextBox.Background>
+                    <ImageBrush ImageSource="/Images/cue_banner_search.png" AlignmentX="Left" Stretch="Uniform" />
+                </TextBox.Background>
+            </TextBox>
         </DockPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0">

@@ -37,6 +37,7 @@ namespace DCSInsight
         private TCPClientHandler _tcpClientHandler;
         private bool _isConnected;
         private bool _rangeTesting;
+        private LuaWindow _luaWindow;
 
         public MainWindow()
         {
@@ -48,6 +49,7 @@ namespace DCSInsight
 
         public void Dispose()
         {
+            _luaWindow?.Close();
             ItemsControlAPI.Items.Clear();
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
@@ -65,6 +67,10 @@ namespace DCSInsight
                 ShowVersionInfo();
                 SetFormState();
                 CheckBoxTop.IsChecked = true;
+
+                Top = Settings.Default.MainWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.MainWindowTop;
+                Left = Settings.Default.MainWindowLeft.CompareTo(-1) == 0 ? Left : Settings.Default.MainWindowLeft;
+                
                 _formLoaded = true;
             }
             catch (Exception ex)
@@ -256,6 +262,10 @@ namespace DCSInsight
         {
             try
             {
+                Settings.Default.MainWindowTop = Top;
+                Settings.Default.MainWindowLeft = Left;
+                Settings.Default.Save();
+                _luaWindow?.Close();
                 _isConnected = false;
                 _tcpClientHandler?.Disconnect();
             }
@@ -594,7 +604,10 @@ namespace DCSInsight
             {
                 var settingsWindow = new SettingsWindow();
                 settingsWindow.ShowDialog();
-                Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
+                if (settingsWindow.DialogResult == true)
+                {
+                    Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
+                }
                 Settings.Default.Save();
             }
             catch (Exception ex)
@@ -607,8 +620,9 @@ namespace DCSInsight
         {
             try
             {
-                var luaWindow = new LuaWindow();
-                luaWindow.Show();
+                _luaWindow?.Close();
+                _luaWindow = new LuaWindow();
+                _luaWindow.Show();
             }
             catch (Exception ex)
             {

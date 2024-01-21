@@ -53,7 +53,8 @@ namespace DCSInsight.Windows
 
         private void CheckDCSBIOSStatus()
         {
-            var result = Common.CheckJSONDirectory(TextBoxDcsBiosJSONLocation.Text);
+            var result = Common.CheckJSONDirectory(Environment.ExpandEnvironmentVariables(TextBoxDcsBiosJSONLocation.Text));
+            ButtonOk.IsEnabled = false;
 
             if (result.Item1 == false && result.Item2 == false)
             {
@@ -72,13 +73,12 @@ namespace DCSInsight.Windows
 
             LabelDCSBIOSNotFound.Foreground = Brushes.LimeGreen;
             LabelDCSBIOSNotFound.Content = " JSON files found.";
+            ButtonOk.IsEnabled = true;
         }
 
         private void LoadSettings()
         {
-            var settingsFolder = Settings.Default.DCSBiosJSONLocation;
-            
-            TextBoxDcsBiosJSONLocation.Text = settingsFolder;
+            TextBoxDcsBiosJSONLocation.Text = Settings.Default.DCSBiosJSONLocation;
         }
 
         private void ButtonCancel_OnClick(object sender, RoutedEventArgs e)

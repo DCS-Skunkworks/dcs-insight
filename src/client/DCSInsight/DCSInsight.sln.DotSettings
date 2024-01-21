@@ -9,6 +9,8 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=TCP/@EntryIndexedValue">TCP</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=API/@EntryIndexedValue">API</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=DCSBIOS/@EntryIndexedValue">DCSBIOS</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/Abbreviations/=JSON/@EntryIndexedValue">JSON</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Comms/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=consolas/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=DCSAPI/@EntryIndexedValue">True</s:Boolean>

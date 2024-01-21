@@ -5,5 +5,20 @@
     <Setting Name="DCSBiosJSONLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)">%USERPROFILE%\Saved Games\DCS\Scripts\DCS-BIOS\doc\json</Value>
     </Setting>
+    <Setting Name="MainWindowTop" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="MainWindowLeft" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="LuaWindowTop" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="LuaWindowLeft" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="MainScreenId" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

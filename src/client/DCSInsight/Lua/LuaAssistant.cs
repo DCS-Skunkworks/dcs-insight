@@ -10,7 +10,7 @@ namespace DCSInsight.Lua
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly object LockObject = new();
-        private static string _dcsbiosAircraftsLuaLocation;
+        private static string _dcsbiosAircraftLuaLocation;
         private static string _dcsbiosModuleLuaFilePath;
         private static readonly List<KeyValuePair<string, string>> LuaControls = new();
         private static readonly List<string> LuaModuleSignatures = new();
@@ -45,9 +45,9 @@ namespace DCSInsight.Lua
         internal static List<string> GetAircraftList(string dcsbiosJSONPath)
         {
             dcsbiosJSONPath = Environment.ExpandEnvironmentVariables(dcsbiosJSONPath);
-            _dcsbiosAircraftsLuaLocation = $"{dcsbiosJSONPath}\\..\\..\\lib\\modules\\aircraft_modules\\";
-            _dcsbiosModuleLuaFilePath = $"{dcsbiosJSONPath}\\..\\..\\lib\\modules\\Module.lua";
-            var directoryInfo = new DirectoryInfo(_dcsbiosAircraftsLuaLocation);
+            _dcsbiosAircraftLuaLocation = $@"{dcsbiosJSONPath}\..\..\lib\modules\aircraft_modules\";
+            _dcsbiosModuleLuaFilePath = $@"{dcsbiosJSONPath}\..\..\lib\modules\Module.lua";
+            var directoryInfo = new DirectoryInfo(_dcsbiosAircraftLuaLocation);
             IEnumerable<FileInfo> files;
             try
             {
@@ -74,7 +74,7 @@ namespace DCSInsight.Lua
 
             // input is a map from category string to a map from key string to control definition
             // we read it all then flatten the grand children (the control definitions)
-            var lineArray = File.ReadAllLines(_dcsbiosAircraftsLuaLocation + aircraftId + ".lua");
+            var lineArray = File.ReadAllLines(_dcsbiosAircraftLuaLocation + aircraftId + ".lua");
             try
             {
                 var luaBuffer = "";
@@ -168,7 +168,7 @@ namespace DCSInsight.Lua
             }
             catch (Exception ex)
             {
-                throw new Exception($"{DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE} ==>[{_dcsbiosAircraftsLuaLocation}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                throw new Exception($"{DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE} ==>[{_dcsbiosAircraftLuaLocation}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
         }
 

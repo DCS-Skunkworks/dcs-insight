@@ -34,5 +34,65 @@ namespace DCSInsight.Properties {
                 this["DCSBiosJSONLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double MainWindowTop {
+            get {
+                return ((double)(this["MainWindowTop"]));
+            }
+            set {
+                this["MainWindowTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double MainWindowLeft {
+            get {
+                return ((double)(this["MainWindowLeft"]));
+            }
+            set {
+                this["MainWindowLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double LuaWindowTop {
+            get {
+                return ((double)(this["LuaWindowTop"]));
+            }
+            set {
+                this["LuaWindowTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public double LuaWindowLeft {
+            get {
+                return ((double)(this["LuaWindowLeft"]));
+            }
+            set {
+                this["LuaWindowLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int MainScreenId {
+            get {
+                return ((int)(this["MainScreenId"]));
+            }
+            set {
+                this["MainScreenId"] = value;
+            }
+        }
     }
 }

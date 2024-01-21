@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using ControlReference.CustomControls;
 using DCSInsight.Lua;
 using DCSInsight.Misc;
 using DCSInsight.Properties;
+using Clipboard = System.Windows.Clipboard;
 using Cursors = System.Windows.Input.Cursors;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace DCSInsight.Windows
@@ -24,6 +27,8 @@ namespace DCSInsight.Windows
         private List<string> _aircraftList = new();
         private List<KeyValuePair<string, string>> _luaControls = new();
         private TextBlockSelectable _textBlockSelectable;
+        private Popup _popupSearch;
+        private DataGrid _dataGridValues;
 
         public LuaWindow()
         {
@@ -48,11 +53,17 @@ namespace DCSInsight.Windows
                 _textBlockSelectable.MouseLeave += TextBlock_OnMouseLeave;
                 SetContextMenu(_textBlockSelectable);
 
+                _popupSearch = (Popup)FindResource("PopUpSearchResults");
+                _popupSearch.Height = 400;
+                _dataGridValues = (DataGrid)LogicalTreeHelper.FindLogicalNode(_popupSearch, "DataGridValues");
+
                 _textBlockSelectable.FontFamily = new System.Windows.Media.FontFamily("Consolas");
                 _textBlockSelectable.Width = Double.NaN;
                 
-                var border = new Border();
-                border.Child = _textBlockSelectable;
+                var border = new Border
+                {
+                    Child = _textBlockSelectable
+                };
                 StackPanelLuaCommand.Children.Add(border);
                 StackPanelLuaCommand.Children.Add(new Line());
 
@@ -61,6 +72,12 @@ namespace DCSInsight.Windows
                 LoadAircraft();
 
                 SetFormState();
+
+                TextBoxSearch.Focus();
+
+                Top = Settings.Default.LuaWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.LuaWindowTop;
+                Left = Settings.Default.LuaWindowTop.CompareTo(-1) == 0 ? Left : Settings.Default.LuaWindowTop;
+
                 _isLoaded = true;
             }
             catch (Exception exception)
@@ -71,11 +88,19 @@ namespace DCSInsight.Windows
 
         private void LuaWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-
+            try
+            {
+                if (e.Key == Key.Escape)
+                {
+                    Close();
+                }
+            }
+            catch (Exception exception)
+            {
+                Common.ShowMessageBox(exception.Message + Environment.NewLine + exception.StackTrace);
+            }
         }
-
-
-
+        
         private void TextBlock_OnMouseEnter(object sender, MouseEventArgs e)
         {
             try
@@ -99,19 +124,19 @@ namespace DCSInsight.Windows
                 Common.ShowMessageBox(exception.Message + Environment.NewLine + exception.StackTrace);
             }
         }
-
-
+        
         private void SetContextMenu(TextBlockSelectable textBlock)
         {
             try
             {
-                //_contextMenu.Opened += TextBlockContextMenuOpened;
                 ContextMenu contextMenu = new();
                 contextMenu.Opened += TextBlock_ContextMenuOpened;
                 contextMenu.Tag = textBlock;
-                var menuItemCopy = new MenuItem();
-                menuItemCopy.Tag = textBlock;
-                menuItemCopy.Header = "Copy";
+                var menuItemCopy = new MenuItem
+                {
+                    Tag = textBlock,
+                    Header = "Copy"
+                };
                 menuItemCopy.Click += MenuItemCopy_OnClick;
                 contextMenu.Items.Add(menuItemCopy);
                 textBlock.ContextMenu = contextMenu;
@@ -228,7 +253,7 @@ namespace DCSInsight.Windows
         {
             try
             {
-                //TextBoxSearchCommon.AdjustShownPopupData(TextBoxSearch, _popupSearch, _dataGridValues, _luaControls);
+                TextBoxSearchLuaControls.AdjustShownPopupData(TextBoxSearch, _popupSearch, _dataGridValues, _luaControls);
                 SetFormState();
             }
             catch (Exception ex)
@@ -239,7 +264,55 @@ namespace DCSInsight.Windows
 
         private void TextBoxSearch_OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            
+            TextBoxSearchLuaControls.HandleFirstSpace(sender, e);
+        }
+
+        private void LuaWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+            try
+            {
+                Settings.Default.LuaWindowTop = Top;
+                Settings.Default.LuaWindowLeft = Left;
+                Settings.Default.Save();  
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+        
+        private void DataGridValues_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            LuaControlSelected(true);
+        }
+
+        private void DataGridValues_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LuaControlSelected(true);
+        }
+        
+        private void DataGridValues_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            LuaControlSelected(false);
+        }
+
+        private void LuaControlSelected(bool keepSearchOpen)
+        {
+            try
+            {
+                if (_dataGridValues.SelectedItems.Count == 1)
+                {
+                    var keyValuePair = (KeyValuePair<string,string>)_dataGridValues.SelectedItem;
+                    ComboBoxLuaControls.SelectedItem = keyValuePair;
+                    SetFormState();
+                }
+                _popupSearch.IsOpen = keepSearchOpen;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
         }
     }
 }
