@@ -82,17 +82,5 @@ namespace DCSInsight.Properties {
                 this["LuaWindowLeft"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int MainScreenId {
-            get {
-                return ((int)(this["MainScreenId"]));
-            }
-            set {
-                this["MainScreenId"] = value;
-            }
-        }
     }
 }
