@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -28,18 +26,6 @@ namespace DCSInsight.UserControls
         public UserControlLoSetCommandAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
-        }
-
-        public new void Dispose()
-        {
-            base.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
-        public new async ValueTask DisposeAsync()
-        {
-            await base.DisposeAsync();
-            GC.SuppressFinalize(this);
         }
 
         private void UserControlLoSetCommandAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -119,7 +105,7 @@ namespace DCSInsight.UserControls
                             _textBoxSearch.TextChanged += TextBoxSearch_OnTextChanged;
                             _textBoxSearch.KeyUp += TextBoxSearch_OnKeyUp;
                             _textBoxSearch.PreviewKeyDown += TextBoxSearch_PreviewKeyDown;
-                            TextBoxSearchCommon.SetBackgroundSearchBanner(_textBoxSearch);
+                            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(_textBoxSearch);
                             controlList.Add(_textBoxSearch);
                             TextBoxParameterList.Add(_textBoxSearch);
                         }
@@ -346,7 +332,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                TextBoxSearchCommon.AdjustShownPopupData(((TextBox)sender), _popupSearch, _dataGridValues, _loSetCommands);
+                TextBoxSearchLoSetCommands.AdjustShownPopupData(((TextBox)sender), _popupSearch, _dataGridValues, _loSetCommands);
                 SetFormState();
             }
             catch (Exception ex)
@@ -357,12 +343,12 @@ namespace DCSInsight.UserControls
 
         private void TextBoxSearch_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBoxSearchCommon.SetBackgroundSearchBanner(((TextBox)sender));
+            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(((TextBox)sender));
         }
         
         private void TextBoxSearch_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            TextBoxSearchCommon.HandleFirstSpace(sender, e);
+            TextBoxSearchLoSetCommands.HandleFirstSpace(sender, e);
         }
     }
 }

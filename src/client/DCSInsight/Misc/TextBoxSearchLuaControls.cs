@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace DCSInsight.Misc
 {
-    internal static class TextBoxSearchCommon
+    internal static class TextBoxSearchLuaControls
     {
         internal static void SetBackgroundSearchBanner(TextBox textBoxSearch)
         {
@@ -41,7 +41,7 @@ namespace DCSInsight.Misc
             }
         }
 
-        internal static void AdjustShownPopupData(TextBox textBoxSearch, Popup popupSearch, DataGrid dataGridValues, IEnumerable<LoSetCommand> loSetCommands)
+        internal static void AdjustShownPopupData(TextBox textBoxSearch, Popup popupSearch, DataGrid dataGridValues, IEnumerable<KeyValuePair<string,string>> luaControls)
         {
             try
             {
@@ -55,14 +55,13 @@ namespace DCSInsight.Misc
 
                 if (string.IsNullOrEmpty(textBoxSearch.Text))
                 {
-                    dataGridValues.DataContext = loSetCommands;
-                    dataGridValues.ItemsSource = loSetCommands;
+                    dataGridValues.DataContext = luaControls;
+                    dataGridValues.ItemsSource = luaControls;
                     dataGridValues.Items.Refresh();
                     return;
                 }
-                var subList = loSetCommands.Where(loSetCommand => (!string.IsNullOrWhiteSpace(loSetCommand.Description) && 
-                                                                   loSetCommand.Description.ToUpper().Contains(textBoxSearch.Text.ToUpper()))
-                                                                      || (!string.IsNullOrWhiteSpace(loSetCommand.Code) && loSetCommand.Code.ToUpper().Contains(textBoxSearch.Text.ToUpper())));
+                var subList = luaControls.Where(luaControl => !string.IsNullOrWhiteSpace(luaControl.Value) && 
+                                                                   luaControl.Value.ToUpper().Contains(textBoxSearch.Text.ToUpper()));
                 dataGridValues.DataContext = subList;
                 dataGridValues.ItemsSource = subList;
                 dataGridValues.Items.Refresh();

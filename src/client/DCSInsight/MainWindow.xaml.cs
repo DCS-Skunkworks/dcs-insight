@@ -19,9 +19,9 @@ using DCSInsight.Misc;
 using ErrorEventArgs = DCSInsight.Events.ErrorEventArgs;
 using System.Windows.Media.Imaging;
 using DCSInsight.Communication;
+using DCSInsight.Properties;
 using DCSInsight.Windows;
 using Octokit;
-using ProductHeaderValue = System.Net.Http.Headers.ProductHeaderValue;
 
 namespace DCSInsight
 {
@@ -37,6 +37,7 @@ namespace DCSInsight
         private TCPClientHandler _tcpClientHandler;
         private bool _isConnected;
         private bool _rangeTesting;
+        private LuaWindow _luaWindow;
 
         public MainWindow()
         {
@@ -48,6 +49,7 @@ namespace DCSInsight
 
         public void Dispose()
         {
+            _luaWindow?.Close();
             ItemsControlAPI.Items.Clear();
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
@@ -65,6 +67,11 @@ namespace DCSInsight
                 ShowVersionInfo();
                 SetFormState();
                 CheckBoxTop.IsChecked = true;
+
+                Top = Settings.Default.MainWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.MainWindowTop;
+                Left = Settings.Default.MainWindowLeft.CompareTo(-1) == 0 ? Left : Settings.Default.MainWindowLeft;
+
+                ButtonLuaWindow.Visibility = Directory.Exists(Environment.ExpandEnvironmentVariables(Settings.Default.DCSBiosJSONLocation)) ? Visibility.Visible : Visibility.Collapsed; 
                 _formLoaded = true;
             }
             catch (Exception ex)
@@ -256,6 +263,10 @@ namespace DCSInsight
         {
             try
             {
+                Settings.Default.MainWindowTop = Top;
+                Settings.Default.MainWindowLeft = Left;
+                Settings.Default.Save();
+                _luaWindow?.Close();
                 _isConnected = false;
                 _tcpClientHandler?.Disconnect();
             }
@@ -585,6 +596,38 @@ namespace DCSInsight
             catch (Exception ex)
             {
                 Logger.Error(ex, "Error checking for newer releases.");
+            }
+        }
+
+        private void TextBlockSetDCSBIOSLocation_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var settingsWindow = new SettingsWindow();
+                settingsWindow.ShowDialog();
+                if (settingsWindow.DialogResult == true)
+                {
+                    Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
+                }
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void ButtonLuaWindow_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _luaWindow?.Close();
+                _luaWindow = new LuaWindow();
+                _luaWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
             }
         }
     }
