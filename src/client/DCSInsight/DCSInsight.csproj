@@ -1,13 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
-    <UseWPF>true</UseWPF>	
-    <UseWindowsForms>true</UseWindowsForms> <!-- for WinForms -->
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- for WinForms -->
     <AssemblyName>dcs-insight</AssemblyName>
     <Version>1.0.0</Version>
-    <AssemblyVersion>1.8.5</AssemblyVersion>
+    <AssemblyVersion>1.8.6</AssemblyVersion>
     <ApplicationIcon>Images\Magnifier_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
