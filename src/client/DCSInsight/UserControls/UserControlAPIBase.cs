@@ -34,6 +34,7 @@ namespace DCSInsight.UserControls
         protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
         protected static readonly AutoResetEvent AutoResetEventPolling = new(false);
+        protected const string LuaConsole = "LuaConsole";
 
         public int Id { get; protected set; }
         protected abstract void BuildUI();

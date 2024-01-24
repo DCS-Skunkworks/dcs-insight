@@ -63,6 +63,7 @@ local LoGeoCoordinatesToLoCoordinatesAPI =
 	require("Scripts.DCS-INSIGHT.lib.commands.LoGeoCoordinatesToLoCoordinatesAPI")
 local LoGetAltitudeAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoGetAltitudeAPI")
 local LoCoordinatesToGeoCoordinatesAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoCoordinatesToGeoCoordinatesAPI")
+local LoadStringAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoadStringAPI")
 
 --- @class APIHandler
 --- @field public commandsTable table<APIBase>
@@ -132,6 +133,9 @@ function APIHandler:addParameterAPIs()
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 
 	self.commandsTable[#self.commandsTable + 1] = LoCoordinatesToGeoCoordinatesAPI:new(nil, counter())
+	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+
+	self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 end
 

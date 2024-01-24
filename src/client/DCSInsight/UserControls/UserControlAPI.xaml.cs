@@ -89,6 +89,15 @@ namespace DCSInsight.UserControls
                             IsTabStop = true
                         };
 
+                        if (DCSAPI.Syntax == LuaConsole)
+                        {
+                            textBox.TextWrapping = TextWrapping.Wrap;
+                            textBox.AcceptsReturn = true;
+                            textBox.AcceptsTab = true;
+                            textBox.MinWidth = 300;
+                            textBox.MinHeight = 150;
+                        }
+
                         if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
                         {
                             textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
