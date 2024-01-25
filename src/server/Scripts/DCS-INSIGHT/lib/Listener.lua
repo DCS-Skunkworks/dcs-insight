@@ -14,7 +14,7 @@ local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
 --- @field public ReadClientData function
 local Listener = {}
 
---- @func Returns new Listener
+--- Returns new Listener
 --- @return Listener
 function Listener:new(host, port, APIHandler)
 	local o = {
@@ -66,7 +66,7 @@ Listener.ReadClientData = function(str)
 	end
 end
 
---- @func Initializes the TCPServer and APIHandler
+--- Initializes the TCPServer and APIHandler
 function Listener:init()
 	self.APIHandler:init()
 	self.tcpServer = TCPServer:new(self.host, self.port, socket, self.ReadClientData)

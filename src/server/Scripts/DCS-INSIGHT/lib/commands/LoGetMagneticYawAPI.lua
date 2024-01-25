@@ -1,4 +1,4 @@
-module("LoGetMagneticYawAPI", package.seeall)
+module("LoGetMagneticYawInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
@@ -7,7 +7,7 @@ local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 --- @field apiInfo APIInfo
 local LoGetMagneticYawAPI = APIBase:new()
 
---- @func Returns new LoGetMagneticYawAPI
+--- Returns new LoGetMagneticYawAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -19,10 +19,10 @@ function LoGetMagneticYawAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function LoGetMagneticYawAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function LoGetMagneticYawAPI:execute(api)
 	local result_code, message = self:verify_params()

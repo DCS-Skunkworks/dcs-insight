@@ -40,7 +40,7 @@ function APIBase:execute(api)
 	error("step must be implemented by the APIBase subclass", 2)
 end
 
---- @func Adds a parameter definition
+--- Adds a parameter definition
 --- @param id number
 --- @param name string
 --- @param type number
@@ -48,7 +48,7 @@ function APIBase:add_param_def(id, name, type)
 	self.apiInfo.parameter_defs[#self.apiInfo.parameter_defs + 1] = Parameter:new(id, name, type)
 end
 
---- @func Verifies that the parameter have values
+--- Verifies that the parameter have values
 --- @return number result_code, string error_message
 function APIBase:verify_params()
 	for i, param in pairs(self.apiInfo.parameter_defs) do
@@ -60,7 +60,7 @@ function APIBase:verify_params()
 	return 0, ""
 end
 
---- @func Decodes result based on whether it is a function or procedure and sets api.result accordingly
+--- Decodes result based on whether it is a function or procedure and sets api.result accordingly
 --- @param api APIInfo
 --- @param result any
 --- @param result_type string|nil
@@ -94,7 +94,7 @@ function APIBase:decode_result(api, result, result_type)
 	return api
 end
 
---- @func Checks that there is a device with that number
+--- Checks that there is a device with that number
 --- @param device_id number
 --- @return boolean
 function APIBase:verify_device(device_id)
@@ -106,7 +106,7 @@ function APIBase:verify_device(device_id)
 	end
 end
 
---- @func Returns the path of the caller (file system)
+--- Returns the path of the caller (file system)
 --- @return string
 function APIBase:script_path()
 	local str = debug.getinfo(2, "S").source:sub(2)

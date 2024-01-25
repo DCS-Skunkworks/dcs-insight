@@ -19,6 +19,7 @@ local ParamName = {
 	latitude_degrees = "latitude_degrees",
 	x = "x",
 	z = "z",
+	lua_code = "lua code",
 }
 
 return ParamName

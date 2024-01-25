@@ -44,6 +44,7 @@ namespace DCSInsight.Windows
         {
             InitializeComponent();
             _dcsAPIList = dcsAPIList;
+            _dcsAPIList.RemoveAll(o => o.Syntax == "LuaConsole");
             ICEventHandler.AttachErrorListener(this);
             ICEventHandler.AttachConnectionListener(this);
             ICEventHandler.AttachDataListener(this);

@@ -7,22 +7,21 @@ module("APIParameter", package.seeall)
 --- @field value string
 local APIParameter = {}
 
-
---- @func Returns new APIParameter
+--- Returns new APIParameter
 --- @param id number
 --- @param name string
 --- @param type integer
 --- @param value any
 function APIParameter:new(id, name, type, value)
-    local o = {
-        id = id,
-        name = name,    
-        type = type,
-        value = value
-    }
-    setmetatable(o, self)
-    self.__index = self
-    return o
+	local o = {
+		id = id,
+		name = name,
+		type = type,
+		value = value,
+	}
+	setmetatable(o, self)
+	self.__index = self
+	return o
 end
 
 return APIParameter

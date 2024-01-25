@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using DCSInsight.Events;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
@@ -44,7 +45,7 @@ namespace DCSInsight.UserControls
             {
                 ButtonSend.IsEnabled = !TextBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && IsConnected;
 
-                if (DCSAPI.ReturnsData)
+                if (DCSAPI.ReturnsData && !IsLuaConsole)
                 {
                     CheckBoxPolling.IsEnabled = ButtonSend.IsEnabled;
                     ComboBoxPollTimes.IsEnabled = CheckBoxPolling.IsChecked == false;
@@ -89,6 +90,63 @@ namespace DCSInsight.UserControls
                             IsTabStop = true
                         };
 
+                        if (IsLuaConsole)
+                        {
+                            textBox.TextWrapping = TextWrapping.Wrap;
+                            textBox.AcceptsReturn = true;
+                            textBox.AcceptsTab = true;
+                            textBox.MinWidth = 500;
+                            textBox.MinHeight = 150;
+                            textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+                            var labelConsoleWarning = new Label
+                            {
+                                Content = "[warning]",
+                                Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
+                            };
+                            labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnter;
+                            labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeave;
+                            labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
+
+                            void LabelConsoleWarningOnMouseDown(object sender, MouseButtonEventArgs e)
+                            {
+                                MessageBox.Show("WARNING! This function enables arbitrary lua code to be\r\nexecuted on your computer, including calls to package os (Operating System).\r\nDo NOT enable unless your are firewalled.", "Warning", MessageBoxButton.OK);
+                            }
+
+                            labelConsoleWarning.Tag = textBox;
+                            StackPanelLinks.Children.Add(labelConsoleWarning);
+
+                            var labelDefaultLua = new Label
+                            {
+                                Content = "[list environment]",
+                                Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
+                            };
+                            labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnter;
+                            labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeave;
+                            labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
+
+                            void LabelDefaultLuaOnMouseDown(object sender, MouseButtonEventArgs e)
+                            {
+                                try
+                                {
+                                    var callingTextBox = (TextBox)((Label)sender).Tag;
+                                    callingTextBox.Text = Constants.ListEnvironmentSnippet;
+                                    SetFormState();
+                                    if (ButtonSend.IsEnabled)
+                                    {
+                                        SendCommand();
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Common.ShowErrorMessageBox(ex);
+                                }
+                            }
+
+                            labelDefaultLua.Tag = textBox;
+                            StackPanelLinks.Children.Add(labelDefaultLua);
+                        }
+                        
                         if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
                         {
                             textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
@@ -110,7 +168,7 @@ namespace DCSInsight.UserControls
                     ButtonSend.Click += ButtonSend_OnClick;
                     controlList.Add(ButtonSend);
 
-                    if (DCSAPI.ReturnsData)
+                    if (DCSAPI.ReturnsData && !IsLuaConsole)
                     {
                         LabelKeepResults = new Label
                         {
@@ -191,8 +249,8 @@ namespace DCSInsight.UserControls
             {
                 Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
 
-                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
-                
+                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
+
                 AutoResetEventPolling.Set();
 
                 if (result == DCSAPI.Result)

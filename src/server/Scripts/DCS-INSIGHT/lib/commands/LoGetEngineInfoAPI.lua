@@ -1,4 +1,4 @@
-module("LoGetEngineInfoAPI", package.seeall)
+module("LoGetEngineInfoInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
@@ -7,7 +7,7 @@ local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 --- @field apiInfo APIInfo
 local LoGetEngineInfoAPI = APIBase:new()
 
---- @func Returns new LoGetEngineInfoAPI
+--- Returns new LoGetEngineInfoAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -19,10 +19,10 @@ function LoGetEngineInfoAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function LoGetEngineInfoAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function LoGetEngineInfoAPI:execute(api)
 	local result_code, message = self:verify_params()

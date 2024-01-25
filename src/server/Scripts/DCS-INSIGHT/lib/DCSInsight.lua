@@ -76,10 +76,10 @@ function LuaExportAfterNextFrame()
 	local currentTime = LoGetModelTime()
 
 	if currentTime >= lastStepTime then
-		local bool, err = pcall(step)
-		err = err or "something failed"
-		if not bool then
-			Log:log_simple("Listener.step() failed: " .. err)
+		local result_code, result = pcall(step)
+		result = result or "something failed"
+		if not result_code then
+			Log:log_simple("Listener.step() failed: " .. result)
 		end
 		lastStepTime = currentTime + 0.1
 	end

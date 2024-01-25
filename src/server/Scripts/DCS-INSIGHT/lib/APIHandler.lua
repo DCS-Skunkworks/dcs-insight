@@ -1,7 +1,10 @@
 module("APIHandler", package.seeall)
 
 local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
+local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
+local CommonInsight = require("Scripts.DCS-INSIGHT.lib.common.Common")
 
+local LoadStringAPI = require("Scripts.DCS-INSIGHT.lib.commands.LoadStringAPI")
 local GetArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.commands.GetArgumentValueAPI")
 local SetArgumentValueAPI = require("Scripts.DCS-INSIGHT.lib.commands.SetArgumentValueAPI")
 local SetCommandAPI = require("Scripts.DCS-INSIGHT.lib.commands.SetCommandAPI")
@@ -69,7 +72,7 @@ local LoCoordinatesToGeoCoordinatesAPI = require("Scripts.DCS-INSIGHT.lib.comman
 --- @field public apiTable table<APIInfo>
 local APIHandler = {}
 
---- @func Returns new APIHandler
+--- Returns new APIHandler
 function APIHandler:new()
 	--- @type APIHandler
 	local o = {
@@ -87,7 +90,22 @@ local function counter()
 	return id
 end
 
---- @func Fills the commands and api table with APIs having device_id as parameter
+--- Adds the lua console
+function APIHandler:addLuaConsole()
+	Log:log_simple(0)
+	if CommonInsight:tryRequire("Scripts.DCS-INSIGHT.ServerSettingsDevelopment") then
+		local ServerSettingsDevelopment = require("Scripts.DCS-INSIGHT.ServerSettingsDevelopment")
+		if ServerSettingsDevelopment.EnableLuaConsole then
+			self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
+			self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+		end
+	elseif ServerSettings.EnableLuaConsole then
+		self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
+		self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+	end
+end
+
+--- Fills the commands and api table with APIs having device_id as parameter
 function APIHandler:addDeviceAPIs()
 	self.commandsTable[#self.commandsTable + 1] = GetArgumentValueAPI:new(nil, counter())
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
@@ -111,7 +129,7 @@ function APIHandler:addDeviceAPIs()
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 end
 
---- @func Fills the commands and api table with APIs taking parameters but not device_id
+--- Fills the commands and api table with APIs taking parameters but not device_id
 function APIHandler:addParameterAPIs()
 	self.commandsTable[#self.commandsTable + 1] = LoGetAircraftDrawArgumentValueAPI:new(nil, counter())
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
@@ -135,7 +153,7 @@ function APIHandler:addParameterAPIs()
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 end
 
---- @func Fills the commands and api table with APIs not taking parameters
+--- Fills the commands and api table with APIs not taking parameters
 function APIHandler:addParameterlessAPIs()
 	self.commandsTable[#self.commandsTable + 1] = ListCockpitParamsAPI:new(nil, counter())
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
@@ -278,21 +296,28 @@ function APIHandler:addParameterlessAPIs()
 	self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 end
 
---- @func Fills the commands and api table
+--- Fills the commands and api table
 function APIHandler:init()
+	self:addLuaConsole()
 	self:addDeviceAPIs()
 	self:addParameterAPIs()
 	self:addParameterlessAPIs()
 	self:verify_entries()
 end
 
---- @func Executes the command and returns a command containing the result
+--- Executes the command and returns a command containing the result
 --- @param api APIInfo
 function APIHandler:execute(api)
 	for k, v in pairs(self.commandsTable) do
 		if api.id == v.id then
 			local result_code, result = pcall(v.execute, v, api) -- = v:execute(api)
-			if result_code == true then
+
+			if api.error_thrown then
+				if api.error_message == nil then
+					api.error_message = "Error but no error message"
+				end
+				return result
+			elseif result_code == true then
 				result.error_thrown = false
 				result.error_message = ""
 				return result
@@ -315,7 +340,7 @@ function APIHandler:execute(api)
 	end
 end
 
---- @func Performs checks on registered api
+--- Performs checks on registered api
 --- @return boolean
 function APIHandler:verify_entries()
 	local message = "Following api have been loaded :\n"

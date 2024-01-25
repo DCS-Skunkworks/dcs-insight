@@ -34,6 +34,8 @@ namespace DCSInsight.UserControls
         protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
         protected static readonly AutoResetEvent AutoResetEventPolling = new(false);
+        private const string LuaConsole = "LuaConsole";
+        protected bool IsLuaConsole;
 
         public int Id { get; protected set; }
         protected abstract void BuildUI();
@@ -44,6 +46,7 @@ namespace DCSInsight.UserControls
         protected UserControlAPIBase(DCSAPI dcsAPI, bool isConnected)
         {
             DCSAPI = dcsAPI;
+            IsLuaConsole = DCSAPI.Syntax == LuaConsole;
             Id = DCSAPI.Id;
             IsConnected = isConnected;
             PollingTimer = new Timer(PollingTimerCallback);
