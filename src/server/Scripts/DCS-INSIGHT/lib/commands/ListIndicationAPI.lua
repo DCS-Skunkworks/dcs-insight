@@ -1,4 +1,4 @@
-module("ListIndicationAPI", package.seeall)
+module("ListIndicationInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
@@ -9,7 +9,7 @@ local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 --- @field apiInfo APIInfo
 local ListIndicationAPI = APIBase:new()
 
---- @func Returns new ListIndicationAPI
+--- Returns new ListIndicationAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -23,10 +23,10 @@ function ListIndicationAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function ListIndicationAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function ListIndicationAPI:execute(api)
 	local result_code, message = self:verify_params()

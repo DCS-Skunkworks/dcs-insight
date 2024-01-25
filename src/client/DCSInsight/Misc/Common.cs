@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using NLog;
 
 namespace DCSInsight.Misc
@@ -60,6 +61,16 @@ namespace DCSInsight.Misc
             var jsonFound = files.Count(filename => filename.ToLower().EndsWith(".json")) >= 10;
 
             return new Tuple<bool, bool>(true, jsonFound);
+        }
+        
+        public static void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Hand;
+        }
+
+        public static void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
         }
     }
 }

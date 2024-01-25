@@ -1,7 +1,6 @@
-module("SetFrequencyAPI", package.seeall)
+module("SetFrequencyInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
-local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
@@ -10,7 +9,7 @@ local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 --- @field apiInfo APIInfo
 local SetFrequencyAPI = APIBase:new()
 
---- @func Returns new SetFrequencyAPI
+--- Returns new SetFrequencyAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -25,10 +24,10 @@ function SetFrequencyAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function SetFrequencyAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function SetFrequencyAPI:execute(api)
 	local param0

@@ -1,7 +1,6 @@
-module("LoadStringAPI", package.seeall)
+module("LoadStringInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
-local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
 local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 
@@ -10,12 +9,12 @@ local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 --- @field apiInfo APIInfo
 local LoadStringAPI = APIBase:new()
 
---- @func Returns new LoadStringAPI
+--- Returns new LoadStringAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
 function LoadStringAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, false, "LuaConsole", 1)
+	o = o or APIBase:new(o, apiId, true, "LuaConsole", 1)
 
 	o:add_param_def(0, ParamName.lua_code, ParamType.string)
 
@@ -24,10 +23,10 @@ function LoadStringAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function LoadStringAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function LoadStringAPI:execute(api)
 	local param0
@@ -47,10 +46,10 @@ function LoadStringAPI:execute(api)
 
 	local f, err = loadstring(param0)
 	if f then
-		local result, err2 = pcall(f())
-		if err2 then
+		local result_code, result = pcall(f)
+		if not result_code then
 			api.error_thrown = true
-			api.error_message = err2
+			api.error_message = result
 			return api
 		end
 		api = self:decode_result(api, result, nil)

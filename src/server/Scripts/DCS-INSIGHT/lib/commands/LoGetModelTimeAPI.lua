@@ -1,4 +1,4 @@
-module("LoGetModelTimeAPI", package.seeall)
+module("LoGetModelTimeInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 
@@ -7,7 +7,7 @@ local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 --- @field apiInfo APIInfo
 local LoGetModelTimeAPI = APIBase:new()
 
---- @func Returns new LoGetModelTimeAPI
+--- Returns new LoGetModelTimeAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -19,10 +19,10 @@ function LoGetModelTimeAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function LoGetModelTimeAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function LoGetModelTimeAPI:execute(api)
 	local result_code, message = self:verify_params()

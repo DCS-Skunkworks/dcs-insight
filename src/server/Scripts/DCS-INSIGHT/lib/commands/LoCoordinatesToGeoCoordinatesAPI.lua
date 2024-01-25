@@ -1,4 +1,4 @@
-module("LoCoordinatesToGeoCoordinatesAPI", package.seeall)
+module("LoCoordinatesToGeoCoordinatesInsightAPI", package.seeall)
 
 local APIBase = require("Scripts.DCS-INSIGHT.lib.commands.common.APIBase")
 local ParamName = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamName")
@@ -9,7 +9,7 @@ local ParamType = require("Scripts.DCS-INSIGHT.lib.commands.common.ParamType")
 --- @field apiInfo APIInfo
 local LoCoordinatesToGeoCoordinatesAPI = APIBase:new()
 
---- @func Returns new LoCoordinatesToGeoCoordinatesAPI
+--- Returns new LoCoordinatesToGeoCoordinatesAPI
 --- @param o table|nil Parent
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
@@ -24,10 +24,10 @@ function LoCoordinatesToGeoCoordinatesAPI:new(o, apiId)
 	return o
 end
 
---- @func Inits with internal data
+--- Inits with internal data
 function LoCoordinatesToGeoCoordinatesAPI:init() end
 
---- @func Executes sent api and returns the same api containing a result field
+--- Executes sent api and returns the same api containing a result field
 --- @param api APIInfo
 function LoCoordinatesToGeoCoordinatesAPI:execute(api)
 	local param0

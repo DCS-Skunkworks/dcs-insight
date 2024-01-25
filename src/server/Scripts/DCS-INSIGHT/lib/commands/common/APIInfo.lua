@@ -1,7 +1,5 @@
 module("APIInfo", package.seeall)
 
-local Parameter = require("Scripts.DCS-INSIGHT.lib.commands.common.Parameter")
-
 --- @class APIInfo
 --- @field id number
 --- @field returns_data boolean
