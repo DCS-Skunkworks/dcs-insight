@@ -35,11 +35,6 @@ local function step(arg, time)
 	if Listener.tcpServer.step then
 		Listener.tcpServer:step()
 	end
-
-	--[[if counter % 50 == 0 then
-		Log:log_simple("STEP")
-	end
-	counter = counter + 1]]
 end
 
 -- Prev Export functions.

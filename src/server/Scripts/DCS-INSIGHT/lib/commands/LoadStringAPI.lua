@@ -14,7 +14,7 @@ local LoadStringAPI = APIBase:new()
 --- @param apiId integer API ID, must be unique
 --- @return APIBase
 function LoadStringAPI:new(o, apiId)
-	o = o or APIBase:new(o, apiId, true, "LuaConsole", 1)
+	o = o or APIBase:new(o, apiId, true, "Lua Console", 1)
 
 	o:add_param_def(0, ParamName.lua_code, ParamType.string)
 

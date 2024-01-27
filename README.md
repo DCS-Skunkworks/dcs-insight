@@ -17,7 +17,7 @@ Install server in ```Scripts``` folder and add entry to Export.lua.
 
 * Start the mission
 * Connect client, once connected dcs-insight server sends all APIs it has
-* With [LuaConsole enabled](https://github.com/DCS-Skunkworks/dcs-insight/wiki/LuaConsole) you can execute lua snippets, query the environment
+* With [Lua Console enabled](https://github.com/DCS-Skunkworks/dcs-insight/wiki/Lua-Console) you can execute lua snippets, query the environment
 * You can poll an API for changes
 * You can search for API
 

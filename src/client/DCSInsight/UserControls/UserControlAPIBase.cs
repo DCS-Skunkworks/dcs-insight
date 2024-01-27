@@ -23,7 +23,7 @@ namespace DCSInsight.UserControls
         protected bool IsControlLoaded;
         protected readonly List<TextBox> TextBoxParameterList = new();
         protected bool IsConnected;
-        protected readonly Timer PollingTimer;
+        private readonly Timer _pollingTimer;
         protected bool CanSend;
         protected bool KeepResults;
         protected Button ButtonSend;
@@ -34,8 +34,7 @@ namespace DCSInsight.UserControls
         protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
         protected static readonly AutoResetEvent AutoResetEventPolling = new(false);
-        private const string LuaConsole = "LuaConsole";
-        protected bool IsLuaConsole;
+        protected readonly bool IsLuaConsole;
 
         public int Id { get; protected set; }
         protected abstract void BuildUI();
@@ -46,29 +45,29 @@ namespace DCSInsight.UserControls
         protected UserControlAPIBase(DCSAPI dcsAPI, bool isConnected)
         {
             DCSAPI = dcsAPI;
-            IsLuaConsole = DCSAPI.Syntax == LuaConsole;
+            IsLuaConsole = DCSAPI.Syntax == Constants.LuaConsole;
             Id = DCSAPI.Id;
             IsConnected = isConnected;
-            PollingTimer = new Timer(PollingTimerCallback);
-            PollingTimer.Change(Timeout.Infinite, 10000);
+            _pollingTimer = new Timer(PollingTimerCallback);
+            _pollingTimer.Change(Timeout.Infinite, 10000);
         }
 
         public void Dispose()
         {
             AutoResetEventPolling.Set();
             AutoResetEventPolling.Set();
-            PollingTimer?.Dispose();
+            _pollingTimer?.Dispose();
             AutoResetEventPolling.Dispose();
             GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (PollingTimer != null)
+            if (_pollingTimer != null)
             {
                 AutoResetEventPolling.Set();
                 AutoResetEventPolling.Set();
-                await PollingTimer.DisposeAsync();
+                await _pollingTimer.DisposeAsync();
                 AutoResetEventPolling.Dispose();
                 GC.SuppressFinalize(this);
             }
@@ -81,7 +80,7 @@ namespace DCSInsight.UserControls
                 IsConnected = connected;
                 if (!IsConnected)
                 {
-                    PollingTimer.Change(Timeout.Infinite, 10000);
+                    _pollingTimer.Change(Timeout.Infinite, 10000);
                 }
                 SetFormState();
             }
@@ -107,7 +106,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                PollingTimer.Change(milliseconds, milliseconds);
+                _pollingTimer.Change(milliseconds, milliseconds);
                 AutoResetEventPolling.Set();
                 SetFormState();
             }
@@ -121,7 +120,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                PollingTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _pollingTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 SetFormState();
             }
             catch (Exception ex)

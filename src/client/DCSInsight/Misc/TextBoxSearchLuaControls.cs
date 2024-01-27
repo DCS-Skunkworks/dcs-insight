@@ -11,6 +11,24 @@ namespace DCSInsight.Misc
 {
     internal static class TextBoxSearchLuaControls
     {
+        internal static void HandleTyping(TextBox textBoxSearch)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    textBoxSearch.Background = null; 
+                    return;
+                }
+
+                SetBackgroundSearchBanner(textBoxSearch);
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
         internal static void SetBackgroundSearchBanner(TextBox textBoxSearch)
         {
             try

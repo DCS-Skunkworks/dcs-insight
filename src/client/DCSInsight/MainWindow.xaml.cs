@@ -64,6 +64,7 @@ namespace DCSInsight
             {
                 if (_formLoaded) return;
 
+                TextBoxSearchLuaControls.SetBackgroundSearchBanner(TextBoxSearchAPI);
                 ShowVersionInfo();
                 SetFormState();
                 CheckBoxTop.IsChecked = true;
@@ -473,6 +474,12 @@ namespace DCSInsight
         {
             try
             {
+                TextBoxSearchLuaControls.HandleTyping(TextBoxSearchAPI); detta
+                if (Common.LuaConsoleIsLoaded && !Common.LuaConsoleSearchWarningGiven)
+                {
+                    Common.ShowMessageBox("[warning] Any existing lua code written in the Lua Console will be discarded if you search.");
+                    Common.LuaConsoleSearchWarningGiven = true;
+                }
                 if (e.Key == Key.Enter)
                 {
                     ShowAPIs(true);
