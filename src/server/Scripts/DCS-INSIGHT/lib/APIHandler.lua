@@ -92,14 +92,7 @@ end
 
 --- Adds the lua console
 function APIHandler:addLuaConsole()
-	Log:log_simple(0)
-	if CommonInsight:tryRequire("Scripts.DCS-INSIGHT.ServerSettingsDevelopment") then
-		local ServerSettingsDevelopment = require("Scripts.DCS-INSIGHT.ServerSettingsDevelopment")
-		if ServerSettingsDevelopment.EnableLuaConsole then
-			self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
-			self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
-		end
-	elseif ServerSettings.EnableLuaConsole then
+	if ServerSettings.EnableLuaConsole then
 		self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
 		self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
 	end
