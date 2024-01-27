@@ -104,8 +104,8 @@ namespace DCSInsight.UserControls
                                 Content = "[warning]",
                                 Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
                             };
-                            labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnter;
-                            labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeave;
+                            labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
+                            labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                             labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
 
                             void LabelConsoleWarningOnMouseDown(object sender, MouseButtonEventArgs e)
@@ -121,8 +121,8 @@ namespace DCSInsight.UserControls
                                 Content = "[list environment]",
                                 Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
                             };
-                            labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnter;
-                            labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeave;
+                            labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
+                            labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                             labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
 
                             void LabelDefaultLuaOnMouseDown(object sender, MouseButtonEventArgs e)
