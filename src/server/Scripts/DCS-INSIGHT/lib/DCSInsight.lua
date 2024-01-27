@@ -19,8 +19,13 @@ local Log = require("Scripts.DCS-INSIGHT.lib.common.Log")
 local ServerSettings = require("Scripts.DCS-INSIGHT.ServerSettings")
 local APIHandler = require("Scripts.DCS-INSIGHT.lib.APIHandler")
 local APIHandler = APIHandler:new()
-
+local CommonInsight = require("Scripts.DCS-INSIGHT.lib.common.Common")
 local Listener = require("Scripts.DCS-INSIGHT.lib.Listener")
+
+if CommonInsight:tryRequire("Scripts.DCS-INSIGHT.ServerSettingsDevelopment") then
+	local ServerSettingsDevelopment = require("Scripts.DCS-INSIGHT.ServerSettingsDevelopment")
+	ServerSettings:setDeveloperSettings(ServerSettingsDevelopment)
+end
 
 local Listener = Listener:new(ServerSettings.TCP_address, ServerSettings.TCP_port, APIHandler)
 Listener:init()

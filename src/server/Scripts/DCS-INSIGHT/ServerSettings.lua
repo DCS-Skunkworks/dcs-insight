@@ -16,4 +16,11 @@ ServerSettings.Log_JSON = false
 -- Do NOT enable unless your are firewalled.
 ServerSettings.EnableLuaConsole = false
 
+function ServerSettings:setDeveloperSettings(settings)
+	ServerSettings.TCP_address = settings.TCP_address
+	ServerSettings.TCP_port = settings.TCP_port
+	ServerSettings.Log_JSON = settings.Log_JSON
+	ServerSettings.EnableLuaConsole = settings.EnableLuaConsole
+end
+
 return ServerSettings
