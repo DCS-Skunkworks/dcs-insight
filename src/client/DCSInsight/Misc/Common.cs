@@ -63,12 +63,12 @@ namespace DCSInsight.Misc
             return new Tuple<bool, bool>(true, jsonFound);
         }
         
-        public static void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
+        public static void UIElement_OnMouseEnterHandIcon(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Hand;
         }
 
-        public static void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
+        public static void UIElement_OnMouseLeaveNormalIcon(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
         }
