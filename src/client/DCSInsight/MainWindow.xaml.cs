@@ -470,27 +470,6 @@ namespace DCSInsight
             }
         }
 
-        private void TextBoxSearchAPI_OnKeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                TextBoxSearchLuaControls.HandleTyping(TextBoxSearchAPI); detta
-                if (Common.LuaConsoleIsLoaded && !Common.LuaConsoleSearchWarningGiven)
-                {
-                    Common.ShowMessageBox("[warning] Any existing lua code written in the Lua Console will be discarded if you search.");
-                    Common.LuaConsoleSearchWarningGiven = true;
-                }
-                if (e.Key == Key.Enter)
-                {
-                    ShowAPIs(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
         private void ShowVersionInfo()
         {
             try
@@ -631,6 +610,27 @@ namespace DCSInsight
                 _luaWindow?.Close();
                 _luaWindow = new LuaWindow();
                 _luaWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBoxSearchAPI_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                TextBoxSearchLuaControls.HandleTyping(TextBoxSearchAPI);
+                if (Common.LuaConsoleIsLoaded && !Common.LuaConsoleSearchWarningGiven)
+                {
+                    Common.ShowMessageBox("[warning] Any existing lua code written in the Lua Console will be discarded if you search.");
+                    Common.LuaConsoleSearchWarningGiven = true;
+                }
+                if (e.Key == Key.Enter)
+                {
+                    ShowAPIs(true);
+                }
             }
             catch (Exception ex)
             {

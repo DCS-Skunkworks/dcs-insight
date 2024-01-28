@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using DCSInsight.Events;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
 using Application = System.Windows.Application;
@@ -21,6 +20,8 @@ namespace DCSInsight.UserControls
         public UserControlAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
+            LabelResultBase = LabelResult;
+            TextBoxResultBase = TextBoxResult;
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -184,8 +185,7 @@ namespace DCSInsight.UserControls
                 Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
-
-
+        
         private void BuildGenericUI()
         {
             try
@@ -313,62 +313,6 @@ namespace DCSInsight.UserControls
             finally
             {
                 Mouse.OverrideCursor = Cursors.Arrow;
-            }
-        }
-
-
-        public override void SetResult(DCSAPI dcsApi)
-        {
-            try
-            {
-                Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
-
-                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
-
-                AutoResetEventPolling.Set();
-
-                if (result == DCSAPI.Result && !IsLuaConsole)
-                {
-                    return;
-                }
-
-                DCSAPI.Result = result;
-
-                if (KeepResults)
-                {
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result + "\n")));
-                    return;
-                }
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
-        protected override void SendCommand()
-        {
-            try
-            {
-                foreach (var textBox in TextBoxParameterList)
-                {
-                    var parameterId = (int)textBox.Tag;
-                    foreach (var parameter in DCSAPI.Parameters)
-                    {
-                        if (parameter.Id == parameterId)
-                        {
-                            parameter.Value = textBox.Text;
-                        }
-                    }
-                }
-
-                ICEventHandler.SendCommand(DCSAPI);
-                SetFormState();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
             }
         }
     }

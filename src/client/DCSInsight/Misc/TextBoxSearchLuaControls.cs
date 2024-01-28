@@ -17,11 +17,11 @@ namespace DCSInsight.Misc
             {
                 if (string.IsNullOrEmpty(textBoxSearch.Text))
                 {
-                    textBoxSearch.Background = null; 
+                    SetBackgroundSearchBanner(textBoxSearch);
                     return;
                 }
-
-                SetBackgroundSearchBanner(textBoxSearch);
+                
+                textBoxSearch.Background = null;
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace DCSInsight.Misc
                     var textImageBrush = new ImageBrush
                     {
                         ImageSource = new BitmapImage(
-                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search.png", UriKind.RelativeOrAbsolute)),
+                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search_api.png", UriKind.RelativeOrAbsolute)),
                         AlignmentX = AlignmentX.Left,
                         Stretch = Stretch.Uniform
                     };

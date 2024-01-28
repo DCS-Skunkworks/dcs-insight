@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using DCSInsight.Events;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
 
@@ -17,15 +16,17 @@ namespace DCSInsight.UserControls
     public partial class UserControlLoSetCommandAPI : UserControlAPIBase
     {
 
-        private Popup _popupSearch;
+        private Popup _popupSearchICommand;
         private DataGrid _dataGridValues;
-        private List<LoSetCommand> _loSetCommands;
-        private LoSetCommand _loSetCommand;
-        private TextBox _textBoxSearch;
+        private List<LoSetCommand> _loSetICommands;
+        private LoSetCommand _loSetICommand;
+        private TextBox _textBoxSearchICommand;
 
         public UserControlLoSetCommandAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
+            LabelResultBase = LabelResult;
+            TextBoxResultBase = TextBoxResult;
         }
 
         private void UserControlLoSetCommandAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -34,10 +35,10 @@ namespace DCSInsight.UserControls
             {
                 if (IsControlLoaded) return;
 
-                _loSetCommands = LoSetCommand.LoadCommands();
-                _popupSearch = (Popup)FindResource("PopUpSearchResults");
-                _popupSearch.Height = 400;
-                _dataGridValues = (DataGrid)LogicalTreeHelper.FindLogicalNode(_popupSearch, "DataGridValues");
+                _loSetICommands = LoSetCommand.LoadCommands();
+                _popupSearchICommand = (Popup)FindResource("PopUpSearchResults");
+                _popupSearchICommand.Height = 400;
+                _dataGridValues = (DataGrid)LogicalTreeHelper.FindLogicalNode(_popupSearchICommand, "DataGridValues");
                 IsTabStop = true;
 
                 BuildUI();
@@ -93,7 +94,7 @@ namespace DCSInsight.UserControls
                         if (dcsAPIParameterType.ParameterName.StartsWith('i'))
                         {
                             var commands = LoSetCommand.LoadCommands();
-                            _textBoxSearch = new TextBox
+                            _textBoxSearchICommand = new TextBox
                             {
                                 Name = "TextBox" + dcsAPIParameterType.Id,
                                 Tag = dcsAPIParameterType.Id,
@@ -102,12 +103,12 @@ namespace DCSInsight.UserControls
                                 Height = 20,
                             };
 
-                            _textBoxSearch.TextChanged += TextBoxSearch_OnTextChanged;
-                            _textBoxSearch.KeyUp += TextBoxSearch_OnKeyUp;
-                            _textBoxSearch.PreviewKeyDown += TextBoxSearch_PreviewKeyDown;
-                            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(_textBoxSearch);
-                            controlList.Add(_textBoxSearch);
-                            TextBoxParameterList.Add(_textBoxSearch);
+                            _textBoxSearchICommand.TextChanged += TextBoxSearchICommand_OnTextChanged;
+                            _textBoxSearchICommand.KeyUp += TextBoxSearchICommand_OnKeyUp;
+                            _textBoxSearchICommand.PreviewKeyDown += TextBoxSearchICommand_PreviewKeyDown;
+                            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(_textBoxSearchICommand);
+                            controlList.Add(_textBoxSearchICommand);
+                            TextBoxParameterList.Add(_textBoxSearchICommand);
                         }
                         else
                         {
@@ -218,61 +219,6 @@ namespace DCSInsight.UserControls
                 Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
-
-        public override void SetResult(DCSAPI dcsApi)
-        {
-            try
-            {
-                Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
-
-                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result);
-                
-                AutoResetEventPolling.Set();
-
-                if (dcsApi.Result == DCSAPI.Result)
-                {
-                    return;
-                }
-
-                DCSAPI.Result = dcsApi.Result;
-
-                if (KeepResults)
-                {
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result + "\n")));
-                    return;
-                }
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
-        protected override void SendCommand()
-        {
-            try
-            {
-                foreach (var textBox in TextBoxParameterList)
-                {
-                    var parameterId = (int)textBox.Tag;
-                    foreach (var parameter in DCSAPI.Parameters)
-                    {
-                        if (parameter.Id == parameterId)
-                        {
-                            parameter.Value = textBox.Text;
-                        }
-                    }
-                }
-
-                ICEventHandler.SendCommand(DCSAPI);
-                SetFormState();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
         
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -280,8 +226,8 @@ namespace DCSInsight.UserControls
             {
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
-                    _loSetCommand = (LoSetCommand)_dataGridValues.SelectedItem;
-                    _textBoxSearch.Text = _loSetCommand.Code;
+                    _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
+                    _textBoxSearchICommand.Text = _loSetICommand.Code;
                 }
                 SetFormState();
             }
@@ -297,11 +243,11 @@ namespace DCSInsight.UserControls
             {
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
-                    _loSetCommand = (LoSetCommand)_dataGridValues.SelectedItem;
-                    _textBoxSearch.Text = _loSetCommand.Code;
+                    _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
+                    _textBoxSearchICommand.Text = _loSetICommand.Code;
                     SetFormState();
                 }
-                _popupSearch.IsOpen = false;
+                _popupSearchICommand.IsOpen = false;
                 SetFormState();
             }
             catch (Exception ex)
@@ -316,10 +262,10 @@ namespace DCSInsight.UserControls
             {
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
-                    _loSetCommand = (LoSetCommand)_dataGridValues.SelectedItem;
-                    _textBoxSearch.Text = _loSetCommand.Code;
+                    _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
+                    _textBoxSearchICommand.Text = _loSetICommand.Code;
                 }
-                _popupSearch.IsOpen = false;
+                _popupSearchICommand.IsOpen = false;
                 SetFormState();
             }
             catch (Exception ex)
@@ -328,11 +274,11 @@ namespace DCSInsight.UserControls
             }
         }
 
-        private void TextBoxSearch_OnKeyUp(object sender, KeyEventArgs e)
+        private void TextBoxSearchICommand_OnKeyUp(object sender, KeyEventArgs e)
         {
             try
             {
-                TextBoxSearchLoSetCommands.AdjustShownPopupData(((TextBox)sender), _popupSearch, _dataGridValues, _loSetCommands);
+                TextBoxSearchLoSetCommands.AdjustShownPopupData(((TextBox)sender), _popupSearchICommand, _dataGridValues, _loSetICommands);
                 SetFormState();
             }
             catch (Exception ex)
@@ -341,12 +287,12 @@ namespace DCSInsight.UserControls
             }
         }
 
-        private void TextBoxSearch_OnTextChanged(object sender, TextChangedEventArgs e)
+        private void TextBoxSearchICommand_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(((TextBox)sender));
         }
         
-        private void TextBoxSearch_PreviewKeyDown(object sender, KeyEventArgs e)
+        private void TextBoxSearchICommand_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             TextBoxSearchLoSetCommands.HandleFirstSpace(sender, e);
         }

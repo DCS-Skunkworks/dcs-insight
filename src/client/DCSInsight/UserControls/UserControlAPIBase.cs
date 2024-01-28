@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using DCSInsight.Events;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
@@ -25,7 +26,7 @@ namespace DCSInsight.UserControls
         protected bool IsConnected;
         private readonly Timer _pollingTimer;
         protected bool CanSend;
-        protected bool KeepResults;
+        private bool KeepResults;
         protected Button ButtonSend;
         protected Label LabelKeepResults;
         protected CheckBox CheckBoxKeepResults;
@@ -33,13 +34,13 @@ namespace DCSInsight.UserControls
         protected CheckBox CheckBoxPolling;
         protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
-        protected static readonly AutoResetEvent AutoResetEventPolling = new(false);
+        protected Label LabelResultBase;
+        protected TextBox TextBoxResultBase;
+        private static readonly AutoResetEvent AutoResetEventPolling = new(false);
         protected readonly bool IsLuaConsole;
 
         public int Id { get; protected set; }
         protected abstract void BuildUI();
-        public abstract void SetResult(DCSAPI dcsApi);
-        protected abstract void SendCommand();
         protected abstract void SetFormState();
 
         protected UserControlAPIBase(DCSAPI dcsAPI, bool isConnected)
@@ -73,6 +74,75 @@ namespace DCSInsight.UserControls
             }
         }
         
+        protected void SendCommand()
+        {
+            try
+            {
+                foreach (var textBox in TextBoxParameterList)
+                {
+                    var parameterId = (int)textBox.Tag;
+                    foreach (var parameter in DCSAPI.Parameters)
+                    {
+                        if (parameter.Id == parameterId)
+                        {
+                            parameter.Value = textBox.Text;
+                        }
+                    }
+                }
+
+                ICEventHandler.SendCommand(DCSAPI);
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private string ResultTextBoxFirstLine()
+        {
+            var textBoxResultText = "";
+            Application.Current.Dispatcher.Invoke(
+                DispatcherPriority.Normal,
+                (ThreadStart)delegate { textBoxResultText = TextBoxResultBase.Text; });
+
+            if (string.IsNullOrEmpty(textBoxResultText)) return "";
+
+            return textBoxResultText.IndexOf("\n", StringComparison.Ordinal) == -1 ? textBoxResultText : textBoxResultText[..textBoxResultText.IndexOf("\n", StringComparison.Ordinal)];
+        }
+
+        internal void SetResult(DCSAPI dcsApi)
+        {
+            try
+            {
+                Dispatcher?.BeginInvoke((Action)(() => LabelResultBase.Content = $"Result ({dcsApi.ResultType})"));
+
+                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
+
+                AutoResetEventPolling.Set();
+
+
+                if (result == ResultTextBoxFirstLine() && result == DCSAPI.Result && !IsLuaConsole)
+                {
+                    return;
+                }
+
+                DCSAPI.Result = result;
+
+                if (KeepResults)
+                {
+                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResultBase.Text = TextBoxResultBase.Text.Insert(0, result + "\n")));
+                    return;
+                }
+                Dispatcher?.BeginInvoke((Action)(() => TextBoxResultBase.Text = result));
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+
         public void SetConnectionStatus(bool connected)
         {
             try

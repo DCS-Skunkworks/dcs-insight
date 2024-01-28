@@ -22,7 +22,7 @@ namespace DCSInsight.Misc
                     var textImageBrush = new ImageBrush
                     {
                         ImageSource = new BitmapImage(
-                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search.png", UriKind.RelativeOrAbsolute)),
+                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search_icommands.png", UriKind.RelativeOrAbsolute)),
                         AlignmentX = AlignmentX.Left,
                         Stretch = Stretch.Uniform
                     };

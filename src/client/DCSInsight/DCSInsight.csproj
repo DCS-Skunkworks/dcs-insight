@@ -8,12 +8,14 @@
     <!-- for WinForms -->
     <AssemblyName>dcs-insight</AssemblyName>
     <Version>1.0.0</Version>
-    <AssemblyVersion>1.8.7</AssemblyVersion>
+    <AssemblyVersion>1.9.0</AssemblyVersion>
     <ApplicationIcon>Images\Magnifier_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Images\clear_search_result.png" />
-    <None Remove="Images\cue_banner_search.png" />
+    <None Remove="Images\cue_banner_search_api.png" />
+    <None Remove="Images\cue_banner_search_dcsbios_controls.png" />
+    <None Remove="Images\cue_banner_search_icommands.png" />
     <None Remove="Images\Icon_green_lamp_off.png" />
     <None Remove="Images\Icon_green_lamp_on.png" />
     <None Remove="Images\Magnifier_icon.ico" />
@@ -31,7 +33,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\clear_search_result.png" />
-    <Resource Include="Images\cue_banner_search.png" />
+    <Resource Include="Images\cue_banner_search_api.png" />
+    <Resource Include="Images\cue_banner_search_dcsbios_controls.png" />
+    <Resource Include="Images\cue_banner_search_icommands.png" />
     <Resource Include="Images\Icon_green_lamp_off.png" />
     <Resource Include="Images\Icon_green_lamp_on.png" />
     <Resource Include="Images\Magnifier_icon.ico" />
