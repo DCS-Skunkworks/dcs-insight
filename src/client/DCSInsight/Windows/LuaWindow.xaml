@@ -43,7 +43,7 @@
             <Label Content="Search" Width="Auto" Margin="10,0,0,0" DockPanel.Dock="Left"></Label>
             <TextBox Name="TextBoxSearch" Width="Auto" MinWidth="100" VerticalAlignment="Center" Margin="10,0,0,0" DockPanel.Dock="Left" TextChanged="TextBoxSearch_OnTextChanged" KeyUp="TextBoxSearch_OnKeyUp" PreviewKeyDown="TextBoxSearch_OnPreviewKeyDown">
                 <TextBox.Background>
-                    <ImageBrush ImageSource="/Images/cue_banner_search.png" AlignmentX="Left" Stretch="Uniform" />
+                    <ImageBrush ImageSource="/Images/cue_banner_search_dcsbios_controls.png" AlignmentX="Left" Stretch="Uniform" />
                 </TextBox.Background>
             </TextBox>
         </DockPanel>

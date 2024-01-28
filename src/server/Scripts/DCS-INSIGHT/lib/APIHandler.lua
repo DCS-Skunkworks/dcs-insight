@@ -301,8 +301,17 @@ end
 --- Executes the command and returns a command containing the result
 --- @param api APIInfo
 function APIHandler:execute(api)
+	api.error_thrown = false
+	api.error_message = ""
+
 	for k, v in pairs(self.commandsTable) do
 		if api.id == v.id then
+			if api.api_syntax == "Lua Console" and ServerSettings.EnableLuaConsole == false then
+				api.error_thrown = true
+				api.error_message = "Lua Console is not allowed"
+				return api
+			end
+
 			local result_code, result = pcall(v.execute, v, api) -- = v:execute(api)
 
 			if api.error_thrown then

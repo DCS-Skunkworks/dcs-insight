@@ -5,9 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using DCSInsight.Events;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
+using Application = System.Windows.Application;
 
 namespace DCSInsight.UserControls
 {
@@ -20,6 +20,8 @@ namespace DCSInsight.UserControls
         public UserControlAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
+            LabelResultBase = LabelResult;
+            TextBoxResultBase = TextBoxResult;
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -60,6 +62,16 @@ namespace DCSInsight.UserControls
 
         protected override void BuildUI()
         {
+            if (IsLuaConsole)
+            {
+                BuildLuaConsoleUI();
+                return;
+            }
+            BuildGenericUI();
+        }
+
+        private void BuildLuaConsoleUI()
+        {
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
@@ -68,6 +80,123 @@ namespace DCSInsight.UserControls
                 {
                     TextBoxSyntax.Text = DCSAPI.Syntax;
                     TextBoxSyntax.ToolTip = $"Click to copy syntax. (API Id = {DCSAPI.Id})";
+                    StackPanelBottom.Visibility = Visibility.Visible;
+                    Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters").LastChildFill = true;
+                    var controlList = new List<Control>();
+
+                    var textBoxLuaCode = new TextBox
+                    {
+                        Name = "TextBox0", //only one parameter for Lua Console
+                        Tag = 0,
+                        MinWidth = 550,
+                        Height = 20,
+                        IsTabStop = true,
+                        FontFamily = new FontFamily("Consolas"),
+                        TextWrapping = TextWrapping.Wrap,
+                        AcceptsReturn = true,
+                        AcceptsTab = true,
+                        Width = double.NaN,
+                        MinHeight = 150,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                    };
+
+                    TextBoxSyntax.PreviewMouseDown -= TextBoxSyntax_OnPreviewMouseDown;
+                    TextBoxSyntax.MouseEnter -= TextBoxSyntax_OnMouseEnter;
+                    TextBoxSyntax.MouseLeave -= TextBoxSyntax_OnMouseLeave;
+                    TextBoxSyntax.ToolTip = null;
+
+
+                    var labelConsoleWarning = new Label
+                    {
+                        Content = "[warning]",
+                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF")
+                    };
+                    labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
+                    labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
+                    labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
+
+                    void LabelConsoleWarningOnMouseDown(object sender, MouseButtonEventArgs e)
+                    {
+                        MessageBox.Show("WARNING! This function enables arbitrary lua code to be\r\nexecuted on your computer, including calls to package os (Operating System).\r\nDo NOT enable unless your are firewalled.", "Warning", MessageBoxButton.OK);
+                    }
+
+                    labelConsoleWarning.Tag = textBoxLuaCode;
+                    StackPanelLinks.Children.Add(labelConsoleWarning);
+
+                    var labelDefaultLua = new Label
+                    {
+                        Content = "[list environment]",
+                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
+                    };
+                    labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
+                    labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
+                    labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
+
+                    void LabelDefaultLuaOnMouseDown(object sender, MouseButtonEventArgs e)
+                    {
+                        try
+                        {
+                            var callingTextBox = (TextBox)((Label)sender).Tag;
+                            callingTextBox.Text = Constants.ListEnvironmentSnippet;
+                            SetFormState();
+                            if (ButtonSend.IsEnabled)
+                            {
+                                SendCommand();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Common.ShowErrorMessageBox(ex);
+                        }
+                    }
+
+                    labelDefaultLua.Tag = textBoxLuaCode;
+                    StackPanelLinks.Children.Add(labelDefaultLua);
+
+                    textBoxLuaCode.KeyUp += TextBoxParameter_OnKeyUp;
+
+                    controlList.Add(textBoxLuaCode);
+                    TextBoxParameterList.Add(textBoxLuaCode);
+
+                    ButtonSend = new Button
+                    {
+                        Content = "Send",
+                        Height = 20,
+                        Width = 50,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(20, 0, 0, 0)
+                    };
+                    ButtonSend.Click += ButtonSend_OnClick;
+
+                    StackPanelBottom.Children.Add(ButtonSend);
+
+                    ItemsControlParameters.ItemsSource = controlList;
+                    Common.LuaConsoleIsLoaded = true;
+                    SetFormState();
+                }
+                catch (Exception ex)
+                {
+                    Common.ShowErrorMessageBox(ex);
+                }
+
+            }
+            finally
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
+            }
+        }
+        
+        private void BuildGenericUI()
+        {
+            try
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+
+                try
+                {
+                    TextBoxSyntax.Text = DCSAPI.Syntax;
+                    TextBoxSyntax.ToolTip = $"Click to copy syntax. (API Id = {DCSAPI.Id})";
+                    StackPanelBottom.Visibility = Visibility.Collapsed;
 
                     var controlList = new List<Control>();
 
@@ -80,81 +209,24 @@ namespace DCSInsight.UserControls
                         };
                         controlList.Add(label);
 
-                        var textBox = new TextBox
+
+                        var textBoxParameter = new TextBox
                         {
                             Name = "TextBox" + dcsAPIParameterType.Id,
                             Tag = dcsAPIParameterType.Id,
                             MinWidth = 50,
-                            MaxWidth = 100,
                             Height = 20,
                             IsTabStop = true
                         };
 
-                        if (IsLuaConsole)
-                        {
-                            textBox.TextWrapping = TextWrapping.Wrap;
-                            textBox.AcceptsReturn = true;
-                            textBox.AcceptsTab = true;
-                            textBox.MinWidth = 500;
-                            textBox.MinHeight = 150;
-                            textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-                            var labelConsoleWarning = new Label
-                            {
-                                Content = "[warning]",
-                                Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
-                            };
-                            labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
-                            labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
-                            labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
-
-                            void LabelConsoleWarningOnMouseDown(object sender, MouseButtonEventArgs e)
-                            {
-                                MessageBox.Show("WARNING! This function enables arbitrary lua code to be\r\nexecuted on your computer, including calls to package os (Operating System).\r\nDo NOT enable unless your are firewalled.", "Warning", MessageBoxButton.OK);
-                            }
-
-                            labelConsoleWarning.Tag = textBox;
-                            StackPanelLinks.Children.Add(labelConsoleWarning);
-
-                            var labelDefaultLua = new Label
-                            {
-                                Content = "[list environment]",
-                                Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
-                            };
-                            labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
-                            labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
-                            labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
-
-                            void LabelDefaultLuaOnMouseDown(object sender, MouseButtonEventArgs e)
-                            {
-                                try
-                                {
-                                    var callingTextBox = (TextBox)((Label)sender).Tag;
-                                    callingTextBox.Text = Constants.ListEnvironmentSnippet;
-                                    SetFormState();
-                                    if (ButtonSend.IsEnabled)
-                                    {
-                                        SendCommand();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Common.ShowErrorMessageBox(ex);
-                                }
-                            }
-
-                            labelDefaultLua.Tag = textBox;
-                            StackPanelLinks.Children.Add(labelDefaultLua);
-                        }
-                        
                         if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
                         {
-                            textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+                            textBoxParameter.KeyDown += TextBoxParameter_OnKeyDown_Number;
                         }
-                        textBox.KeyUp += TextBoxParameter_OnKeyUp;
+                        textBoxParameter.KeyUp += TextBoxParameter_OnKeyUp;
 
-                        controlList.Add(textBox);
-                        TextBoxParameterList.Add(textBox);
+                        controlList.Add(textBoxParameter);
+                        TextBoxParameterList.Add(textBoxParameter);
                     }
 
                     ButtonSend = new Button
@@ -166,9 +238,10 @@ namespace DCSInsight.UserControls
                         Margin = new Thickness(20, 0, 0, 0)
                     };
                     ButtonSend.Click += ButtonSend_OnClick;
+
                     controlList.Add(ButtonSend);
 
-                    if (DCSAPI.ReturnsData && !IsLuaConsole)
+                    if (DCSAPI.ReturnsData)
                     {
                         LabelKeepResults = new Label
                         {
@@ -217,7 +290,7 @@ namespace DCSInsight.UserControls
                         {
                             Height = 20,
                             Margin = new Thickness(2, 0, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
+                            VerticalAlignment = VerticalAlignment.Center,
                         };
                         ComboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
                         ComboBoxPollTimes.Items.Add(100);
@@ -240,61 +313,6 @@ namespace DCSInsight.UserControls
             finally
             {
                 Mouse.OverrideCursor = Cursors.Arrow;
-            }
-        }
-
-        public override void SetResult(DCSAPI dcsApi)
-        {
-            try
-            {
-                Dispatcher?.BeginInvoke((Action)(() => LabelResult.Content = $"Result ({dcsApi.ResultType})"));
-
-                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
-
-                AutoResetEventPolling.Set();
-
-                if (result == DCSAPI.Result)
-                {
-                    return;
-                }
-
-                DCSAPI.Result = result;
-
-                if (KeepResults)
-                {
-                    Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = TextBoxResult.Text.Insert(0, result + "\n")));
-                    return;
-                }
-                Dispatcher?.BeginInvoke((Action)(() => TextBoxResult.Text = result));
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
-        protected override void SendCommand()
-        {
-            try
-            {
-                foreach (var textBox in TextBoxParameterList)
-                {
-                    var parameterId = (int)textBox.Tag;
-                    foreach (var parameter in DCSAPI.Parameters)
-                    {
-                        if (parameter.Id == parameterId)
-                        {
-                            parameter.Value = textBox.Text;
-                        }
-                    }
-                }
-
-                ICEventHandler.SendCommand(DCSAPI);
-                SetFormState();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
             }
         }
     }

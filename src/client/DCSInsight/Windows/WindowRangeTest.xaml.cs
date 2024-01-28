@@ -11,7 +11,6 @@ using DCSInsight.Events;
 using DCSInsight.Interfaces;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
-using NLog;
 
 namespace DCSInsight.Windows
 {
@@ -19,9 +18,7 @@ namespace DCSInsight.Windows
     /// Interaction logic for WindowRangeTest.xaml
     /// </summary>
     public partial class WindowRangeTest : Window, IErrorListener, IConnectionListener, IDataListener, IDisposable
-
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly List<DCSAPI> _dcsAPIList;
         private bool _formLoaded;
         private DCSAPI _dcsAPI;
@@ -44,7 +41,7 @@ namespace DCSInsight.Windows
         {
             InitializeComponent();
             _dcsAPIList = dcsAPIList;
-            _dcsAPIList.RemoveAll(o => o.Syntax == "LuaConsole");
+            _dcsAPIList.RemoveAll(o => o.Syntax == Constants.LuaConsole);
             ICEventHandler.AttachErrorListener(this);
             ICEventHandler.AttachConnectionListener(this);
             ICEventHandler.AttachDataListener(this);
@@ -176,7 +173,7 @@ namespace DCSInsight.Windows
             }
         }
 
-        private string GetResultString(DCSAPI dcsApi)
+        private static string GetResultString(DCSAPI dcsApi)
         {
             var currentTestString = new StringBuilder();
 

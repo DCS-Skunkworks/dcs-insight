@@ -11,6 +11,24 @@ namespace DCSInsight.Misc
 {
     internal static class TextBoxSearchLuaControls
     {
+        internal static void HandleTyping(TextBox textBoxSearch)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    SetBackgroundSearchBanner(textBoxSearch);
+                    return;
+                }
+                
+                textBoxSearch.Background = null;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
         internal static void SetBackgroundSearchBanner(TextBox textBoxSearch)
         {
             try
@@ -22,7 +40,7 @@ namespace DCSInsight.Misc
                     var textImageBrush = new ImageBrush
                     {
                         ImageSource = new BitmapImage(
-                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search.png", UriKind.RelativeOrAbsolute)),
+                            new Uri("pack://application:,,,/dcs-insight;component/Images/cue_banner_search_api.png", UriKind.RelativeOrAbsolute)),
                         AlignmentX = AlignmentX.Left,
                         Stretch = Stretch.Uniform
                     };
