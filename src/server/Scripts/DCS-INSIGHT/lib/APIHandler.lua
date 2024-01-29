@@ -306,7 +306,7 @@ function APIHandler:execute(api)
 
 	for k, v in pairs(self.commandsTable) do
 		if api.id == v.id then
-			if api.api_syntax == "Lua Console" and ServerSettings.EnableLuaConsole == false then
+			if api.id == 1 and ServerSettings.EnableLuaConsole == false then -- API.id 1 = Lua Console
 				api.error_thrown = true
 				api.error_message = "Lua Console is not allowed"
 				return api
