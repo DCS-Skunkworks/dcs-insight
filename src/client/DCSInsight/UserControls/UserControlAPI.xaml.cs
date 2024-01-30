@@ -101,8 +101,8 @@ namespace DCSInsight.UserControls
                     };
 
                     TextBoxSyntax.PreviewMouseDown -= TextBoxSyntax_OnPreviewMouseDown;
-                    TextBoxSyntax.MouseEnter -= TextBoxSyntax_OnMouseEnter;
-                    TextBoxSyntax.MouseLeave -= TextBoxSyntax_OnMouseLeave;
+                    TextBoxSyntax.MouseEnter -= Common.MouseEnter;
+                    TextBoxSyntax.MouseLeave -= Common.MouseLeave;
                     TextBoxSyntax.ToolTip = null;
 
 
@@ -158,17 +158,7 @@ namespace DCSInsight.UserControls
                     controlList.Add(textBoxLuaCode);
                     TextBoxParameterList.Add(textBoxLuaCode);
 
-                    ButtonSend = new Button
-                    {
-                        Content = "Send",
-                        Height = 20,
-                        Width = 50,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(20, 0, 0, 0)
-                    };
-                    ButtonSend.Click += ButtonSend_OnClick;
-
-                    StackPanelBottom.Children.Add(ButtonSend);
+                    StackPanelBottom.Children.Add(GetButtonSend());
 
                     ItemsControlParameters.ItemsSource = controlList;
                     Common.LuaConsoleIsLoaded = true;
@@ -200,104 +190,25 @@ namespace DCSInsight.UserControls
 
                     var controlList = new List<Control>();
 
-                    foreach (var dcsAPIParameterType in DCSAPI.Parameters)
+                    foreach (var dcsAPIParameter in DCSAPI.Parameters)
                     {
-                        var label = new Label
-                        {
-                            Content = dcsAPIParameterType.ParameterName.Replace("_", "__"),
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-                        controlList.Add(label);
+                        controlList.Add(GetLabelParameterName(dcsAPIParameter.ParameterName));
 
-
-                        var textBoxParameter = new TextBox
-                        {
-                            Name = "TextBox" + dcsAPIParameterType.Id,
-                            Tag = dcsAPIParameterType.Id,
-                            MinWidth = 50,
-                            Height = 20,
-                            IsTabStop = true
-                        };
-
-                        if (dcsAPIParameterType.Type == ParameterTypeEnum.number)
-                        {
-                            textBoxParameter.KeyDown += TextBoxParameter_OnKeyDown_Number;
-                        }
-                        textBoxParameter.KeyUp += TextBoxParameter_OnKeyUp;
-
+                        var textBoxParameter = GetTextBoxParameter(dcsAPIParameter);
                         controlList.Add(textBoxParameter);
                         TextBoxParameterList.Add(textBoxParameter);
                     }
 
-                    ButtonSend = new Button
-                    {
-                        Content = "Send",
-                        Height = 20,
-                        Width = 50,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Margin = new Thickness(20, 0, 0, 0)
-                    };
-                    ButtonSend.Click += ButtonSend_OnClick;
-
-                    controlList.Add(ButtonSend);
+                    controlList.Add(GetButtonSend());
 
                     if (DCSAPI.ReturnsData)
                     {
-                        LabelKeepResults = new Label
-                        {
-                            Content = "Keep results",
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Margin = new Thickness(10, 0, 0, 0)
-                        };
-                        controlList.Add(LabelKeepResults);
-
-                        CheckBoxKeepResults = new CheckBox
-                        {
-                            Margin = new Thickness(0, 0, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-                        CheckBoxKeepResults.Checked += CheckBoxKeepResults_OnChecked;
-                        CheckBoxKeepResults.Unchecked += CheckBoxKeepResults_OnUnchecked;
-                        controlList.Add(CheckBoxKeepResults);
-
-                        LabelPolling = new Label
-                        {
-                            Content = "Poll",
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Margin = new Thickness(10, 0, 0, 0)
-                        };
-                        controlList.Add(LabelPolling);
-
-                        CheckBoxPolling = new CheckBox
-                        {
-                            Margin = new Thickness(0, 0, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center
-
-                        };
-                        CheckBoxPolling.Checked += CheckBoxPolling_OnChecked;
-                        CheckBoxPolling.Unchecked += CheckBoxPolling_OnUnchecked;
-                        controlList.Add(CheckBoxPolling);
-
-                        LabelPollingInterval = new Label
-                        {
-                            Content = "Interval (ms) :",
-                            VerticalAlignment = VerticalAlignment.Center,
-                            Margin = new Thickness(10, 0, 0, 0)
-                        };
-                        controlList.Add(LabelPollingInterval);
-
-                        ComboBoxPollTimes = new ComboBox
-                        {
-                            Height = 20,
-                            Margin = new Thickness(2, 0, 0, 0),
-                            VerticalAlignment = VerticalAlignment.Center,
-                        };
-                        ComboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
-                        ComboBoxPollTimes.Items.Add(100);
-                        ComboBoxPollTimes.Items.Add(500);
-                        ComboBoxPollTimes.Items.Add(1000);
-                        ComboBoxPollTimes.Items.Add(2000);
-                        ComboBoxPollTimes.SelectedIndex = 0;
+                        controlList.Add(GetLabelKeepResults());
+                        controlList.Add(GetCheckBoxKeepResults());
+                        controlList.Add(GetLabelPolling());
+                        controlList.Add(GetCheckBoxPolling());
+                        controlList.Add(GetLabelPollingInterval());
+                        controlList.Add(GetComboBoxPollTimes());
                         controlList.Add(ComboBoxPollTimes);
                     }
 

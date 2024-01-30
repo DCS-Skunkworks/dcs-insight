@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Icon="/dcs-insight;component/Images/Magnifier_icon.png" 
         xmlns:local="clr-namespace:DCSInsight"
+        xmlns:misc="clr-namespace:DCSInsight.Misc"
 
         mc:Ignorable="d"
         Title="DCS-Insight" Height="560" Width="750" WindowStartupLocation="CenterScreen" Closing="MainWindow_OnClosing" Loaded="MainWindow_OnLoaded">
@@ -44,13 +45,13 @@
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" >
                     <TextBlock Name="TextBlockAppInfo" MouseDown="TextBlockAppInfo_OnMouseDown">dcs-insight</TextBlock>
                 </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave">
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockAppWiki" MouseDown="TextBlockAppWiki_OnMouseDown">wiki</TextBlock>
                 </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave">
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockCheckNewVersion" MouseDown="TextBlockCheckNewVersion_OnMouseDown">check version</TextBlock>
                 </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="UIElement_OnMouseEnter" MouseLeave="UIElement_OnMouseLeave">
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockSetDCSBIOSLocation" MouseDown="TextBlockSetDCSBIOSLocation_OnMouseDown">set dcs-bios</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
