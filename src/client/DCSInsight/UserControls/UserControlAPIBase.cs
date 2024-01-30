@@ -26,7 +26,7 @@ namespace DCSInsight.UserControls
         protected bool IsConnected;
         private readonly Timer _pollingTimer;
         protected bool CanSend;
-        private bool KeepResults;
+        private bool _keepResults;
         protected Button ButtonSend;
         protected Label LabelKeepResults;
         protected CheckBox CheckBoxKeepResults;
@@ -46,7 +46,7 @@ namespace DCSInsight.UserControls
         protected UserControlAPIBase(DCSAPI dcsAPI, bool isConnected)
         {
             DCSAPI = dcsAPI;
-            IsLuaConsole = DCSAPI.Syntax == Constants.LuaConsole;
+            IsLuaConsole = DCSAPI.Id == Constants.LuaConsole;
             Id = DCSAPI.Id;
             IsConnected = isConnected;
             _pollingTimer = new Timer(PollingTimerCallback);
@@ -129,7 +129,7 @@ namespace DCSInsight.UserControls
 
                 DCSAPI.Result = result;
 
-                if (KeepResults)
+                if (_keepResults)
                 {
                     Dispatcher?.BeginInvoke((Action)(() => TextBoxResultBase.Text = TextBoxResultBase.Text.Insert(0, result + "\n")));
                     return;
@@ -291,7 +291,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                KeepResults = false;
+                _keepResults = false;
                 SetFormState();
             }
             catch (Exception ex)
@@ -304,7 +304,7 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                KeepResults = true;
+                _keepResults = true;
                 SetFormState();
             }
             catch (Exception ex)

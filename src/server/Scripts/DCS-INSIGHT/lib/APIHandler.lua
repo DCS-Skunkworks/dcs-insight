@@ -95,6 +95,8 @@ function APIHandler:addLuaConsole()
 	if ServerSettings.EnableLuaConsole then
 		self.commandsTable[#self.commandsTable + 1] = LoadStringAPI:new(nil, counter())
 		self.apiTable[#self.apiTable + 1] = self.commandsTable[#self.commandsTable].apiInfo
+	else
+		counter() -- increase counter as 1 is reserved for lua console
 	end
 end
 
