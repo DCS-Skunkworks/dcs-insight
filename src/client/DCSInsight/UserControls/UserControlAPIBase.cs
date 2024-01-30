@@ -28,11 +28,7 @@ namespace DCSInsight.UserControls
         protected bool CanSend;
         private bool _keepResults;
         protected Button ButtonSend;
-        protected Label LabelKeepResults;
-        protected CheckBox CheckBoxKeepResults;
-        protected Label LabelPolling;
         protected CheckBox CheckBoxPolling;
-        protected Label LabelPollingInterval;
         protected ComboBox ComboBoxPollTimes;
         protected Label LabelResultBase;
         protected TextBox TextBoxResultBase;
@@ -313,30 +309,6 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void TextBoxSyntax_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                Mouse.OverrideCursor = Cursors.Hand;
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
-        protected void TextBoxSyntax_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            try
-            {
-                Mouse.OverrideCursor = Cursors.Arrow;
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
         protected void TextBoxSyntax_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -349,6 +321,122 @@ namespace DCSInsight.UserControls
             {
                 Common.ShowErrorMessageBox(ex);
             }
+        }
+
+        protected static Label GetLabelParameterName(string parameterName)
+        {
+            return new Label
+            {
+                Content = parameterName.Replace("_", "__"),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+        }
+        protected TextBox GetTextBoxParameter(ParameterInfo parameterInfo)
+        {
+            var textBox = new TextBox
+            {
+                Name = "TextBox" + parameterInfo.Id,
+                Tag = parameterInfo.Id,
+                MinWidth = 50,
+                Height = 20,
+                IsTabStop = true
+            };
+
+
+            if (parameterInfo.Type == ParameterTypeEnum.number)
+            {
+                textBox.KeyDown += TextBoxParameter_OnKeyDown_Number;
+            }
+            textBox.KeyUp += TextBoxParameter_OnKeyUp;
+
+            return textBox;
+        }
+
+        protected Button GetButtonSend()
+        {
+            ButtonSend = new Button
+            {
+                Content = "Send",
+                Height = 20,
+                Width = 50,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(20, 0, 0, 0)
+            };
+            ButtonSend.Click += ButtonSend_OnClick;
+
+            return ButtonSend;
+        }
+
+        protected Label GetLabelKeepResults()
+        {
+            return new Label
+            {
+                Content = "Keep results",
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 0, 0)
+            };
+        }
+
+        protected CheckBox GetCheckBoxKeepResults()
+        {
+            var checkBoxKeepResults = new CheckBox
+            {
+                Margin = new Thickness(0, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            checkBoxKeepResults.Checked += CheckBoxKeepResults_OnChecked;
+            checkBoxKeepResults.Unchecked += CheckBoxKeepResults_OnUnchecked;
+            return checkBoxKeepResults;
+        }
+
+        protected static Label GetLabelPolling()
+        {
+            return new Label
+            {
+                Content = "Poll",
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 0, 0)
+            };
+        }
+
+        protected CheckBox GetCheckBoxPolling()
+        {
+            CheckBoxPolling = new CheckBox
+            {
+                Margin = new Thickness(0, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+
+            };
+            CheckBoxPolling.Checked += CheckBoxPolling_OnChecked;
+            CheckBoxPolling.Unchecked += CheckBoxPolling_OnUnchecked;
+            return CheckBoxPolling;
+        }
+
+        protected static Label GetLabelPollingInterval()
+        {
+            return new Label
+            {
+                Content = "Interval (ms) :",
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(10, 0, 0, 0)
+            };
+        }
+
+        protected ComboBox GetComboBoxPollTimes()
+        {
+            ComboBoxPollTimes = new ComboBox
+            {
+                Height = 20,
+                Margin = new Thickness(2, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            ComboBoxPollTimes.DataContextChanged += ComboBoxPollTimes_OnDataContextChanged;
+            ComboBoxPollTimes.Items.Add(100);
+            ComboBoxPollTimes.Items.Add(500);
+            ComboBoxPollTimes.Items.Add(1000);
+            ComboBoxPollTimes.Items.Add(2000);
+            ComboBoxPollTimes.SelectedIndex = 0;
+            return ComboBoxPollTimes;
         }
     }
 }

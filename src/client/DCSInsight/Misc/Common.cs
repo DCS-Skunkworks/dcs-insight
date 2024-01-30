@@ -14,6 +14,8 @@ namespace DCSInsight.Misc
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         internal static bool LuaConsoleIsLoaded;
         internal static bool LuaConsoleSearchWarningGiven;
+        public static MouseEventHandler MouseEnter => UIElement_OnMouseEnterHandIcon;
+        public static MouseEventHandler MouseLeave => UIElement_OnMouseLeaveNormalIcon;
 
         internal static void ShowMessageBox(string message)
         {

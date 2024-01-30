@@ -528,16 +528,6 @@ namespace DCSInsight
             });
         }
 
-        private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Hand;
-        }
-
-        private void UIElement_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Arrow;
-        }
-
         private async void TextBlockCheckNewVersion_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             try
