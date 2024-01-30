@@ -400,4 +400,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 *.bak
-src/server/Scripts/DCS-INSIGHT/ServerSettingsDevelopment.lua
+src/server/Scripts/DCS-INSIGHT/*ServerSettingsDevelopment*.lua
