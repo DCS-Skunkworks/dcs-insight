@@ -95,7 +95,7 @@ namespace DCSInsight.Windows
                 
                 if (DCSBIOSChanged)
                 {
-                    Settings.Default.DCSBiosJSONLocation = TextBoxDcsBiosJSONLocation.Text;
+                    Settings.Default.DCSBiosJSONLocation = Environment.ExpandEnvironmentVariables(TextBoxDcsBiosJSONLocation.Text);
                     Settings.Default.Save();
                 }
                 DialogResult = true;
