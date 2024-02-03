@@ -42,6 +42,8 @@ namespace DCSInsight
         public MainWindow()
         {
             InitializeComponent();
+            Settings.Default.DCSBiosJSONLocation = Environment.ExpandEnvironmentVariables(Settings.Default.DCSBiosJSONLocation);
+            Settings.Default.Save();
             ICEventHandler.AttachErrorListener(this);
             ICEventHandler.AttachConnectionListener(this);
             ICEventHandler.AttachDataListener(this);
@@ -72,7 +74,7 @@ namespace DCSInsight
                 Top = Settings.Default.MainWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.MainWindowTop;
                 Left = Settings.Default.MainWindowLeft.CompareTo(-1) == 0 ? Left : Settings.Default.MainWindowLeft;
 
-                ButtonLuaWindow.Visibility = Directory.Exists(Environment.ExpandEnvironmentVariables(Settings.Default.DCSBiosJSONLocation)) ? Visibility.Visible : Visibility.Collapsed; 
+                ButtonLuaWindow.Visibility = Directory.Exists(Settings.Default.DCSBiosJSONLocation) ? Visibility.Visible : Visibility.Collapsed; 
                 _formLoaded = true;
             }
             catch (Exception ex)
