@@ -9,6 +9,11 @@ function lfs.writedir()
 	return ""
 end
 
+--- @return string Returns current directory for script
+function lfs.currentdir()
+	return ""
+end
+
 ---@class CockpitDevice
 --- DCS Cockpit Device
 CockpitDevice = {}
