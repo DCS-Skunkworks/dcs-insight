@@ -74,7 +74,7 @@ namespace DCSInsight
                 Top = Settings.Default.MainWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.MainWindowTop;
                 Left = Settings.Default.MainWindowLeft.CompareTo(-1) == 0 ? Left : Settings.Default.MainWindowLeft;
 
-                ButtonLuaWindow.Visibility = Directory.Exists(Settings.Default.DCSBiosJSONLocation) ? Visibility.Visible : Visibility.Collapsed; 
+                ButtonLuaWindow.Visibility = Directory.Exists(Settings.Default.DCSBiosJSONLocation) ? Visibility.Visible : Visibility.Collapsed;
                 _formLoaded = true;
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace DCSInsight
         {
             try
             {
-                ButtonConnect.IsEnabled = !string.IsNullOrEmpty(TextBoxServer.Text) && !string.IsNullOrEmpty(TextBoxPort.Text);
+                ButtonConnectDisconnect.IsEnabled = !string.IsNullOrEmpty(TextBoxServer.Text) && !string.IsNullOrEmpty(TextBoxPort.Text);
                 ButtonRangeTest.IsEnabled = _isConnected && _dcsAPIList.Count > 0;
             }
             catch (Exception ex)
@@ -100,12 +100,18 @@ namespace DCSInsight
         {
             try
             {
+                if (ItemsControlAPI.Items.Count > 0 && Settings.Default.AskForReloadAPIList)
+                {
+                    var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
+                    windowAskReloadAPIDialog.ShowDialog();
+                }
+
                 Mouse.OverrideCursor = Cursors.Wait;
                 try
                 {
                     _tcpClientHandler?.Disconnect();
                     _isConnected = false;
-                    _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text);
+                    _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text, ItemsControlAPI.Items.Count == 0 || Settings.Default.ReloadAPIList);
                     _tcpClientHandler.Connect();
                 }
                 catch (Exception ex)
@@ -128,11 +134,8 @@ namespace DCSInsight
                 {
                     _isConnected = false;
                     _tcpClientHandler?.Disconnect();
-                    _dcsAPIList.Clear();
-                    _loadedAPIUserControls.Clear();
-                    ItemsControlAPI.ItemsSource = null;
-                    ItemsControlAPI.Items.Clear();
                     SetConnectionStatus(_isConnected);
+                    SetFormState();
                 }
                 catch (Exception ex)
                 {
@@ -204,7 +207,7 @@ namespace DCSInsight
 
         private void SetConnectionStatus(bool connected)
         {
-            ButtonConnect.Content = connected ? "Disconnect" : "Connect";
+            ButtonConnectDisconnect.Content = connected ? "Disconnect" : "Connect";
             Title = connected ? "Connected" : "Disconnected";
             SetFormState();
             _loadedAPIUserControls.ForEach(o => o.SetConnectionStatus(_isConnected));
@@ -245,7 +248,7 @@ namespace DCSInsight
             }
         }
 
-        private void ButtonConnect_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonConnectDisconnect_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -554,7 +557,7 @@ namespace DCSInsight
             {
                 var client = new GitHubClient(new Octokit.ProductHeaderValue("dcs-insight"));
                 var lastRelease = await client.Repository.Release.GetLatest("DCS-Skunkworks", "dcs-insight");
-                var githubVersion = new Version(lastRelease.TagName.Replace("v.", "").Replace("v",""));
+                var githubVersion = new Version(lastRelease.TagName.Replace("v.", "").Replace("v", ""));
                 if (githubVersion.CompareTo(thisVersion) > 0)
                 {
                     if (MessageBox.Show(this, $"Newer version can be downloaded ({lastRelease.TagName}).\nGo to download page?", "New Version Available", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
@@ -623,6 +626,19 @@ namespace DCSInsight
                 {
                     ShowAPIs(true);
                 }
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBlockAPIReload_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
+                windowAskReloadAPIDialog.ShowDialog();
             }
             catch (Exception ex)
             {

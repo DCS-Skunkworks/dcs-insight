@@ -1,0 +1,40 @@
+﻿<Window x:Class="DCSInsight.Windows.WindowAskReloadAPIDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Reload APIs from server?" 
+        Height="200" 
+        Width="410" 
+        WindowStartupLocation="CenterOwner" 
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock FontSize="12" Margin="5,5,5,5">
+                <LineBreak/>
+                Do you want to reload all APIs from the server? 
+                <LineBreak/>
+                All APIs will lose any information you may have entered.
+                <LineBreak/>
+                APIs can also be reloaded by restarting the client.
+                <LineBreak/>
+                If you restart missions frequently it is recommended to not reload APIs.
+            </TextBlock>
+        </StackPanel>
+        <DockPanel Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <CheckBox Name="CheckBoxDoNotAskAgain" IsChecked="False" VerticalAlignment="Bottom" Margin="10,10,10,10" HorizontalAlignment="Right" Content="Do not ask again" />
+                <Button Name="ButtonYes" Content="Yes" Width="40" VerticalAlignment="Bottom" Margin="10,10,0,10" HorizontalAlignment="Right" Click="ButtonYes_OnClick" />
+                <Button Name="ButtonNo" Content="No" Width="40" VerticalAlignment="Bottom" Margin="10,10,10,10" HorizontalAlignment="Right" Click="ButtonNo_OnClick" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
