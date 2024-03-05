@@ -30,11 +30,13 @@ namespace DCSInsight.Communication
         public bool LogJSON { get; set; }
         private string _currentMessage = "";
         private volatile bool _responseReceived;
+        private bool _requestAPIList;
 
-        public TCPClientHandler(string host, string port)
+        public TCPClientHandler(string host, string port, bool requestAPIList)
         {
             _host = host;
             _port = port;
+            _requestAPIList = requestAPIList;
             ICEventHandler.AttachCommandListener(this);
         }
 
@@ -75,7 +77,7 @@ namespace DCSInsight.Communication
 
                     if (!_tcpClient.Connected) break;
 
-                    if (!_apiListReceived && _metaDataPollCounter < 1)
+                    if (_requestAPIList && !_apiListReceived && _metaDataPollCounter < 1)
                     {
                         Thread.Sleep(300);
                         _metaDataPollCounter++;

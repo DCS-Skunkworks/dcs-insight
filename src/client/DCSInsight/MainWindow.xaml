@@ -26,7 +26,7 @@
             <TextBox Name="TextBoxServer" Text="127.0.0.1" Width="80"></TextBox>
             <Label Content="Port" VerticalAlignment="Center" ></Label>
             <TextBox Name="TextBoxPort" Text="7790" Width="40"></TextBox>
-            <Button Name="ButtonConnect" Content="Connect" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonConnect_OnClick"></Button>
+            <Button Name="ButtonConnectDisconnect" Content="Connect" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonConnectDisconnect_OnClick"></Button>
             <CheckBox Name="CheckBoxTop" Content="On Top" BorderBrush="Gray" Margin="20,0,0,0" Checked="CheckBoxTop_OnChecked" Unchecked="CheckBoxTop_OnUnchecked"></CheckBox>
             <TextBox Name="TextBoxSearchAPI" TextWrapping="NoWrap"  IsReadOnly="False" Width="150"  Margin="20,0,0,0" PreviewKeyDown="TextBoxSearchAPI_OnPreviewKeyDown" />
             <Button>
@@ -53,6 +53,9 @@
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockSetDCSBIOSLocation" MouseDown="TextBlockSetDCSBIOSLocation_OnMouseDown">set dcs-bios</TextBlock>
+                </StatusBarItem>
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
+                    <TextBlock Name="TextBlockAPIReload" MouseDown="TextBlockAPIReload_OnMouseDown">API Reload Setting</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>
