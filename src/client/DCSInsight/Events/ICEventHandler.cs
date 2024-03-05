@@ -9,7 +9,7 @@ namespace DCSInsight.Events
     internal static class ICEventHandler
     {
         public delegate void SendCommandEventHandler(SendCommandEventArgs e);
-        public static event SendCommandEventHandler OnSendCommand;
+        public static event SendCommandEventHandler? OnSendCommand;
         
         public static void AttachCommandListener(ICommandListener listener)
         {
@@ -24,15 +24,16 @@ namespace DCSInsight.Events
         public static void SendCommand(DCSAPI api)
         {
             // remove earlier result, no need to send that to server
-            var command = api.CloneJson();
+            var command = api.CloneJson() ?? throw new Exception("Failed to clone DCSAPI");
+
             command.Result = "";
-            OnSendCommand?.Invoke(new SendCommandEventArgs {APIObject = command});
+            OnSendCommand?.Invoke(new SendCommandEventArgs(command));
         }
         /*
          *
          */
         public delegate void ErrorEventHandler(ErrorEventArgs e);
-        public static event ErrorEventHandler OnError;
+        public static event ErrorEventHandler? OnError;
 
         public static void AttachErrorListener(IErrorListener listener)
         {
@@ -46,13 +47,13 @@ namespace DCSInsight.Events
 
         public static void SendErrorMessage(string message, Exception ex)
         {
-            OnError?.Invoke(new ErrorEventArgs { Message = message, Ex = ex});
+            OnError?.Invoke(new ErrorEventArgs (message, ex));
         }
         /*
          *
          */
         public delegate void ConnectionStatusEventHandler(ConnectionEventArgs e);
-        public static event ConnectionStatusEventHandler OnConnection;
+        public static event ConnectionStatusEventHandler? OnConnection;
 
         public static void AttachConnectionListener(IConnectionListener listener)
         {
@@ -72,7 +73,7 @@ namespace DCSInsight.Events
          *
          */
         public delegate void DataEventHandler(DataEventArgs e);
-        public static event DataEventHandler OnData;
+        public static event DataEventHandler? OnData;
 
         public static void AttachDataListener(IDataListener listener)
         {
@@ -86,11 +87,11 @@ namespace DCSInsight.Events
 
         public static void SendData(List<DCSAPI> dcsAPIs)
         {
-            OnData?.Invoke(new DataEventArgs { DCSAPIS = dcsAPIs });
+            OnData?.Invoke(new DataEventArgs(null, dcsAPIs ));
         }
         public static void SendData(DCSAPI dcsAPI)
         {
-            OnData?.Invoke(new DataEventArgs { DCSApi = dcsAPI });
+            OnData?.Invoke(new DataEventArgs (dcsAPI, null));
         }
     }
 }

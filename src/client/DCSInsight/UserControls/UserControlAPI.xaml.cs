@@ -16,12 +16,14 @@ namespace DCSInsight.UserControls
     /// </summary>
     public partial class UserControlAPI : UserControlAPIBase
     {
+        private readonly DockPanel _dockPanelParameters;
 
         public UserControlAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
             LabelResultBase = LabelResult;
             TextBoxResultBase = TextBoxResult;
+            _dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -45,10 +47,14 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (ButtonSend == null) throw new Exception("ButtonSend is null.");
+
                 ButtonSend.IsEnabled = !TextBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && IsConnected;
 
                 if (DCSAPI.ReturnsData && !IsLuaConsole)
                 {
+                    if (ComboBoxPollTimes == null || CheckBoxPolling == null) throw new Exception("ComboBoxPollTimes or CheckBoxPolling is null.");
+
                     CheckBoxPolling.IsEnabled = ButtonSend.IsEnabled;
                     ComboBoxPollTimes.IsEnabled = CheckBoxPolling.IsChecked == false;
                 }
@@ -81,7 +87,7 @@ namespace DCSInsight.UserControls
                     TextBoxSyntax.Text = DCSAPI.Syntax;
                     TextBoxSyntax.ToolTip = $"Click to copy syntax. (API Id = {DCSAPI.Id})";
                     StackPanelBottom.Visibility = Visibility.Visible;
-                    Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters").LastChildFill = true;
+                    _dockPanelParameters.LastChildFill = true;
                     var controlList = new List<Control>();
 
                     var textBoxLuaCode = new TextBox
@@ -105,12 +111,15 @@ namespace DCSInsight.UserControls
                     TextBoxSyntax.MouseLeave -= Common.MouseLeave;
                     TextBoxSyntax.ToolTip = null;
 
-
+                    var brushConverter = new BrushConverter().ConvertFromString("#0000FF");
                     var labelConsoleWarning = new Label
                     {
-                        Content = "[warning]",
-                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF")
+                        Content = "[warning]"
                     };
+                    if (brushConverter != null)
+                    {
+                        labelConsoleWarning.Foreground = (SolidColorBrush)brushConverter;
+                    }
                     labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
                     labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                     labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
@@ -125,9 +134,12 @@ namespace DCSInsight.UserControls
 
                     var labelDefaultLua = new Label
                     {
-                        Content = "[list environment]",
-                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
+                        Content = "[list environment]"
                     };
+                    if (brushConverter != null)
+                    {
+                        labelDefaultLua.Foreground = (SolidColorBrush)brushConverter;
+                    }
                     labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
                     labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                     labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
@@ -139,7 +151,7 @@ namespace DCSInsight.UserControls
                             var callingTextBox = (TextBox)((Label)sender).Tag;
                             callingTextBox.Text = Constants.ListEnvironmentSnippet;
                             SetFormState();
-                            if (ButtonSend.IsEnabled)
+                            if (ButtonSend is { IsEnabled: true })
                             {
                                 SendCommand();
                             }
@@ -175,7 +187,7 @@ namespace DCSInsight.UserControls
                 Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
-        
+
         private void BuildGenericUI()
         {
             try
@@ -209,7 +221,6 @@ namespace DCSInsight.UserControls
                         controlList.Add(GetCheckBoxPolling());
                         controlList.Add(GetLabelPollingInterval());
                         controlList.Add(GetComboBoxPollTimes());
-                        controlList.Add(ComboBoxPollTimes);
                     }
 
                     ItemsControlParameters.ItemsSource = controlList;

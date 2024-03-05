@@ -14,6 +14,12 @@ namespace DCSInsight.Misc
         public string Description { get; private set; }
         public string Code { get; private set; }
 
+        private LoSetCommand(string description, string code)
+        {
+            Description = description;
+            Code = code;
+        }
+
         internal static List<LoSetCommand> LoadCommands()
         {
             var result = new List<LoSetCommand>();
@@ -31,7 +37,7 @@ namespace DCSInsight.Misc
                 if (string.IsNullOrEmpty(s) || !s.Trim().StartsWith("i") || !s.Contains('\t') || s.Contains('/') || s.Contains(':')) continue;
 
                 var array = s.Split('\t');
-                result.Add(new LoSetCommand { Code = array[1].Trim(), Description = array[0].Trim() });
+                result.Add(new LoSetCommand (array[0].Trim(), array[1].Trim()));
             }
 
             result = result.OrderBy(o => o.Description).ToList();

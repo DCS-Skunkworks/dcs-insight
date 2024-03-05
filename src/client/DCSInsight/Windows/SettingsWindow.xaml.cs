@@ -16,9 +16,9 @@ namespace DCSInsight.Windows
     /// </summary>
     public partial class SettingsWindow
     {
-        public string DcsBiosJSONLocation { get; private set; }
+        public string? DcsBiosJSONLocation { get; private set; }
         private bool _isLoaded;
-        public bool DCSBIOSChanged { get; private set; }
+        private bool DCSBIOSChanged { get; set; }
 
         public SettingsWindow()
         {

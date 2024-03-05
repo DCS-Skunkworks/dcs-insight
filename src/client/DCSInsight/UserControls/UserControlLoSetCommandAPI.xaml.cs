@@ -16,17 +16,30 @@ namespace DCSInsight.UserControls
     public partial class UserControlLoSetCommandAPI : UserControlAPIBase
     {
 
-        private Popup _popupSearchICommand;
-        private DataGrid _dataGridValues;
-        private List<LoSetCommand> _loSetICommands;
-        private LoSetCommand _loSetICommand;
-        private TextBox _textBoxSearchICommand;
+        private readonly Popup _popupSearchICommand;
+        private readonly DataGrid _dataGridValues;
+        private readonly List<LoSetCommand> _loSetICommands;
+        private LoSetCommand? _loSetICommand;
+        private TextBox? _textBoxSearchICommand;
 
         public UserControlLoSetCommandAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
             LabelResultBase = LabelResult;
             TextBoxResultBase = TextBoxResult;
+
+            _loSetICommands = LoSetCommand.LoadCommands();
+            if (_loSetICommands == null) throw new ArgumentException("Failed load ICommands.");
+
+            _popupSearchICommand = (Popup)FindResource("PopUpSearchResults");
+
+            if (_popupSearchICommand == null) throw new ArgumentException("Failed to find PopUpSearchResults.");
+
+            _popupSearchICommand.Height = 400;
+            var node = LogicalTreeHelper.FindLogicalNode(_popupSearchICommand, "DataGridValues");
+            if (node == null) throw new ArgumentException("Failed to find DataGridValues.");
+
+            _dataGridValues = (DataGrid)node;
         }
 
         private void UserControlLoSetCommandAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -34,11 +47,7 @@ namespace DCSInsight.UserControls
             try
             {
                 if (IsControlLoaded) return;
-
-                _loSetICommands = LoSetCommand.LoadCommands();
-                _popupSearchICommand = (Popup)FindResource("PopUpSearchResults");
-                _popupSearchICommand.Height = 400;
-                _dataGridValues = (DataGrid)LogicalTreeHelper.FindLogicalNode(_popupSearchICommand, "DataGridValues");
+                
                 IsTabStop = true;
 
                 BuildUI();
@@ -54,6 +63,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (ButtonSend == null || CheckBoxPolling == null || ComboBoxPollTimes == null) return;
+
                 ButtonSend.IsEnabled = !TextBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && IsConnected;
 
                 if (DCSAPI.ReturnsData)
@@ -152,6 +163,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (_textBoxSearchICommand == null) return;
+
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
                     _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
@@ -169,6 +182,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (_textBoxSearchICommand == null) return;
+
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
                     _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
@@ -188,6 +203,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (_textBoxSearchICommand == null) return;
+
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
                     _loSetICommand = (LoSetCommand)_dataGridValues.SelectedItem;
@@ -206,7 +223,8 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                TextBoxSearchLoSetCommands.AdjustShownPopupData(((TextBox)sender), _popupSearchICommand, _dataGridValues, _loSetICommands);
+                
+                TextBoxSearchLoSetCommands.AdjustShownPopupData((TextBox)sender, _popupSearchICommand, _dataGridValues, _loSetICommands);
                 SetFormState();
             }
             catch (Exception ex)
@@ -217,7 +235,7 @@ namespace DCSInsight.UserControls
 
         private void TextBoxSearchICommand_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner(((TextBox)sender));
+            TextBoxSearchLoSetCommands.SetBackgroundSearchBanner((TextBox)sender);
         }
         
         private void TextBoxSearchICommand_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -6,27 +6,42 @@ namespace DCSInsight.Events
 {
     public class SendCommandEventArgs : EventArgs
     {
-        public object Sender { get; set; }
-        public DCSAPI APIObject { get; set; }
+        public SendCommandEventArgs(DCSAPI apiObject)
+        {
+            APIObject = apiObject;
+        }
+
+        public DCSAPI APIObject { get; }
     }
 
     public class ErrorEventArgs : EventArgs
     {
-        public object Sender { get; set; }
-        public string Message { get; set; }
+        public ErrorEventArgs(string message, Exception ex)
+        {
+            Message = message;
+            Ex = ex;
+        }
 
-        public Exception Ex { get; set; }
+        public string Message { get; }
+
+        public Exception Ex { get; }
     }
 
     public class ConnectionEventArgs : EventArgs
     {
-        public bool IsConnected { get; set; }
+        public bool IsConnected { get; init; }
     }
 
     public class DataEventArgs : EventArgs
     {
-        public DCSAPI DCSApi { get; set; }
+        public DataEventArgs(DCSAPI? dcsApi, List<DCSAPI>? dcsapis)
+        {
+            DCSApi = dcsApi;
+            DCSAPIS = dcsapis;
+        }
 
-        public List<DCSAPI> DCSAPIS { get; set; }
+        public DCSAPI? DCSApi { get; }
+
+        public List<DCSAPI>? DCSAPIS { get; }
     }
 }

@@ -27,11 +27,11 @@ namespace DCSInsight.UserControls
         private readonly Timer _pollingTimer;
         protected bool CanSend;
         private bool _keepResults;
-        protected Button ButtonSend;
-        protected CheckBox CheckBoxPolling;
-        protected ComboBox ComboBoxPollTimes;
-        protected Label LabelResultBase;
-        protected TextBox TextBoxResultBase;
+        protected Button? ButtonSend;
+        protected CheckBox? CheckBoxPolling;
+        protected ComboBox? ComboBoxPollTimes;
+        protected Label? LabelResultBase;
+        protected TextBox? TextBoxResultBase;
         private static readonly AutoResetEvent AutoResetEventPolling = new(false);
         protected readonly bool IsLuaConsole;
 
@@ -60,16 +60,13 @@ namespace DCSInsight.UserControls
 
         public async ValueTask DisposeAsync()
         {
-            if (_pollingTimer != null)
-            {
-                AutoResetEventPolling.Set();
-                AutoResetEventPolling.Set();
-                await _pollingTimer.DisposeAsync();
-                AutoResetEventPolling.Dispose();
-                GC.SuppressFinalize(this);
-            }
+            AutoResetEventPolling.Set();
+            AutoResetEventPolling.Set();
+            await _pollingTimer.DisposeAsync();
+            AutoResetEventPolling.Dispose();
+            GC.SuppressFinalize(this);
         }
-        
+
         protected void SendCommand()
         {
             try
@@ -100,20 +97,22 @@ namespace DCSInsight.UserControls
             var textBoxResultText = "";
             Application.Current.Dispatcher.Invoke(
                 DispatcherPriority.Normal,
-                (ThreadStart)delegate { textBoxResultText = TextBoxResultBase.Text; });
+                (ThreadStart)delegate { textBoxResultText = TextBoxResultBase?.Text ?? ""; });
 
             if (string.IsNullOrEmpty(textBoxResultText)) return "";
 
-            return textBoxResultText.IndexOf("\n", StringComparison.Ordinal) == -1 ? textBoxResultText : textBoxResultText[..textBoxResultText.IndexOf("\n", StringComparison.Ordinal)];
+            return textBoxResultText.Contains('\n', StringComparison.Ordinal) ? textBoxResultText : textBoxResultText[..textBoxResultText.IndexOf("\n", StringComparison.Ordinal)];
         }
 
         internal void SetResult(DCSAPI dcsApi)
         {
             try
             {
+                if (LabelResultBase == null || TextBoxResultBase == null) return;
+
                 Dispatcher?.BeginInvoke((Action)(() => LabelResultBase.Content = $"Result ({dcsApi.ResultType})"));
 
-                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
+                var result = dcsApi.ErrorThrown ? dcsApi.ErrorMessage ?? "nil" : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result;
 
                 AutoResetEventPolling.Set();
 
@@ -195,23 +194,23 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void PollingTimerCallback(object state)
+        private void PollingTimerCallback(object? state)
         {
             try
             {
                 AutoResetEventPolling.WaitOne();
                 if (CanSend)
                 {
-                    Dispatcher?.BeginInvoke((Action)(SendCommand));
+                    Dispatcher?.BeginInvoke((Action)SendCommand);
                 }
             }
             catch (Exception ex)
             {
-                ICEventHandler.SendErrorMessage( "Timer Polling Error", ex);
+                ICEventHandler.SendErrorMessage("Timer Polling Error", ex);
             }
         }
-        
-        protected void CheckBoxPolling_OnUnchecked(object sender, RoutedEventArgs e)
+
+        private void CheckBoxPolling_OnUnchecked(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -224,11 +223,12 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void CheckBoxPolling_OnChecked(object sender, RoutedEventArgs e)
+        private void CheckBoxPolling_OnChecked(object sender, RoutedEventArgs e)
         {
             try
             {
-                StartPolling(int.Parse(ComboBoxPollTimes.SelectedValue.ToString()));
+                var comboBoxPollTimes = (ComboBox)sender;
+                StartPolling(int.Parse(comboBoxPollTimes.SelectedValue.ToString() ?? "500"));
                 SetFormState();
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void ComboBoxPollTimes_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void ComboBoxPollTimes_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
@@ -249,7 +249,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void TextBoxParameter_OnKeyDown_Number(object sender, KeyEventArgs e)
+        private void TextBoxParameter_OnKeyDown_Number(object sender, KeyEventArgs e)
         {
             try
             {
@@ -283,7 +283,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void CheckBoxKeepResults_OnUnchecked(object sender, RoutedEventArgs e)
+        private void CheckBoxKeepResults_OnUnchecked(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void CheckBoxKeepResults_OnChecked(object sender, RoutedEventArgs e)
+        private void CheckBoxKeepResults_OnChecked(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -367,7 +367,7 @@ namespace DCSInsight.UserControls
             return ButtonSend;
         }
 
-        protected Label GetLabelKeepResults()
+        protected static Label GetLabelKeepResults()
         {
             return new Label
             {
