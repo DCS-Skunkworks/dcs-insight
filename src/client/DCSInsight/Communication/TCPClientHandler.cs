@@ -20,8 +20,8 @@ namespace DCSInsight.Communication
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly Channel<DCSAPI> _asyncCommandsChannel = Channel.CreateUnbounded<DCSAPI>();
-        private TcpClient _tcpClient;
-        private Thread _clientThread;
+        private TcpClient? _tcpClient;
+        private Thread? _clientThread;
         private bool _isRunning;
         private readonly string _host;
         private readonly string _port;
@@ -50,6 +50,8 @@ namespace DCSInsight.Communication
 
         private async void ClientThread()
         {
+            if (_tcpClient == null) return;
+
             ICEventHandler.SendConnectionStatus(_isRunning);
             _responseReceived = true;
             while (_isRunning)
@@ -83,6 +85,7 @@ namespace DCSInsight.Communication
                         _metaDataPollCounter++;
                         _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes("SENDAPI\n"));
                         Thread.Sleep(1000);
+                        _requestAPIList = false;
                     }
 
                     if (_asyncCommandsChannel.Reader.Count > 0 && _responseReceived)
@@ -128,6 +131,8 @@ namespace DCSInsight.Communication
                 if (str.Contains("\"returns_data\":") && str.EndsWith("}")) // regex?
                 {
                     var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
+                    if (dcsApi == null) return;
+
                     _currentMessage = "";
                     ICEventHandler.SendData(dcsApi);
                     _responseReceived = true;
@@ -148,6 +153,8 @@ namespace DCSInsight.Communication
             try
             {
                 var dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
+                if (dcsAPIList == null) return;
+
                 ICEventHandler.SendData(dcsAPIList);
                 _responseReceived = true;
                 _apiListReceived = true;

@@ -21,7 +21,7 @@ namespace DCSInsight.Windows
     {
         private readonly List<DCSAPI> _dcsAPIList;
         private bool _formLoaded;
-        private DCSAPI _dcsAPI;
+        private DCSAPI? _dcsAPI;
         private readonly List<TextBoxParam> _textBoxParameterList = new();
         private bool _isConnected = true;
         private bool _isRunning;
@@ -32,7 +32,7 @@ namespace DCSInsight.Windows
         private bool _showErrors;
         private bool _showNilResults;
         private static readonly AutoResetEvent AutoResetEvent1 = new(false);
-        private Thread _thread;
+        private Thread? _thread;
         private readonly int _threadLoopSleep = 20;
         private readonly List<ResultComparator> _resultComparatorList = new();
         private readonly object _lockObject = new();
@@ -128,7 +128,10 @@ namespace DCSInsight.Windows
             {
                 if (_resultComparatorList.All(o => o.IsMatch(dcsApi) == false))
                 {
-                    _resultComparatorList.Add(new ResultComparator(dcsApi.CloneJson()));
+                    var clone = dcsApi.CloneJson();
+                    if (clone == null) return;
+
+                    _resultComparatorList.Add(new ResultComparator(clone));
                 }
             }
         }
@@ -140,6 +143,7 @@ namespace DCSInsight.Windows
                 lock (_lockObject)
                 {
                     if (!_isConnected || !_isRunning) return;
+                    if (args.DCSApi == null) return;
 
                     if (args.DCSApi.ErrorThrown)
                     {
@@ -176,13 +180,14 @@ namespace DCSInsight.Windows
         private static string GetResultString(DCSAPI dcsApi)
         {
             var currentTestString = new StringBuilder();
+            if(dcsApi.Parameters == null) return currentTestString.ToString();
 
             foreach (var dcsApiParameter in dcsApi.Parameters)
             {
                 currentTestString.Append($"{dcsApiParameter.ParameterName} [{dcsApiParameter.Value}], ");
             }
 
-            currentTestString.Append($" result : {(dcsApi.ErrorThrown ? dcsApi.ErrorMessage : (string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result))}");
+            currentTestString.Append($" result : {(dcsApi.ErrorThrown ? dcsApi.ErrorMessage : string.IsNullOrEmpty(dcsApi.Result) ? "nil" : dcsApi.Result)}");
 
             return currentTestString.ToString();
         }
@@ -258,6 +263,7 @@ namespace DCSInsight.Windows
                         for (var b = i; b <= x; b++)
                         {
                             if (_stopRunning) return;
+                            if(_dcsAPI?.Parameters == null) continue;
 
                             _dcsAPI.Parameters[0].Value = b.ToString();
 
@@ -265,7 +271,7 @@ namespace DCSInsight.Windows
                             ICEventHandler.SendCommand(_dcsAPI);
                             AutoResetEvent1.WaitOne();
                             Thread.Sleep(_threadLoopSleep);
-                            Dispatcher?.BeginInvoke((Action)(SetFormState));
+                            Dispatcher?.BeginInvoke((Action)SetFormState);
                         }
                     } while (_doLoop);
                 }
@@ -273,7 +279,7 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    Dispatcher?.BeginInvoke((Action)SetFormState);
                     PulseLed.Pulse();
                 }
             }
@@ -299,6 +305,7 @@ namespace DCSInsight.Windows
                             for (var c = j; c <= y; c++)
                             {
                                 if (_stopRunning) return;
+                                if (_dcsAPI?.Parameters == null) continue;
 
                                 _dcsAPI.Parameters[0].Value = b.ToString();
                                 _dcsAPI.Parameters[1].Value = c.ToString();
@@ -311,7 +318,7 @@ namespace DCSInsight.Windows
                                 ICEventHandler.SendCommand(_dcsAPI);
                                 AutoResetEvent1.WaitOne();
                                 Thread.Sleep(_threadLoopSleep);
-                                Dispatcher?.BeginInvoke((Action)(SetFormState));
+                                Dispatcher?.BeginInvoke((Action)SetFormState);
                             }
                         }
                     } while (_doLoop);
@@ -320,7 +327,7 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    Dispatcher?.BeginInvoke((Action)SetFormState);
                     PulseLed.Pulse();
                 }
             }
@@ -348,6 +355,7 @@ namespace DCSInsight.Windows
                                 for (var d = k; d <= z; d++)
                                 {
                                     if (_stopRunning) return;
+                                    if (_dcsAPI?.Parameters == null) continue;
 
                                     _dcsAPI.Parameters[0].Value = b.ToString();
                                     _dcsAPI.Parameters[1].Value = c.ToString();
@@ -357,7 +365,7 @@ namespace DCSInsight.Windows
                                     ICEventHandler.SendCommand(_dcsAPI);
                                     AutoResetEvent1.WaitOne();
                                     Thread.Sleep(_threadLoopSleep);
-                                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                                    Dispatcher?.BeginInvoke((Action)SetFormState);
                                 }
                             }
                         }
@@ -367,7 +375,7 @@ namespace DCSInsight.Windows
                 {
                     Thread.Sleep(500);
                     _isRunning = false;
-                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    Dispatcher?.BeginInvoke((Action)SetFormState);
                     PulseLed.Pulse();
                 }
             }
@@ -387,9 +395,12 @@ namespace DCSInsight.Windows
                 {
                     //var controlList = new List<Control>();
                     StackPanelParameters.Children.Clear();
+                    if (_dcsAPI?.Parameters == null) return;
 
                     foreach (var dcsAPIParameterType in _dcsAPI.Parameters)
                     {
+                        if (dcsAPIParameterType?.ParameterName == null) continue;
+
                         var stackPanel = new StackPanel
                         {
                             Orientation = Orientation.Horizontal

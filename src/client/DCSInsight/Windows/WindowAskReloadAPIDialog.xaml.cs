@@ -12,7 +12,7 @@ namespace DCSInsight.Windows
     /// </summary>
     public partial class WindowAskReloadAPIDialog
     {
-        public DialogResult DialogResult { get; set; }
+        public new DialogResult DialogResult { get; set; }
 
         public WindowAskReloadAPIDialog()
         {

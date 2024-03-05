@@ -10,12 +10,12 @@ namespace DCSInsight.Lua
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly object LockObject = new();
-        private static string _dcsbiosAircraftLuaLocation;
-        private static string _dcsbiosModuleLuaFilePath;
+        private static string? _dcsbiosAircraftLuaLocation;
+        private static string? _dcsbiosModuleLuaFilePath;
         private static readonly List<KeyValuePair<string, string>> LuaControls = new();
         private static readonly List<string> LuaModuleSignatures = new();
         private static string _aircraftId = "";
-        private const string DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE = "Error loading DCS-BIOS lua.";
+        private const string DCSBIOSLuaNotFoundErrorMessage = "Error loading DCS-BIOS lua.";
 
         internal static List<KeyValuePair<string, string>> GetLuaControls(string aircraftId)
         {
@@ -168,12 +168,13 @@ namespace DCSInsight.Lua
             }
             catch (Exception ex)
             {
-                throw new Exception($"{DCSBIOS_LUA_NOT_FOUND_ERROR_MESSAGE} ==>[{_dcsbiosAircraftLuaLocation}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                throw new Exception($"{DCSBIOSLuaNotFoundErrorMessage} ==>[{_dcsbiosAircraftLuaLocation}]<=={Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
         }
 
         internal static List<string> GetModuleFunctionSignatures()
         {
+            if (string.IsNullOrEmpty(_dcsbiosModuleLuaFilePath)) return new List<string>();
             if (LuaModuleSignatures.Count > 0) return LuaModuleSignatures;
 
             LuaModuleSignatures.Clear();

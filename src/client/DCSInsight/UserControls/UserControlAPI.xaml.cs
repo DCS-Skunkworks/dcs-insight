@@ -22,6 +22,7 @@ namespace DCSInsight.UserControls
             InitializeComponent();
             LabelResultBase = LabelResult;
             TextBoxResultBase = TextBoxResult;
+            
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -45,10 +46,14 @@ namespace DCSInsight.UserControls
         {
             try
             {
+                if (ButtonSend == null) throw new Exception("ButtonSend is null.");
+
                 ButtonSend.IsEnabled = !TextBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && IsConnected;
 
                 if (DCSAPI.ReturnsData && !IsLuaConsole)
                 {
+                    if (ComboBoxPollTimes == null || CheckBoxPolling == null) throw new Exception("ComboBoxPollTimes or CheckBoxPolling is null.");
+
                     CheckBoxPolling.IsEnabled = ButtonSend.IsEnabled;
                     ComboBoxPollTimes.IsEnabled = CheckBoxPolling.IsChecked == false;
                 }
@@ -79,9 +84,12 @@ namespace DCSInsight.UserControls
                 try
                 {
                     TextBoxSyntax.Text = DCSAPI.Syntax;
-                    TextBoxSyntax.ToolTip = $"Click to copy syntax. (API Id = {DCSAPI.Id})";
+                    TextBoxSyntax.MouseEnter -= Common.MouseEnter;
+                    TextBoxSyntax.MouseLeave -= Common.MouseLeave;
+
                     StackPanelBottom.Visibility = Visibility.Visible;
-                    Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters").LastChildFill = true;
+                    var dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
+                    dockPanelParameters.LastChildFill = true;
                     var controlList = new List<Control>();
 
                     var textBoxLuaCode = new TextBox
@@ -100,17 +108,17 @@ namespace DCSInsight.UserControls
                         VerticalScrollBarVisibility = ScrollBarVisibility.Auto
                     };
 
-                    TextBoxSyntax.PreviewMouseDown -= TextBoxSyntax_OnPreviewMouseDown;
-                    TextBoxSyntax.MouseEnter -= Common.MouseEnter;
-                    TextBoxSyntax.MouseLeave -= Common.MouseLeave;
-                    TextBoxSyntax.ToolTip = null;
+                    textBoxLuaCode.PreviewKeyDown += TextBoxLuaCode_OnPreviewKeyDown;
 
-
+                    var brushConverter = new BrushConverter().ConvertFromString("#0000FF");
                     var labelConsoleWarning = new Label
                     {
-                        Content = "[warning]",
-                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF")
+                        Content = "[warning]"
                     };
+                    if (brushConverter != null)
+                    {
+                        labelConsoleWarning.Foreground = (SolidColorBrush)brushConverter;
+                    }
                     labelConsoleWarning.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
                     labelConsoleWarning.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                     labelConsoleWarning.MouseDown += LabelConsoleWarningOnMouseDown;
@@ -125,9 +133,12 @@ namespace DCSInsight.UserControls
 
                     var labelDefaultLua = new Label
                     {
-                        Content = "[list environment]",
-                        Foreground = (SolidColorBrush)new BrushConverter().ConvertFromString("#0000FF"),
+                        Content = "[list environment]"
                     };
+                    if (brushConverter != null)
+                    {
+                        labelDefaultLua.Foreground = (SolidColorBrush)brushConverter;
+                    }
                     labelDefaultLua.MouseEnter += Common.UIElement_OnMouseEnterHandIcon;
                     labelDefaultLua.MouseLeave += Common.UIElement_OnMouseLeaveNormalIcon;
                     labelDefaultLua.MouseDown += LabelDefaultLuaOnMouseDown;
@@ -139,7 +150,7 @@ namespace DCSInsight.UserControls
                             var callingTextBox = (TextBox)((Label)sender).Tag;
                             callingTextBox.Text = Constants.ListEnvironmentSnippet;
                             SetFormState();
-                            if (ButtonSend.IsEnabled)
+                            if (ButtonSend is { IsEnabled: true })
                             {
                                 SendCommand();
                             }
@@ -152,9 +163,7 @@ namespace DCSInsight.UserControls
 
                     labelDefaultLua.Tag = textBoxLuaCode;
                     StackPanelLinks.Children.Add(labelDefaultLua);
-
-                    textBoxLuaCode.KeyUp += TextBoxParameter_OnKeyUp;
-
+                    
                     controlList.Add(textBoxLuaCode);
                     TextBoxParameterList.Add(textBoxLuaCode);
 
@@ -175,7 +184,7 @@ namespace DCSInsight.UserControls
                 Mouse.OverrideCursor = Cursors.Arrow;
             }
         }
-        
+
         private void BuildGenericUI()
         {
             try
@@ -209,7 +218,6 @@ namespace DCSInsight.UserControls
                         controlList.Add(GetCheckBoxPolling());
                         controlList.Add(GetLabelPollingInterval());
                         controlList.Add(GetComboBoxPollTimes());
-                        controlList.Add(ComboBoxPollTimes);
                     }
 
                     ItemsControlParameters.ItemsSource = controlList;

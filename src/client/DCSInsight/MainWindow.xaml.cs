@@ -34,10 +34,10 @@ namespace DCSInsight
         private List<DCSAPI> _dcsAPIList = new();
         private readonly List<UserControlAPIBase> _loadedAPIUserControls = new();
         private bool _formLoaded;
-        private TCPClientHandler _tcpClientHandler;
+        private TCPClientHandler? _tcpClientHandler;
         private bool _isConnected;
         private bool _rangeTesting;
-        private LuaWindow _luaWindow;
+        private LuaWindow? _luaWindow;
 
         public MainWindow()
         {
@@ -155,13 +155,13 @@ namespace DCSInsight
                 _isConnected = args.IsConnected;
                 if (!_isConnected)
                 {
-                    Dispatcher?.BeginInvoke((Action)(Disconnect));
-                    Dispatcher?.BeginInvoke((Action)(SetFormState));
+                    Dispatcher?.BeginInvoke((Action)Disconnect);
+                    Dispatcher?.BeginInvoke((Action)SetFormState);
                     return;
                 }
 
                 Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(args.IsConnected)));
-                Dispatcher?.BeginInvoke((Action)(SetFormState)); ;
+                Dispatcher?.BeginInvoke((Action)SetFormState); ;
             }
             catch (Exception ex)
             {
@@ -225,7 +225,7 @@ namespace DCSInsight
                     }
                 }
 
-                Dispatcher?.BeginInvoke((Action)(SetFormState));
+                Dispatcher?.BeginInvoke((Action)SetFormState);
             }
             catch (Exception ex)
             {
@@ -240,7 +240,7 @@ namespace DCSInsight
                 _dcsAPIList = dcsApis;
                 //Debug.WriteLine("Count is " + _dcsAPIList.Count);
                 Dispatcher?.BeginInvoke((Action)(() => ShowAPIs()));
-                Dispatcher?.BeginInvoke((Action)(SetFormState));
+                Dispatcher?.BeginInvoke((Action)SetFormState);
             }
             catch (Exception ex)
             {
@@ -317,7 +317,7 @@ namespace DCSInsight
                 Target target = LogManager.Configuration.FindTargetByName(targetName);
                 if (target != null)
                 {
-                    FileTarget fileTarget;
+                    FileTarget? fileTarget;
 
                     // Unwrap the target if necessary.
                     if (target is not WrapperTargetBase wrapperTarget)
@@ -487,22 +487,7 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
-
-        private void TextBlockAppInfo_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                TryOpenLogFileWithTarget("logfile");
-                if (_tcpClientHandler == null) return;
-
-                _tcpClientHandler.LogJSON = true;
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
+        
         private void ButtonRangeTest_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -639,6 +624,21 @@ namespace DCSInsight
             {
                 var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
                 windowAskReloadAPIDialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBlockViewLog_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                TryOpenLogFileWithTarget("logfile");
+                if (_tcpClientHandler == null) return;
+
+                _tcpClientHandler.LogJSON = true;
             }
             catch (Exception ex)
             {

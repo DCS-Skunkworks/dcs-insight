@@ -14,7 +14,7 @@ namespace DCSInsight.Misc
         /// <typeparam name="T">The type of object being copied.</typeparam>
         /// <param name="source">The object instance to copy.</param>
         /// <returns>The copied object.</returns>
-        public static T CloneJson<T>(this T source)
+        public static T? CloneJson<T>(this T source)
         {
             //Note to devs: Use Newtonsoft.Json to clone the object, not System.Text.Json; because there are a lot of Newtonsoft.Json [JsonIgnore] attributes that are ignored
             //by the System.Text.Json serializer. This could lead to recursive serialization of unwanted properties that raises an exception.

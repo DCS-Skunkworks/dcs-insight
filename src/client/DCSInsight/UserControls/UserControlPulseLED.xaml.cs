@@ -63,7 +63,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        private void PulseTimerCallback(object state)
+        private void PulseTimerCallback(object? state)
         {
             try
             {

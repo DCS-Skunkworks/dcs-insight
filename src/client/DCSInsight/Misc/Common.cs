@@ -27,9 +27,9 @@ namespace DCSInsight.Misc
             return AppDomain.CurrentDomain.BaseDirectory;
         }
 
-        internal static void ShowErrorMessageBox(Exception ex, string message = null)
+        internal static void ShowErrorMessageBox(Exception ex, string? message = null)
         {
-            Logger.Error(ex, message);
+            Logger.Error(ex, message ?? "");
             MessageBox.Show(ex.Message, $"Details logged to error log.{Environment.NewLine}{ex.Source}", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
@@ -79,7 +79,7 @@ namespace DCSInsight.Misc
             Mouse.OverrideCursor = Cursors.Arrow;
         }
 
-        internal static T FindVisualChild<T>(DependencyObject dependencyObject) where T : DependencyObject
+        internal static T? FindVisualChild<T>(DependencyObject? dependencyObject) where T : DependencyObject
         {
             if (dependencyObject == null) return null;
 
@@ -107,12 +107,12 @@ namespace DCSInsight.Misc
         /// <returns>The first parent item that matches the submitted type parameter. 
         /// If not matching item can be found, 
         /// a null parent is being returned.</returns>
-        internal static T FindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
+        internal static T? FindChild<T>(this DependencyObject? parent, string childName) where T : DependencyObject
         {
             // Confirm parent and childName are valid. 
             if (parent == null) return null;
 
-            T foundChild = null;
+            T? foundChild = null;
 
             var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (var i = 0; i < childrenCount; i++)
@@ -146,7 +146,7 @@ namespace DCSInsight.Misc
             return foundChild;
         }
 
-        internal static bool TryFindVisualChildByName<TChild>(this DependencyObject parent, string childElementName, out TChild childElement, bool isCaseSensitive = false)
+        internal static bool TryFindVisualChildByName<TChild>(this DependencyObject parent, string childElementName, out TChild? childElement, bool isCaseSensitive = false)
             where TChild : FrameworkElement
         {
             childElement = null;

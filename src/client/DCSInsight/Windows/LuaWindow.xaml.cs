@@ -26,19 +26,15 @@ namespace DCSInsight.Windows
         private bool _isLoaded;
         private List<string> _aircraftList = new();
         private List<KeyValuePair<string, string>> _luaControls = new();
-        private TextBlockSelectable _textBlockSelectable;
-        private Popup _popupSearch;
-        private DataGrid _dataGridValues;
+        private TextBlockSelectable? _textBlockSelectable;
+        private Popup? _popupSearch;
+        private DataGrid? _dataGridValues;
 
         public LuaWindow()
         {
             InitializeComponent();
         }
-
-        private void SetFormState()
-        {
-        }
-
+        
         private void LuaWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             try
@@ -70,9 +66,7 @@ namespace DCSInsight.Windows
                 StackPanelLuaCommand.UpdateLayout();
 
                 LoadAircraft();
-
-                SetFormState();
-
+                
                 TextBoxSearch.Focus();
 
                 Top = Settings.Default.LuaWindowTop.CompareTo(-1) == 0 ? Top : Settings.Default.LuaWindowTop;
@@ -174,7 +168,7 @@ namespace DCSInsight.Windows
             }
         }
 
-        private void CopyToClipboard(TextBlockSelectable textBlock)
+        private static void CopyToClipboard(TextBlockSelectable textBlock)
         {
             if (string.IsNullOrEmpty(textBlock.SelectedText)) textBlock.SelectAll();
 
@@ -226,6 +220,8 @@ namespace DCSInsight.Windows
         {
             try
             {
+                if (_textBlockSelectable == null) return;
+
                 var luaControl = (KeyValuePair<string,string>)ComboBoxLuaControls.SelectedItem;
 
                 var luaSignatures = LuaAssistant.GetModuleFunctionSignatures();
@@ -253,8 +249,9 @@ namespace DCSInsight.Windows
         {
             try
             {
+                if (_popupSearch == null || _dataGridValues == null) return;
+
                 TextBoxSearchLuaControls.AdjustShownPopupData(TextBoxSearch, _popupSearch, _dataGridValues, _luaControls);
-                SetFormState();
             }
             catch (Exception ex)
             {
@@ -300,14 +297,14 @@ namespace DCSInsight.Windows
         {
             try
             {
+                if (_dataGridValues == null || _popupSearch == null) return;
+
                 if (_dataGridValues.SelectedItems.Count == 1)
                 {
                     var keyValuePair = (KeyValuePair<string,string>)_dataGridValues.SelectedItem;
                     ComboBoxLuaControls.SelectedItem = keyValuePair;
-                    SetFormState();
                 }
                 _popupSearch.IsOpen = keepSearchOpen;
-                SetFormState();
             }
             catch (Exception ex)
             {
