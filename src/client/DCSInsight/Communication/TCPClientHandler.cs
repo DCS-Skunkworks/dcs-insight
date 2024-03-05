@@ -25,9 +25,9 @@ namespace DCSInsight.Communication
         private bool _isRunning;
         private readonly string _host;
         private readonly string _port;
-        private bool _apiListReceived = false;
+        private bool _apiListReceived;
         private int _metaDataPollCounter;
-        public bool LogJSON { get; set; }
+        public bool LogJSON { get; set; } 
         private string _currentMessage = "";
         private volatile bool _responseReceived;
         private bool _requestAPIList;
