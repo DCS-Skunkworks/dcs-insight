@@ -29,8 +29,7 @@ namespace DCSInsight.Misc
 
         internal static void ShowErrorMessageBox(Exception ex, string? message = null)
         {
-            if(message != null) Logger.Error(ex, message);
-
+            Logger.Error(ex, message ?? "");
             MessageBox.Show(ex.Message, $"Details logged to error log.{Environment.NewLine}{ex.Source}", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 

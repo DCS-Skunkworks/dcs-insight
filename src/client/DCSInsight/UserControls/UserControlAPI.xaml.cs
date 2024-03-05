@@ -16,14 +16,13 @@ namespace DCSInsight.UserControls
     /// </summary>
     public partial class UserControlAPI : UserControlAPIBase
     {
-        private readonly DockPanel _dockPanelParameters;
 
         public UserControlAPI(DCSAPI dcsAPI, bool isConnected) : base(dcsAPI, isConnected)
         {
             InitializeComponent();
             LabelResultBase = LabelResult;
             TextBoxResultBase = TextBoxResult;
-            _dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
+            
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -85,9 +84,12 @@ namespace DCSInsight.UserControls
                 try
                 {
                     TextBoxSyntax.Text = DCSAPI.Syntax;
-                    TextBoxSyntax.ToolTip = $"Click to copy syntax. (API Id = {DCSAPI.Id})";
+                    TextBoxSyntax.MouseEnter -= Common.MouseEnter;
+                    TextBoxSyntax.MouseLeave -= Common.MouseLeave;
+
                     StackPanelBottom.Visibility = Visibility.Visible;
-                    _dockPanelParameters.LastChildFill = true;
+                    var dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
+                    dockPanelParameters.LastChildFill = true;
                     var controlList = new List<Control>();
 
                     var textBoxLuaCode = new TextBox
@@ -106,10 +108,7 @@ namespace DCSInsight.UserControls
                         VerticalScrollBarVisibility = ScrollBarVisibility.Auto
                     };
 
-                    TextBoxSyntax.PreviewMouseDown -= TextBoxSyntax_OnPreviewMouseDown;
-                    TextBoxSyntax.MouseEnter -= Common.MouseEnter;
-                    TextBoxSyntax.MouseLeave -= Common.MouseLeave;
-                    TextBoxSyntax.ToolTip = null;
+                    textBoxLuaCode.PreviewKeyDown += TextBoxLuaCode_OnPreviewKeyDown;
 
                     var brushConverter = new BrushConverter().ConvertFromString("#0000FF");
                     var labelConsoleWarning = new Label
@@ -164,9 +163,7 @@ namespace DCSInsight.UserControls
 
                     labelDefaultLua.Tag = textBoxLuaCode;
                     StackPanelLinks.Children.Add(labelDefaultLua);
-
-                    textBoxLuaCode.KeyUp += TextBoxParameter_OnKeyUp;
-
+                    
                     controlList.Add(textBoxLuaCode);
                     TextBoxParameterList.Add(textBoxLuaCode);
 

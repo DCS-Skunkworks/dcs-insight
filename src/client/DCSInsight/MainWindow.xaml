@@ -43,7 +43,7 @@
         <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3">
             <StatusBar DockPanel.Dock="Bottom" Margin="5,0,5,0">
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" >
-                    <TextBlock Name="TextBlockAppInfo" MouseDown="TextBlockAppInfo_OnMouseDown">dcs-insight</TextBlock>
+                    <TextBlock Name="TextBlockAppInfo">dcs-insight</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockAppWiki" MouseDown="TextBlockAppWiki_OnMouseDown">wiki</TextBlock>
@@ -55,7 +55,10 @@
                     <TextBlock Name="TextBlockSetDCSBIOSLocation" MouseDown="TextBlockSetDCSBIOSLocation_OnMouseDown">set dcs-bios</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
-                    <TextBlock Name="TextBlockAPIReload" MouseDown="TextBlockAPIReload_OnMouseDown">API Reload Setting</TextBlock>
+                    <TextBlock Name="TextBlockAPIReload" MouseDown="TextBlockAPIReload_OnMouseDown">api reload setting</TextBlock>
+                </StatusBarItem>
+                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
+                    <TextBlock Name="TextBlockViewLog" MouseDown="TextBlockViewLog_OnMouseDown">view client log</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>

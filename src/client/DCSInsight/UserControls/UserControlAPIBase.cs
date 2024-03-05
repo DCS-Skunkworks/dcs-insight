@@ -101,7 +101,7 @@ namespace DCSInsight.UserControls
 
             if (string.IsNullOrEmpty(textBoxResultText)) return "";
 
-            return textBoxResultText.Contains('\n', StringComparison.Ordinal) ? textBoxResultText : textBoxResultText[..textBoxResultText.IndexOf("\n", StringComparison.Ordinal)];
+            return textBoxResultText.Contains('\n', StringComparison.Ordinal) == false ? textBoxResultText : textBoxResultText[..textBoxResultText.IndexOf("\n", StringComparison.Ordinal)];
         }
 
         internal void SetResult(DCSAPI dcsApi)
@@ -155,7 +155,7 @@ namespace DCSInsight.UserControls
             }
         }
 
-        protected void ButtonSend_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonSend_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -266,23 +266,7 @@ namespace DCSInsight.UserControls
                 Common.ShowErrorMessageBox(ex);
             }
         }
-
-        protected void TextBoxParameter_OnKeyUp(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.Key == Key.Enter && CanSend)
-                {
-                    SendCommand();
-                }
-                SetFormState();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
+        
         private void CheckBoxKeepResults_OnUnchecked(object sender, RoutedEventArgs e)
         {
             try
@@ -301,6 +285,41 @@ namespace DCSInsight.UserControls
             try
             {
                 _keepResults = true;
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        protected void TextBoxLuaCode_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key == Key.Enter && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && CanSend)
+                {
+                    SendCommand();
+                    e.Handled = true;
+                    return;
+                }
+
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBoxParameter_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key == Key.Enter && CanSend)
+                {
+                    SendCommand();
+                }
                 SetFormState();
             }
             catch (Exception ex)

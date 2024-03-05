@@ -487,22 +487,7 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
-
-        private void TextBlockAppInfo_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                TryOpenLogFileWithTarget("logfile");
-                if (_tcpClientHandler == null) return;
-
-                _tcpClientHandler.LogJSON = true;
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
+        
         private void ButtonRangeTest_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -639,6 +624,21 @@ namespace DCSInsight
             {
                 var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
                 windowAskReloadAPIDialog.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void TextBlockViewLog_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                TryOpenLogFileWithTarget("logfile");
+                if (_tcpClientHandler == null) return;
+
+                _tcpClientHandler.LogJSON = true;
             }
             catch (Exception ex)
             {
