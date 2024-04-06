@@ -5,7 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DCSInsight.Misc;
 
-namespace ControlReference.CustomControls
+namespace DCSInsight.CustomControls
 {
     internal class TextBlockSelectable : TextBlock
     {

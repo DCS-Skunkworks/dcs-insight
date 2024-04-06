@@ -15,50 +15,54 @@ if (($null -eq $env:dcsinsightReleaseDestinationFolderPath) -or (-not (Test-Path
     exit
 }
 
-#---------------------------------
-# Release version management
-#---------------------------------
-Write-Host "Starting release version management" -foregroundcolor "Green"
-#Get Path to csproj
-$projectFilePath = $clientPath + "\DCSInsight.csproj"
-If (-not(Test-Path $projectFilePath)) {
-    Write-Host "Fatal error. Project path not found: $projectPath" -foregroundcolor "Red"
-    exit
+$changeProjectVersion = Read-Host "Change Project Version? Y/N"
+
+if($changeProjectVersion.Trim().ToLower().Equals("y"))
+{
+    #---------------------------------
+    # Release version management
+    #---------------------------------
+    Write-Host "Starting release version management" -foregroundcolor "Green"
+    #Get Path to csproj
+    $projectFilePath = $clientPath + "\DCSInsight.csproj"
+    If (-not(Test-Path $projectFilePath)) {
+        Write-Host "Fatal error. Project path not found: $projectPath" -foregroundcolor "Red"
+        exit
+    }
+
+    #Readind project file
+    $xml = [xml](Get-Content $projectFilePath)
+    [string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
+
+    #Split the Version Numbers
+    $avMajor, $avMinor, $avPatch = $assemblyVersion.Split('.')
+
+    Write-Host "Current assembly version is: $assemblyVersion" -foregroundcolor "Green"
+
+    #Sets new version into Project 
+    #Warning: for this to work, since the PropertyGroup is indexed, AssemblyVersion must be in the FIRST Propertygroup (or else, change the index).
+    Write-Host "What kind of release is this? If not minor then patch version will be incremented." -foregroundcolor "Green"
+    $isMinorRelease = Read-Host "Minor release? Y/N"
+
+    if ($isMinorRelease.Trim().ToLower().Equals("y")) {
+        [int]$avMinor = [int]$avMinor + 1
+        [int]$avPatch = 0
+    }
+    else {
+        [int]$avPatch = [int]$avPatch + 1
+    }
+
+    #Sets new version into Project 
+    #Warning: for this to work, since the PropertyGroup is indexed, AssemblyVersion must be in the FIRST Propertygroup (or else, change the index).
+    $xml.Project.PropertyGroup.AssemblyVersion = "$avMajor.$avMinor.$avPatch".Trim()
+    [string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
+    Write-Host "New assembly version is $assemblyVersion" -foregroundcolor "Green"
+
+    #Saving project file
+    $xml.Save($projectFilePath)
+    Write-Host "Project file updated" -foregroundcolor "Green"
+    Write-Host "Finished release version management" -foregroundcolor "Green"
 }
-
-#Readind project file
-$xml = [xml](Get-Content $projectFilePath)
-[string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
-
-#Split the Version Numbers
-$avMajor, $avMinor, $avPatch = $assemblyVersion.Split('.')
-
-Write-Host "Current assembly version is: $assemblyVersion" -foregroundcolor "Green"
-
-#Sets new version into Project 
-#Warning: for this to work, since the PropertyGroup is indexed, AssemblyVersion must be in the FIRST Propertygroup (or else, change the index).
-Write-Host "What kind of release is this? If not minor then patch version will be incremented." -foregroundcolor "Green"
-$isMinorRelease = Read-Host "Minor release? Y/N"
-
-if ($isMinorRelease.Trim().ToLower().Equals("y")) {
-    [int]$avMinor = [int]$avMinor + 1
-    [int]$avPatch = 0
-}
-else {
-    [int]$avPatch = [int]$avPatch + 1
-}
-
-#Sets new version into Project 
-#Warning: for this to work, since the PropertyGroup is indexed, AssemblyVersion must be in the FIRST Propertygroup (or else, change the index).
-$xml.Project.PropertyGroup.AssemblyVersion = "$avMajor.$avMinor.$avPatch".Trim()
-[string]$assemblyVersion = $xml.Project.PropertyGroup.AssemblyVersion
-Write-Host "New assembly version is $assemblyVersion" -foregroundcolor "Green"
-
-#Saving project file
-$xml.Save($projectFilePath)
-Write-Host "Project file updated" -foregroundcolor "Green"
-Write-Host "Finished release version management" -foregroundcolor "Green"
-
 #---------------------------------
 # Client publishing
 #---------------------------------

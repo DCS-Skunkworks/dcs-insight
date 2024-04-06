@@ -68,7 +68,10 @@ namespace DCSInsight.JSON
 
     public enum ParameterTypeEnum
     {
+        // ReSharper disable once InconsistentNaming
         number = 0,
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once InconsistentNaming
         str = 1
     }
 

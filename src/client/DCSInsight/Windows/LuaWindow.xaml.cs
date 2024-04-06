@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Shapes;
-using ControlReference.CustomControls;
+using DCSInsight.CustomControls;
 using DCSInsight.Lua;
 using DCSInsight.Misc;
 using DCSInsight.Properties;

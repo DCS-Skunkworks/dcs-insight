@@ -128,7 +128,7 @@ namespace DCSInsight.Lua
              end, 5, "ARC-210 Display", "COMSEC submode (PT/CT/CT-TD)")
             */
             var startIndex = luaBuffer.IndexOf("\"", StringComparison.Ordinal);
-            var endIndex = luaBuffer.IndexOf("\"", luaBuffer.IndexOf("\"") + 1);
+            var endIndex = luaBuffer.IndexOf("\"", luaBuffer.IndexOf("\"", StringComparison.Ordinal) + 1, StringComparison.Ordinal);
             var controlId = luaBuffer.Substring(startIndex + 1, endIndex - startIndex - 1);
 
             return new KeyValuePair<string, string>(controlId, luaBuffer);

@@ -4,9 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Settings" Height="200" Width="800"
+        Title="Settings" Height="200" Width="570"
         Loaded="SettingsWindow_OnLoaded"
-        WindowStartupLocation="CenterScreen" KeyDown="SettingsWindow_OnKeyDown" Icon="/Images/Magnifier_icon.png">
+        WindowStartupLocation="CenterOwner" KeyDown="SettingsWindow_OnKeyDown" Icon="/Images/Magnifier_icon.png">
     <Grid Margin="-4,0,4,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>

@@ -13,7 +13,7 @@ namespace DCSInsight.UserControls
     /// </summary>
     public partial class UserControlPulseLED : UserControl, IDisposable, IAsyncDisposable
     {
-        private readonly Timer _timerLoopPulse;
+        private Timer? _timerLoopPulse;
 
         public UserControlPulseLED()
         {
@@ -26,6 +26,7 @@ namespace DCSInsight.UserControls
         public void Dispose()
         {
             _timerLoopPulse?.Dispose();
+            _timerLoopPulse = null;
             GC.SuppressFinalize(this);
         }
 
@@ -34,6 +35,7 @@ namespace DCSInsight.UserControls
             if (_timerLoopPulse != null)
             {
                 await _timerLoopPulse.DisposeAsync();
+                _timerLoopPulse = null;
                 GC.SuppressFinalize(this);
             }
         }
@@ -54,7 +56,7 @@ namespace DCSInsight.UserControls
             {
                 Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(true)));
 
-                _timerLoopPulse.Change(milliseconds, milliseconds);
+                _timerLoopPulse?.Change(milliseconds, milliseconds);
                 //Dispatcher?.BeginInvoke((Action)(SetFormState));
             }
             catch (Exception ex)
@@ -69,7 +71,7 @@ namespace DCSInsight.UserControls
             {
                 Dispatcher?.BeginInvoke((Action)(() => SetPulseImage(false)));
                 //Dispatcher?.BeginInvoke((Action)(() => ToolBarMain.UpdateLayout()));
-                _timerLoopPulse.Change(Timeout.Infinite, Timeout.Infinite);
+                _timerLoopPulse?.Change(Timeout.Infinite, Timeout.Infinite);
                 //Dispatcher?.BeginInvoke((Action)(SetFormState));
             }
             catch (Exception ex)

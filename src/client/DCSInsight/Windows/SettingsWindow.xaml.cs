@@ -155,7 +155,6 @@ namespace DCSInsight.Windows
                 }
                 try
                 {
-                    var directoryInfo = new DirectoryInfo(TextBoxDcsBiosJSONLocation.Text);
                     DcsBiosJSONLocation = TextBoxDcsBiosJSONLocation.Text;
                 }
                 catch (Exception ex)
