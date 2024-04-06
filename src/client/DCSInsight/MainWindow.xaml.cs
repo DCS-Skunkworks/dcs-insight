@@ -103,6 +103,7 @@ namespace DCSInsight
                 if (ItemsControlAPI.Items.Count > 0 && Settings.Default.AskForReloadAPIList)
                 {
                     var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
+                    windowAskReloadAPIDialog.Owner = this;
                     windowAskReloadAPIDialog.ShowDialog();
                 }
 
@@ -161,7 +162,7 @@ namespace DCSInsight
                 }
 
                 Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(args.IsConnected)));
-                Dispatcher?.BeginInvoke((Action)SetFormState); ;
+                Dispatcher?.BeginInvoke((Action)SetFormState); 
             }
             catch (Exception ex)
             {
@@ -570,6 +571,7 @@ namespace DCSInsight
             try
             {
                 var settingsWindow = new SettingsWindow();
+                settingsWindow.Owner = this;
                 settingsWindow.ShowDialog();
                 if (settingsWindow.DialogResult == true)
                 {
@@ -589,7 +591,8 @@ namespace DCSInsight
             {
                 _luaWindow?.Close();
                 _luaWindow = new LuaWindow();
-                _luaWindow.Show();
+                _luaWindow.Show(); 
+                _luaWindow.Left = Left + Width;
             }
             catch (Exception ex)
             {
@@ -623,6 +626,7 @@ namespace DCSInsight
             try
             {
                 var windowAskReloadAPIDialog = new WindowAskReloadAPIDialog();
+                windowAskReloadAPIDialog.Owner = this;
                 windowAskReloadAPIDialog.ShowDialog();
             }
             catch (Exception ex)

@@ -4,13 +4,12 @@ using DCSInsight.Misc;
 using Newtonsoft.Json;
 using NLog;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using DCSInsight.Interfaces;
 
 namespace DCSInsight.Communication
@@ -19,7 +18,7 @@ namespace DCSInsight.Communication
 
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly Channel<DCSAPI> _asyncCommandsChannel = Channel.CreateUnbounded<DCSAPI>();
+        private readonly ConcurrentQueue<DCSAPI> _commandsQueue = new();
         private TcpClient? _tcpClient;
         private Thread? _clientThread;
         private bool _isRunning;
@@ -48,7 +47,7 @@ namespace DCSInsight.Communication
             GC.SuppressFinalize(this);
         }
 
-        private async void ClientThread()
+        private void ClientThread()
         {
             if (_tcpClient == null) return;
 
@@ -88,11 +87,12 @@ namespace DCSInsight.Communication
                         _requestAPIList = false;
                     }
 
-                    if (_asyncCommandsChannel.Reader.Count > 0 && _responseReceived)
+                    if (_commandsQueue.Count > 0 && _responseReceived)
                     {
-                        var cts = new CancellationTokenSource(100);
-                        var dcsApi = await _asyncCommandsChannel.Reader.ReadAsync(cts.Token);
+                        if (!_commandsQueue.TryDequeue(out var dcsApi)) continue;
+
                         if (LogJSON) Logger.Info(JsonConvert.SerializeObject(dcsApi, Formatting.Indented));
+
                         _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dcsApi) + "\n"));
                         _responseReceived = false;
                     }
@@ -209,17 +209,16 @@ namespace DCSInsight.Communication
             }
         }
 
-        public async Task AddAsyncCommand(DCSAPI dcsApi)
+        public void AddCommand(DCSAPI dcsApi)
         {
-            var cts = new CancellationTokenSource(100);
-            await _asyncCommandsChannel.Writer.WriteAsync(dcsApi, cts.Token);
+            _commandsQueue.Enqueue(dcsApi);
         }
         
-        public async void SendCommand(SendCommandEventArgs args)
+        public void SendCommand(SendCommandEventArgs args)
         {
             try
             {
-                await AddAsyncCommand(args.APIObject);
+                _commandsQueue.Enqueue(args.APIObject);
             }
             catch (Exception ex)
             {
