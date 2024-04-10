@@ -227,8 +227,10 @@ namespace DCSInsight.UserControls
         {
             try
             {
-                var comboBoxPollTimes = (ComboBox)sender;
-                StartPolling(int.Parse(comboBoxPollTimes.SelectedValue.ToString() ?? "500"));
+                if (ComboBoxPollTimes == null)
+                    throw new ArgumentException("ComboBoxPollTimes has not been created, cannot poll.");
+
+                StartPolling(int.Parse(ComboBoxPollTimes.SelectedValue.ToString() ?? "500"));
                 SetFormState();
             }
             catch (Exception ex)

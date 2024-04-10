@@ -49,14 +49,15 @@ namespace DCSInsight.UserControls
                 if (ButtonSend == null) throw new Exception("ButtonSend is null.");
 
                 ButtonSend.IsEnabled = !TextBoxParameterList.Any(o => string.IsNullOrEmpty(o.Text)) && IsConnected;
-
-                if (DCSAPI.ReturnsData && !IsLuaConsole)
+                
+                if (DCSAPI.ReturnsData)
                 {
                     if (ComboBoxPollTimes == null || CheckBoxPolling == null) throw new Exception("ComboBoxPollTimes or CheckBoxPolling is null.");
 
                     CheckBoxPolling.IsEnabled = ButtonSend.IsEnabled;
                     ComboBoxPollTimes.IsEnabled = CheckBoxPolling.IsChecked == false;
                 }
+
                 CanSend = ButtonSend.IsEnabled;
             }
             catch (Exception ex)
@@ -88,6 +89,9 @@ namespace DCSInsight.UserControls
                     TextBoxSyntax.MouseLeave -= Common.MouseLeave;
 
                     StackPanelBottom.Visibility = Visibility.Visible;
+                    StackPanelLinks.Visibility = Visibility.Visible;
+                    StackPanelConsolePolling.Visibility = Visibility.Visible;
+
                     var dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
                     dockPanelParameters.LastChildFill = true;
                     var controlList = new List<Control>();
@@ -164,6 +168,14 @@ namespace DCSInsight.UserControls
                     labelDefaultLua.Tag = textBoxLuaCode;
                     StackPanelLinks.Children.Add(labelDefaultLua);
                     
+                    StackPanelConsolePolling.Children.Add(GetLabelKeepResults());
+                    StackPanelConsolePolling.Children.Add(GetCheckBoxKeepResults());
+                    StackPanelConsolePolling.Children.Add(GetLabelPolling());
+                    StackPanelConsolePolling.Children.Add(GetCheckBoxPolling());
+                    StackPanelConsolePolling.Children.Add(GetLabelPollingInterval());
+                    StackPanelConsolePolling.Children.Add(GetComboBoxPollTimes());
+                    StackPanelConsolePolling.UpdateLayout();
+
                     controlList.Add(textBoxLuaCode);
                     TextBoxParameterList.Add(textBoxLuaCode);
 

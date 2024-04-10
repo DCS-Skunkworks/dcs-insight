@@ -25,7 +25,8 @@
 
         <StackPanel Grid.Column="0" Grid.Row="1"   Margin="5,5,5,5">
             <TextBox Name="TextBoxSyntax" Text="GetDevice(device_id):SetCommand(command_id, new_value)" FontSize="15" FontStyle="Normal" IsReadOnly="True" Background="WhiteSmoke" BorderThickness="0" FontFamily="consolas" Margin="5,5,5,5" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" PreviewMouseDown="TextBoxSyntax_OnPreviewMouseDown"></TextBox>
-            <StackPanel Name="StackPanelLinks" Orientation="Horizontal"/>
+            <StackPanel Name="StackPanelLinks" Orientation="Horizontal" Visibility="Collapsed"/>
+            <StackPanel Name="StackPanelConsolePolling"  Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed" Margin="0,0,10,0"/>
         </StackPanel>
 
         <ItemsControl Name="ItemsControlParameters" Grid.Column="0" Grid.Row="2" KeyboardNavigation.TabNavigation="Cycle" Margin="5,5,5,5">
