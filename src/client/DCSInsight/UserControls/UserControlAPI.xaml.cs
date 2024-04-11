@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +23,6 @@ namespace DCSInsight.UserControls
             InitializeComponent();
             LabelResultBase = LabelResult;
             TextBoxResultBase = TextBoxResult;
-            
         }
 
         private void UserControlAPI_OnLoaded(object sender, RoutedEventArgs e)
@@ -92,7 +92,14 @@ namespace DCSInsight.UserControls
                     StackPanelLinks.Visibility = Visibility.Visible;
                     StackPanelConsolePolling.Visibility = Visibility.Visible;
 
-                    var dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ?? throw new Exception("Failed to find DockPanelParameters");
+                    if (Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") == null)
+                    {
+                        Logger.Error("Failed to find DockPanelParameters in BuildLuaConsoleUI.");
+                        Common.ShowMessageBox("Error building GUI. Please restart application.");
+                        return;
+                    }
+
+                    var dockPanelParameters = Application.Current.MainWindow.FindChild<DockPanel>("DockPanelParameters") ??  throw new Exception("Failed to find DockPanelParameters");
                     dockPanelParameters.LastChildFill = true;
                     var controlList = new List<Control>();
 
@@ -113,6 +120,7 @@ namespace DCSInsight.UserControls
                     };
 
                     textBoxLuaCode.PreviewKeyDown += TextBoxLuaCode_OnPreviewKeyDown;
+                    textBoxLuaCode.KeyUp += TextBoxLuaCode_OnKeyUp;
 
                     var brushConverter = new BrushConverter().ConvertFromString("#0000FF");
                     var labelConsoleWarning = new Label

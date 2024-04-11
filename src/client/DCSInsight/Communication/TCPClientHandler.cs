@@ -24,18 +24,14 @@ namespace DCSInsight.Communication
         private bool _isRunning;
         private readonly string _host;
         private readonly string _port;
-        private bool _apiListReceived;
-        private int _metaDataPollCounter;
-        public bool LogJSON { get; set; } 
+        public bool LogJSON { get; set; }
         private string _currentMessage = "";
         private volatile bool _responseReceived;
-        private bool _requestAPIList;
 
-        public TCPClientHandler(string host, string port, bool requestAPIList)
+        public TCPClientHandler(string host, string port)
         {
             _host = host;
             _port = port;
-            _requestAPIList = requestAPIList;
             ICEventHandler.AttachCommandListener(this);
         }
 
@@ -45,6 +41,39 @@ namespace DCSInsight.Communication
             ICEventHandler.DetachCommandListener(this);
             _tcpClient?.Dispose();
             GC.SuppressFinalize(this);
+        }
+
+        public void RequestAPIList()
+        {
+            if (_tcpClient == null) return;
+
+            try
+            {
+                if (!_tcpClient.Connected) return;
+
+                Thread.Sleep(300);
+                _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes("SENDAPI\n"));
+                Thread.Sleep(1000);
+
+                var bytes = new byte[_tcpClient.Available];
+                var bytesRead = _tcpClient.GetStream().Read(bytes);
+                var msg = Encoding.ASCII.GetString(bytes);
+                if (LogJSON) Logger.Info(msg);
+                HandleAPIMessage(msg);
+                Thread.Sleep(100);
+            }
+            catch (SocketException ex)
+            {
+                Logger.Error(ex);
+                return;
+            }
+        }
+
+        public void StartListening()
+        {
+            _isRunning = true;
+            _clientThread = new Thread(ClientThread);
+            _clientThread.Start();
         }
 
         private void ClientThread()
@@ -78,15 +107,6 @@ namespace DCSInsight.Communication
 
                     if (!_tcpClient.Connected) break;
 
-                    if (_requestAPIList && !_apiListReceived && _metaDataPollCounter < 1)
-                    {
-                        Thread.Sleep(300);
-                        _metaDataPollCounter++;
-                        _tcpClient.GetStream().Write(Encoding.ASCII.GetBytes("SENDAPI\n"));
-                        Thread.Sleep(1000);
-                        _requestAPIList = false;
-                    }
-
                     if (_commandsQueue.Count > 0 && _responseReceived)
                     {
                         if (!_commandsQueue.TryDequeue(out var dcsApi)) continue;
@@ -103,7 +123,7 @@ namespace DCSInsight.Communication
                     var bytesRead = _tcpClient.GetStream().Read(bytes);
                     var msg = Encoding.ASCII.GetString(bytes);
                     if (LogJSON) Logger.Info(msg);
-                    HandleMessage(msg);
+                    HandleCommandMessage(msg);
                     Thread.Sleep(100);
                 }
                 catch (SocketException ex)
@@ -117,24 +137,30 @@ namespace DCSInsight.Communication
             _tcpClient = null;
             ICEventHandler.SendConnectionStatus(_isRunning);
         }
-        
-        private void HandleMessage(string str)
+
+        private void HandleCommandMessage(string str)
         {
             try
             {
-                if (!_apiListReceived)
-                {
-                    HandleAPIMessage(str);
-                    return;
-                }
-
                 if (str.Contains("\"returns_data\":") && str.EndsWith("}")) // regex?
                 {
-                    var dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
+                    DCSAPI? dcsApi;
+                    try
+                    {
+                        dcsApi = JsonConvert.DeserializeObject<DCSAPI>(_currentMessage + str);
+                    }
+                    catch (Exception e)
+                    {
+                        _currentMessage = "";
+                        _responseReceived = true;
+                        ICEventHandler.SendCommsErrorMessage("Error parsing JSON (API)", e);
+                        return;
+                    }
+
                     if (dcsApi == null) return;
 
                     _currentMessage = "";
-                    ICEventHandler.SendData(dcsApi);
+                    ICEventHandler.SendCommandData(dcsApi);
                     _responseReceived = true;
                 }
                 else
@@ -152,12 +178,22 @@ namespace DCSInsight.Communication
         {
             try
             {
-                var dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
+                List<DCSAPI>? dcsAPIList;
+                try
+                {
+                    dcsAPIList = JsonConvert.DeserializeObject<List<DCSAPI>>(str);
+                }
+                catch (Exception e)
+                {
+                    _responseReceived = true;
+                    ICEventHandler.SendCommsErrorMessage("Error parsing JSON (API List)", e);
+                    return;
+                }
+
                 if (dcsAPIList == null) return;
 
-                ICEventHandler.SendData(dcsAPIList);
+                ICEventHandler.SendAPIData(dcsAPIList);
                 _responseReceived = true;
-                _apiListReceived = true;
             }
             catch (Exception ex)
             {
@@ -185,9 +221,6 @@ namespace DCSInsight.Communication
                 _isRunning = false;
                 _tcpClient = new TcpClient();
                 _tcpClient.Connect(serverEndPoint);
-                _isRunning = true;
-                _clientThread = new Thread(ClientThread);
-                _clientThread.Start();
             }
             catch (Exception ex)
             {
@@ -213,7 +246,7 @@ namespace DCSInsight.Communication
         {
             _commandsQueue.Enqueue(dcsApi);
         }
-        
+
         public void SendCommand(SendCommandEventArgs args)
         {
             try

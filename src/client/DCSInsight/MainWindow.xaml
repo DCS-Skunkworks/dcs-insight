@@ -15,13 +15,26 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
             <RowDefinition Height="35" />
             <RowDefinition Height="10*" />
             <RowDefinition Height="10*" />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
 
-        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+        <Menu Height="25" HorizontalAlignment="Stretch" Name="MainMenu" VerticalAlignment="Top" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+            <MenuItem Header="File" >
+                <MenuItem Name="MenuItemExit" Header="Exit" Click="MenuItemExit_OnClick" />
+            </MenuItem>
+            <MenuItem Header="Options">
+                <MenuItem Name ="MenuItemAPIReload" Header="API reload setting" Click="MenuItemAPIReload_OnClick" />
+                <MenuItem Name ="MenuSetDCSBIOSPath" Header="Set DCS-BIOS path" Click="MenuSetDCSBIOSPath_OnClick" />
+                <MenuItem Name ="MenuCheckNewVersion" Header="Check for new version" Click="MenuCheckNewVersion_OnClick" />
+                <MenuItem Name ="MenuOpenLog" Header="Open log" Click="MenuOpenLog_OnClick" />
+            </MenuItem>
+        </Menu>
+
+        <ToolBar Height="35" HorizontalAlignment="Stretch" Name="ToolBarMain" VerticalAlignment="Top" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" >
             <Label Content="Server " VerticalAlignment="Center" ></Label>
             <TextBox Name="TextBoxServer" Text="127.0.0.1" Width="80"></TextBox>
             <Label Content="Port" VerticalAlignment="Center" ></Label>
@@ -36,11 +49,11 @@
             <Button Name="ButtonLuaWindow" Content="lua" BorderBrush="Gray" Margin="20,0,0,0" Click="ButtonLuaWindow_OnClick"></Button>
         </ToolBar>
 
-        <ScrollViewer Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" >
+        <ScrollViewer Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" >
             <ItemsControl Name="ItemsControlAPI">
             </ItemsControl>
         </ScrollViewer>
-        <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3">
+        <DockPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4">
             <StatusBar DockPanel.Dock="Bottom" Margin="5,0,5,0">
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" >
                     <TextBlock Name="TextBlockAppInfo">dcs-insight</TextBlock>
@@ -48,17 +61,9 @@
                 <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
                     <TextBlock Name="TextBlockAppWiki" MouseDown="TextBlockAppWiki_OnMouseDown">wiki</TextBlock>
                 </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
-                    <TextBlock Name="TextBlockCheckNewVersion" MouseDown="TextBlockCheckNewVersion_OnMouseDown">check version</TextBlock>
-                </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
-                    <TextBlock Name="TextBlockSetDCSBIOSLocation" MouseDown="TextBlockSetDCSBIOSLocation_OnMouseDown">set dcs-bios</TextBlock>
-                </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
-                    <TextBlock Name="TextBlockAPIReload" MouseDown="TextBlockAPIReload_OnMouseDown">api reload setting</TextBlock>
-                </StatusBarItem>
-                <StatusBarItem VerticalAlignment="Stretch" Foreground="#0000FF" HorizontalAlignment="Stretch" Margin="20,0,0,0" HorizontalContentAlignment="Left" MouseEnter="{x:Static misc:Common.MouseEnter}" MouseLeave="{x:Static misc:Common.MouseLeave}" >
-                    <TextBlock Name="TextBlockViewLog" MouseDown="TextBlockViewLog_OnMouseDown">view client log</TextBlock>
+                <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
+                    <TextBlock Name="TextBlockError" >
+                    </TextBlock>
                 </StatusBarItem>
                 <StatusBarItem VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right">
                     <TextBlock Name="TextBlockMessage" ></TextBlock>

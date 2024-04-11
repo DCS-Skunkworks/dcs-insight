@@ -17,7 +17,7 @@ namespace DCSInsight.Windows
     /// <summary>
     /// Interaction logic for WindowRangeTest.xaml
     /// </summary>
-    public partial class WindowRangeTest : Window, IErrorListener, IConnectionListener, IDataListener, IDisposable
+    public partial class WindowRangeTest : Window, IErrorListener, IConnectionListener, ICommandDataListener, IDisposable
     {
         private readonly List<DCSAPI> _dcsAPIList;
         private bool _formLoaded;
@@ -44,14 +44,14 @@ namespace DCSInsight.Windows
             _dcsAPIList.RemoveAll(o => o.Id == Constants.LuaConsole);
             ICEventHandler.AttachErrorListener(this);
             ICEventHandler.AttachConnectionListener(this);
-            ICEventHandler.AttachDataListener(this);
+            ICEventHandler.AttachCommandDataListener(this);
         }
 
         public void Dispose()
         {
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
-            ICEventHandler.DetachDataListener(this);
+            ICEventHandler.DetachCommandDataListener(this);
             _stopRunning = true;
             _doLoop = false;
             AutoResetEvent1.Set();
@@ -136,7 +136,7 @@ namespace DCSInsight.Windows
             }
         }
 
-        public void DataReceived(DataEventArgs args)
+        public void CommandDataReceived(CommandDataEventArgs args)
         {
             try
             {

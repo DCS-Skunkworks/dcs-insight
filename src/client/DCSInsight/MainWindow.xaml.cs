@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -22,13 +24,15 @@ using DCSInsight.Communication;
 using DCSInsight.Properties;
 using DCSInsight.Windows;
 using Octokit;
+using System.ComponentModel.Design;
+using System.Windows.Media;
 
 namespace DCSInsight
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IErrorListener, IConnectionListener, IDataListener, IDisposable
+    public partial class MainWindow : Window, IErrorListener, IConnectionListener, ICommsErrorListener, ICommandDataListener, IAPIDataListener, IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private List<DCSAPI> _dcsAPIList = new();
@@ -38,6 +42,11 @@ namespace DCSInsight
         private bool _isConnected;
         private bool _rangeTesting;
         private LuaWindow? _luaWindow;
+        private static readonly AutoResetEvent AutoResetEventErrorMessage = new(false);
+        private Thread? _errorMessageThread;
+        private const int ErrorMessageViewTime = 4000;
+        private readonly ConcurrentQueue<string> _errorMessagesQueue = new();
+        private bool _isClosing;
 
         public MainWindow()
         {
@@ -46,16 +55,22 @@ namespace DCSInsight
             Settings.Default.Save();
             ICEventHandler.AttachErrorListener(this);
             ICEventHandler.AttachConnectionListener(this);
-            ICEventHandler.AttachDataListener(this);
+            ICEventHandler.AttachAPIDataListener(this);
+            ICEventHandler.AttachCommandDataListener(this);
+            ICEventHandler.AttachCommsErrorListener(this);
         }
 
         public void Dispose()
         {
             _luaWindow?.Close();
+            AutoResetEventErrorMessage.Set();
+            _errorMessageThread?.Join();
             ItemsControlAPI.Items.Clear();
             ICEventHandler.DetachErrorListener(this);
             ICEventHandler.DetachConnectionListener(this);
-            ICEventHandler.DetachDataListener(this);
+            ICEventHandler.DetachAPIDataListener(this);
+            ICEventHandler.DetachCommandDataListener(this);
+            ICEventHandler.DetachCommsErrorListener(this);
             _tcpClientHandler?.Dispose();
             GC.SuppressFinalize(this);
         }
@@ -65,6 +80,10 @@ namespace DCSInsight
             try
             {
                 if (_formLoaded) return;
+
+                _errorMessageThread = new Thread(ErrorMessageThread);
+                _errorMessageThread.Start();
+                TextBlockError.Background = new SolidColorBrush(Common.HSLToRGB(348.0 / 360, 0.83, 0.70));
 
                 TextBoxSearchLuaControls.SetBackgroundSearchBanner(TextBoxSearchAPI);
                 ShowVersionInfo();
@@ -112,8 +131,15 @@ namespace DCSInsight
                 {
                     _tcpClientHandler?.Disconnect();
                     _isConnected = false;
-                    _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text, ItemsControlAPI.Items.Count == 0 || Settings.Default.ReloadAPIList);
+                    _tcpClientHandler = new TCPClientHandler(TextBoxServer.Text, TextBoxPort.Text);
                     _tcpClientHandler.Connect();
+
+                    if (Settings.Default.ReloadAPIList || ItemsControlAPI.Items.IsEmpty)
+                    {
+                        _tcpClientHandler.RequestAPIList();
+                    }
+
+                    _tcpClientHandler.StartListening();
                 }
                 catch (Exception ex)
                 {
@@ -162,7 +188,7 @@ namespace DCSInsight
                 }
 
                 Dispatcher?.BeginInvoke((Action)(() => SetConnectionStatus(args.IsConnected)));
-                Dispatcher?.BeginInvoke((Action)SetFormState); 
+                Dispatcher?.BeginInvoke((Action)SetFormState);
             }
             catch (Exception ex)
             {
@@ -185,7 +211,24 @@ namespace DCSInsight
             }
         }
 
-        public void DataReceived(DataEventArgs args)
+        public void CommandDataReceived(CommandDataEventArgs args)
+        {
+            try
+            {
+                if (_rangeTesting) return;
+
+                if (args.DCSApi != null)
+                {
+                    HandleMessage(args.DCSApi);
+                }
+            }
+            catch (Exception ex)
+            {
+                Dispatcher?.BeginInvoke((Action)(() => Common.ShowErrorMessageBox(ex)));
+            }
+        }
+
+        public void APIDataReceived(APIDataEventArgs args)
         {
             try
             {
@@ -194,10 +237,6 @@ namespace DCSInsight
                 if (args.DCSAPIS != null)
                 {
                     HandleAPIMessage(args.DCSAPIS);
-                }
-                if (args.DCSApi != null)
-                {
-                    HandleMessage(args.DCSApi);
                 }
             }
             catch (Exception ex)
@@ -238,6 +277,8 @@ namespace DCSInsight
         {
             try
             {
+                if (!Settings.Default.ReloadAPIList && !ItemsControlAPI.Items.IsEmpty) return;
+
                 _dcsAPIList = dcsApis;
                 //Debug.WriteLine("Count is " + _dcsAPIList.Count);
                 Dispatcher?.BeginInvoke((Action)(() => ShowAPIs()));
@@ -270,6 +311,8 @@ namespace DCSInsight
         {
             try
             {
+                _isClosing = true; 
+                AutoResetEventErrorMessage.Set();
                 Settings.Default.MainWindowTop = Top;
                 Settings.Default.MainWindowLeft = Left;
                 Settings.Default.Save();
@@ -488,7 +531,7 @@ namespace DCSInsight
                 Common.ShowErrorMessageBox(ex);
             }
         }
-        
+
         private void ButtonRangeTest_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -521,14 +564,6 @@ namespace DCSInsight
 
         private async void TextBlockCheckNewVersion_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            try
-            {
-                await CheckForNewVersion();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
         }
 
         private async Task CheckForNewVersion()
@@ -566,32 +601,13 @@ namespace DCSInsight
             }
         }
 
-        private void TextBlockSetDCSBIOSLocation_OnMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                var settingsWindow = new SettingsWindow();
-                settingsWindow.Owner = this;
-                settingsWindow.ShowDialog();
-                if (settingsWindow.DialogResult == true)
-                {
-                    Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
-                }
-                Settings.Default.Save();
-            }
-            catch (Exception ex)
-            {
-                Common.ShowErrorMessageBox(ex);
-            }
-        }
-
         private void ButtonLuaWindow_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 _luaWindow?.Close();
                 _luaWindow = new LuaWindow();
-                _luaWindow.Show(); 
+                _luaWindow.Show();
                 _luaWindow.Left = Left + Width;
             }
             catch (Exception ex)
@@ -621,7 +637,7 @@ namespace DCSInsight
             }
         }
 
-        private void TextBlockAPIReload_OnMouseDown(object sender, MouseButtonEventArgs e)
+        private void MenuItemAPIReload_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -635,7 +651,38 @@ namespace DCSInsight
             }
         }
 
-        private void TextBlockViewLog_OnMouseDown(object sender, MouseButtonEventArgs e)
+        private void MenuSetDCSBIOSPath_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var settingsWindow = new SettingsWindow();
+                settingsWindow.Owner = this;
+                settingsWindow.ShowDialog();
+                if (settingsWindow.DialogResult == true)
+                {
+                    Settings.Default.DCSBiosJSONLocation = settingsWindow.DcsBiosJSONLocation;
+                }
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private async void MenuCheckNewVersion_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await CheckForNewVersion();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void MenuOpenLog_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -643,6 +690,59 @@ namespace DCSInsight
                 if (_tcpClientHandler == null) return;
 
                 _tcpClientHandler.LogJSON = true;
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void MenuItemExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Close();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        private void ErrorMessageThread()
+        {
+            try
+            {
+                while (!_isClosing)
+                {
+                    if(_errorMessagesQueue.IsEmpty) AutoResetEventErrorMessage.WaitOne();
+
+                    if (_isClosing) break;
+
+                    var result = _errorMessagesQueue.TryDequeue(out var message);
+                    Dispatcher?.BeginInvoke(() => result ? TextBlockError.Text = message : TextBlockError.Text = "");
+                    Thread.Sleep(ErrorMessageViewTime);
+                    Dispatcher?.BeginInvoke(() => TextBlockError.Text = "");
+                }
+            }
+            catch (Exception ex)
+            {
+                ICEventHandler.SendErrorMessage("ErrorMessageThread() Error", ex);
+            }
+        }
+
+        private void SetCommsErrorMessage(string errorMessage)
+        {
+            _errorMessagesQueue.Enqueue(errorMessage);
+            AutoResetEventErrorMessage.Set();
+        }
+
+        public void CommsErrorMessage(CommsErrorEventArgs args)
+        {
+            try
+            {
+                SetCommsErrorMessage(args.ShortMessage);
+                Logger.Error(args.Ex);
             }
             catch (Exception ex)
             {
