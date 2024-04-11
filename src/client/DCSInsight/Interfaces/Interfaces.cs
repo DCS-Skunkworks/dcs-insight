@@ -12,13 +12,23 @@ namespace DCSInsight.Interfaces
         void ErrorMessage(ErrorEventArgs args);
     }
 
+    public interface ICommsErrorListener
+    {
+        void CommsErrorMessage(CommsErrorEventArgs args);
+    }
+
     public interface IConnectionListener
     {
         void ConnectionStatus(ConnectionEventArgs args);
     }
 
-    public interface IDataListener
+    public interface IAPIDataListener
     {
-        void DataReceived(DataEventArgs args);
+        void APIDataReceived(APIDataEventArgs args);
+    }
+
+    public interface ICommandDataListener
+    {
+        void CommandDataReceived(CommandDataEventArgs args);
     }
 }

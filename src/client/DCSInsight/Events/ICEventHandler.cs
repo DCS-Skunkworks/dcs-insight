@@ -70,28 +70,64 @@ namespace DCSInsight.Events
             OnConnection?.Invoke(new ConnectionEventArgs { IsConnected = isConnected});
         }
         /*
+         * For handling API list
+         */
+        public delegate void APIDataEventHandler(APIDataEventArgs e);
+        public static event APIDataEventHandler? OnAPIData;
+
+        public static void AttachAPIDataListener(IAPIDataListener listener)
+        {
+            OnAPIData += listener.APIDataReceived;
+        }
+
+        public static void DetachAPIDataListener(IAPIDataListener listener)
+        {
+            OnAPIData -= listener.APIDataReceived;
+        }
+
+        public static void SendAPIData(List<DCSAPI> dcsAPIs)
+        {
+            OnAPIData?.Invoke(new APIDataEventArgs(dcsAPIs));
+        }
+        /*
+         * For handling back and forth command data
+         */
+        public delegate void CommandDataEventHandler(CommandDataEventArgs e);
+        public static event CommandDataEventHandler? OnCommandData;
+
+        public static void AttachCommandDataListener(ICommandDataListener listener)
+        {
+            OnCommandData += listener.CommandDataReceived;
+        }
+
+        public static void DetachCommandDataListener(ICommandDataListener listener)
+        {
+            OnCommandData -= listener.CommandDataReceived;
+        }
+
+        public static void SendCommandData(DCSAPI dcsAPI)
+        {
+            OnCommandData?.Invoke(new CommandDataEventArgs(dcsAPI));
+        }
+        /*
          *
          */
-        public delegate void DataEventHandler(DataEventArgs e);
-        public static event DataEventHandler? OnData;
+        public delegate void CommsErrorEventHandler(CommsErrorEventArgs e);
+        public static event CommsErrorEventHandler? OnCommsError;
 
-        public static void AttachDataListener(IDataListener listener)
+        public static void AttachCommsErrorListener(ICommsErrorListener listener)
         {
-            OnData += listener.DataReceived;
+            OnCommsError += listener.CommsErrorMessage;
         }
 
-        public static void DetachDataListener(IDataListener listener)
+        public static void DetachCommsErrorListener(ICommsErrorListener listener)
         {
-            OnData -= listener.DataReceived;
+            OnCommsError -= listener.CommsErrorMessage;
         }
 
-        public static void SendData(List<DCSAPI> dcsAPIs)
+        public static void SendCommsErrorMessage(string shortMessage, Exception ex)
         {
-            OnData?.Invoke(new DataEventArgs(null, dcsAPIs ));
-        }
-        public static void SendData(DCSAPI dcsAPI)
-        {
-            OnData?.Invoke(new DataEventArgs (dcsAPI, null));
+            OnCommsError?.Invoke(new CommsErrorEventArgs(shortMessage, ex));
         }
     }
 }

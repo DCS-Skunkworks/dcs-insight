@@ -27,20 +27,40 @@ namespace DCSInsight.Events
         public Exception Ex { get; }
     }
 
+    public class CommsErrorEventArgs : EventArgs
+    {
+        public CommsErrorEventArgs(string shortMessage, Exception ex)
+        {
+            ShortMessage = shortMessage;
+            Ex = ex;
+        }
+
+        public string ShortMessage { get; }
+        
+        public Exception Ex { get; }
+    }
+
     public class ConnectionEventArgs : EventArgs
     {
         public bool IsConnected { get; init; }
     }
 
-    public class DataEventArgs : EventArgs
+    public class CommandDataEventArgs : EventArgs
     {
-        public DataEventArgs(DCSAPI? dcsApi, List<DCSAPI>? dcsapis)
+        public CommandDataEventArgs(DCSAPI dcsApi)
         {
             DCSApi = dcsApi;
-            DCSAPIS = dcsapis;
         }
 
         public DCSAPI? DCSApi { get; }
+    }
+
+    public class APIDataEventArgs : EventArgs
+    {
+        public APIDataEventArgs(List<DCSAPI> dcsapis)
+        {
+            DCSAPIS = dcsapis;
+        }
 
         public List<DCSAPI>? DCSAPIS { get; }
     }
