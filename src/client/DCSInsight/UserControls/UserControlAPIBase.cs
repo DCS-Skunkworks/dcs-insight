@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using DCSInsight.Events;
+using DCSInsight.Interfaces;
 using DCSInsight.JSON;
 using DCSInsight.Misc;
 using NLog;
@@ -17,14 +18,13 @@ namespace DCSInsight.UserControls
     /// <summary>
     /// Interaction logic for UserControlAPIBase.xaml
     /// </summary>
-    public abstract partial class UserControlAPIBase : UserControl, IDisposable, IAsyncDisposable
+    public abstract partial class UserControlAPIBase : UserControl, ICommsErrorListener,  IDisposable, IAsyncDisposable
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         protected readonly DCSAPI DCSAPI;
         protected bool IsControlLoaded;
         protected readonly List<TextBox> TextBoxParameterList = new();
         protected bool IsConnected;
-        private readonly Timer _pollingTimer;
         protected bool CanSend;
         private bool _keepResults;
         protected Button? ButtonSend;
@@ -32,6 +32,7 @@ namespace DCSInsight.UserControls
         protected ComboBox? ComboBoxPollTimes;
         protected Label? LabelResultBase;
         protected TextBox? TextBoxResultBase;
+        private readonly Timer _pollingTimer;
         private static readonly AutoResetEvent AutoResetEventPolling = new(false);
         protected readonly bool IsLuaConsole;
 
@@ -47,6 +48,7 @@ namespace DCSInsight.UserControls
             IsConnected = isConnected;
             _pollingTimer = new Timer(PollingTimerCallback);
             _pollingTimer.Change(Timeout.Infinite, 10000);
+            ICEventHandler.AttachCommsErrorListener(this);
         }
 
         public void Dispose()
@@ -55,6 +57,7 @@ namespace DCSInsight.UserControls
             AutoResetEventPolling.Set();
             _pollingTimer?.Dispose();
             AutoResetEventPolling.Dispose();
+            ICEventHandler.DetachCommsErrorListener(this);
             GC.SuppressFinalize(this);
         }
 
@@ -64,6 +67,7 @@ namespace DCSInsight.UserControls
             AutoResetEventPolling.Set();
             await _pollingTimer.DisposeAsync();
             AutoResetEventPolling.Dispose();
+            ICEventHandler.DetachCommsErrorListener(this);
             GC.SuppressFinalize(this);
         }
 
@@ -137,6 +141,22 @@ namespace DCSInsight.UserControls
             }
         }
 
+        /// <summary>
+        /// If the command resulted in JSON parsing error this is triggered instead of the above SetResult().
+        /// The next command should then be sent.
+        /// </summary>
+        /// <param name="args"></param>
+        public void CommsErrorMessage(CommsErrorEventArgs args)
+        {
+            try
+            {
+                AutoResetEventPolling.Set();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
 
         public void SetConnectionStatus(bool connected)
         {
@@ -147,7 +167,8 @@ namespace DCSInsight.UserControls
                 {
                     _pollingTimer.Change(Timeout.Infinite, 10000);
                 }
-                SetFormState();
+
+                if(IsControlLoaded) SetFormState();
             }
             catch (Exception ex)
             {
@@ -306,6 +327,18 @@ namespace DCSInsight.UserControls
                     return;
                 }
 
+                SetFormState();
+            }
+            catch (Exception ex)
+            {
+                Common.ShowErrorMessageBox(ex);
+            }
+        }
+
+        protected void TextBoxLuaCode_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
                 SetFormState();
             }
             catch (Exception ex)
